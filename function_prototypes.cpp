@@ -1,10 +1,24 @@
-//Transport
+/*These are the services that each layer provides
+to the layer above it
+*/
 
-SendData(destination, data);
-RecieveData(destination, data);
+//Transport (DOM)
 
-//Network
+SendData(destination, &data);
+RecieveData(&source, &data);
 
-SendSegment(destination, segment);
-RecieveSegment(destination, segment);
+//Network (NATHAN)
+
+SendSegment(destination, &segment);
+RecieveSegment(&source, &segment);
+
+//Link (HUW)
+
+SendPacket(destination, &packet);
+RecievePacket(&source, &packet);
+
+//Physical
+
+SendFrame(destination, &frame);
+RecieveFrame(&source, &frame);
 

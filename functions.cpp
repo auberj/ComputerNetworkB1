@@ -18,3 +18,5 @@ SendSegment(destination, segment){
 }
 RecieveSegment(destination, segment);
 
+//Link
+

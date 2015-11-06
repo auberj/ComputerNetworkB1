@@ -5,4 +5,4 @@
 #include "../physical_dummy/physical.h"
 
 void 	sendHello();
-int 	getMessage();
+int 	getPacket();

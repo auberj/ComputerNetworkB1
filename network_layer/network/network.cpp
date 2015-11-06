@@ -50,13 +50,36 @@ void sendHello(){
 	}
 	packet[126] = HelloChecksum;
 	packet[127] = HelloChecksum;
-	
-	display_string("hello sent\n");
 	char destination = 0;
 	SendPacket(destination, packet);
+
+	display_string("hello sent\n");
+	
 	return;
 }
 
+int getPacket(){
+	char packet[128]; //max packet length in bytes
+	RecievePacket(packet);
+
+	char control1 = packet[0];
+	char control2 = packet[1];
+
+	char SCRADD = packet[2];
+
+	char DESTADD = packet[3];
+
+	char Length = packet[4];
+
+	char segment[MaxSegmentLength];
+	for(int i=0;i<MaxSegmentLength;i++){
+		segment[i]=packet[i+5];
+	}
+
+	char checkSum1 = packet[126];
+	char checkSum2 = packet[127];
+	
+}
 
 
 

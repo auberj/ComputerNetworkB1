@@ -5,7 +5,7 @@
 	#include "../master_include.h"
 #endif
 
-#include "physical.cpp"
+#include "link.cpp"
 
 int SendPacket();
 int RecievePacket();

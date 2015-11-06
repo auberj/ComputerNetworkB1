@@ -1,15 +1,14 @@
-//physical
-//#include "physical.h"
+//link
 
 int SendPacket(char dest, char* packet){
-	display_char(packet[8]);
+	display_string("packet passed to link layer\n");
 	return 0;
 }
 
 int RecievePacket(char* packet){
 
 	//
-	packet[0] = 'k';
+	packet[0] = 'H'; //H for hello
 	packet[1] = 'X';
 	//set SRC address
 	packet[2] = 'g';

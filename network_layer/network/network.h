@@ -2,7 +2,7 @@
 
 
 #include "network_definitions.h"
-#include "../physical_dummy/physical.h"
+#include "../link_dummy/link.h"
 
 void 	gatherNeighbours(char* neighbourtable);
 void 	sendHello();

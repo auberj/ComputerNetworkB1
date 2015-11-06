@@ -11,3 +11,6 @@
 #define HelloChecksum 0x00
 
 #define NumNeighbours 10 //can have up to ten neighbours
+
+#define HelloPacketLength 15
+#define MaxPacketLength 128

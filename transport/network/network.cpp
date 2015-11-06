@@ -6,6 +6,7 @@ int SendSegment(char dest, char* ssegment)
 	display_char(dest);
 	display_string(" with message: ");
 	display_string(ssegment);
+	display_char('\n');
 	return 0;
 }
 

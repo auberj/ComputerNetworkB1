@@ -126,7 +126,7 @@ void display_char(char c)
 		write_data16(display.background);
 
 	display.x += 6;
-	if (display.x >= display.width) { display.x=0; display.y+=8; }
+	if (display.x > display.width-6) { display.x=0; display.y+=8; }
 }
 
 void display_string(char *str)

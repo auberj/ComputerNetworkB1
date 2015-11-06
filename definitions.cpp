@@ -14,13 +14,8 @@ int RecieveSegment(char source, char* rsegment);
 
 //Link (HUW)
 
-<<<<<<< HEAD
-int SendPacket(char dest, char* spacket);
-int RecievePacket(char source, char* rpacket);
-=======
 int SendPacket(char dest, char* Spacket);
-int RecievePacket(char* Rpacket); //the recieved packet will be put in too Rpacket
->>>>>>> origin/master
+int RecievePacket(char* rpacket); //the recieved packet will be put in too Rpacket
 
 //Physical
 
@@ -28,6 +23,7 @@ int SendFrame(destination, &frame);
 int RecieveFrame(&source, &frame);
 
 ////////Transport/////////
+
 Control bits
 	SE: Segment
 	SX: Segment (encrypted)
@@ -46,6 +42,6 @@ App data
 	Up to 114 char array of application data. Anymore than 114 will be split into two packets
 
 Checksum
-
+	We have 16 bits for a checksum. We will use the CRC16 checksum
 
 ///////////////////////////

@@ -9,8 +9,8 @@ int SendPacket(char dest, char* packet){
 int RecievePacket(char* packet){
 
 	//
-	packet[0] = 0xFF;
-	packet[1] = 0xFF;
+	packet[0] = 'k';
+	packet[1] = 'X';
 	//set SRC address
 	packet[2] = 'g';
 	//set DEST address (doesn't matter for HELLO)

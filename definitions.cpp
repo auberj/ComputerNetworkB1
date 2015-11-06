@@ -45,3 +45,10 @@ Checksum
 	We have 16 bits for a checksum. We will use the CRC16 checksum
 
 ///////////////////////////
+
+
+
+/*---NETWORK---//
+
+Control Bits: (X = dont care)
+	HX: Hello

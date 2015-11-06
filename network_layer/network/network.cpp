@@ -60,7 +60,6 @@ void sendHello(){
 	SendPacket(destination, packet);
 
 	display_string("hello sent\n");
-	
 	return;
 }
 
@@ -68,7 +67,7 @@ int getPacket(char* neighbourADD){
 	int PacketType = 0;
 	char packet[128]; //max packet length in bytes
 	RecievePacket(packet);
-
+	display_string("packet recieved\n");
 	char control1 = packet[0];
 	char control2 = packet[1];
 
@@ -86,9 +85,11 @@ int getPacket(char* neighbourADD){
 	char checkSum1 = packet[126];
 	char checkSum2 = packet[127];
 
-	if(control1 = Control1Hello){
+	if(control1 == Control1Hello){
 		PacketType = 1;
+		display_string("hello packet detected\n");
 	}
+	else{display_string("no hello packet\n");}
 	return PacketType;
 }
 

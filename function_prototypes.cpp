@@ -4,13 +4,13 @@ to the layer above it
 
 //Transport (DOM)
 
-SendData(destination, &data);
-RecieveData(&source, &data);
+int SendData(char dest, char* sdata);
+int RecieveData(char source, char* rdata);
 
 //Network (NATHAN)
 
-SendSegment(char dest, char* ssegment);
-RecieveSegment(char dest, char* rsegment);
+int SendSegment(char dest, char* ssegment);
+int RecieveSegment(char source, char* rsegment);
 
 //Link (HUW)
 
@@ -19,6 +19,6 @@ int RecievePacket(char source, char* packet);
 
 //Physical
 
-SendFrame(destination, &frame);
-RecieveFrame(&source, &frame);
+int SendFrame(destination, &frame);
+int RecieveFrame(&source, &frame);
 

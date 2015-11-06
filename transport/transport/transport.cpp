@@ -1,9 +1,18 @@
 #include <string.h>
 
-void senddata(char* message)
+int SendData(char dest, char* sdata)
 {
 	char segment1[120];
-	strncpy (segment1, message, 100);
+	
+	strncpy (segment1, sdata, 100);
 	segment1[100] = '\0';
-	display_string(segment1);
+
+
+	SendSegment(dest, segment1);
+	return 0;
 }
+
+// int RecieveData(char source, char* rdata)
+// {
+
+// }

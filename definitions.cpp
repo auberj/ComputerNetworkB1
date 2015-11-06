@@ -14,8 +14,13 @@ int RecieveSegment(char source, char* rsegment);
 
 //Link (HUW)
 
+<<<<<<< HEAD
 int SendPacket(char dest, char* spacket);
 int RecievePacket(char source, char* rpacket);
+=======
+int SendPacket(char dest, char* Spacket);
+int RecievePacket(char* Rpacket); //the recieved packet will be put in too Rpacket
+>>>>>>> origin/master
 
 //Physical
 

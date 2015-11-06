@@ -15,7 +15,7 @@ int RecieveSegment(char source, char* rsegment);
 //Link (HUW)
 
 int SendPacket(char dest, char* Spacket);
-int RecievePacket(char source, char* Rpacket);
+int RecievePacket(char* Rpacket);
 
 //Physical
 

@@ -24,25 +24,26 @@ int RecieveFrame(&source, &frame);
 
 ////////Transport/////////
 
-Control bits
-	SE: Segment
-	SX: Segment (encrypted)
+// Control bits
+// 	SE: Segment
+// 	SX: Segment (encrypted)
 
-To say this is the 1st segment out of 5
-SRC port
-	Char which is which segment this is eg 1
+// To say this is the 1st segment out of 5
+// SRC port
+// 	Char which is which segment this is eg 1
 
-Dest port
-	Char which is the number of total segments in message eg 5
+// Dest port
+// 	Char which is the number of total segments in message eg 5
 
-Length
-	Length, a char which says length of data in the packet. Eg if message is only 50 characters, length will be 50
+// Length
+// 	Length, a char which says length of data in the packet. Eg if message is only 50 characters, length will be 50
 
-App data
-	Up to 114 char array of application data. Anymore than 114 will be split into two packets
+// App data
+// 	Up to 114 char array of application data. Anymore than 114 will be split into two packets
 
-Checksum
-	We have 16 bits for a checksum. We will use the CRC16 checksum
+// Checksum
+// 	We have 16 bits for a checksum. We will use the CRC16 XModem checksum. This is very good and has a fixed length. The 16 bits are to be split into two uint8_ts and then converted into two characters. The MSB 8 bits will go in the first.
+// 	http://www.lammertbies.nl/comm/info/crc-calculation.html
 
 ///////////////////////////
 

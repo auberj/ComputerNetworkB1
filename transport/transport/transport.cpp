@@ -6,9 +6,9 @@ int SendData(char dest, char* sdata)
 {
 	char segment1[120] = {0};
 	char crc[3] = {0};
-	strncpy (segment1, sdata, 50);
+	strncpy (segment1, sdata, 100);
 
-	uint16_t crcbits = calcrc(segment1, 50);
+	uint16_t crcbits = calcrc(segment1, 100);
 
 	crc[0] = (char)((crcbits & 0xFF00) >> 8);
 	crc[1] = (char)(crcbits & 0x00FF);

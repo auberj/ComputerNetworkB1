@@ -14,11 +14,27 @@ int RecieveSegment(char source, char* rsegment);
 
 //Link (HUW)
 
-int SendPacket(char dest, char* Spacket);
-int RecievePacket(char source, char* Rpacket);
+int SendPacket(char dest, char* spacket);
+int RecievePacket(char source, char* rpacket);
 
 //Physical
 
 int SendFrame(destination, &frame);
 int RecieveFrame(&source, &frame);
 
+////////Transport/////////
+//Control bits: 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+///////////////////////////

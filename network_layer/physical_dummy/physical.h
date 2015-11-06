@@ -8,3 +8,4 @@
 #include "physical.cpp"
 
 int SendPacket();
+int RecievePacket();

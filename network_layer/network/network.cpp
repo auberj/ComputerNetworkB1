@@ -7,29 +7,35 @@
 
 #include "network.h"
 
-
-
-#define NumNeighbours 10 //can have up to ten neighbours
-
 //gather details of neighbours, store in neighbour table
-int neighbours[NumNeighbours]; 
+
 
 int main(){
 	init_lcd();
     set_orientation(East);
 	display_string("Initialising...\n");
-	sendHello();
+
+	char neighbours[NumNeighbours] = {0};//all set to 0
+	gatherNeighbours(neighbours);
 	while(1);
 	return 0;
 }
 
 
-void gatherNeighbours(int neighbourtable[NumNeighbours]){
+void gatherNeighbours(char* neighbourtable){
 	//send hello message
+	sendHello();
 
 	//get responses, check not duplicates 
+	char neighbour[1];
+	int packetType = getPacket(neighbour);
+	if(packetType){ //returns 1 for hello packets
+		//check array element is not the same as neighbour address and =0
+		display_char(neighbour[0]);
+	} 
 
 	//store in table
+	return;
 }
 
 void sendHello(){
@@ -58,14 +64,15 @@ void sendHello(){
 	return;
 }
 
-int getPacket(){
+int getPacket(char* neighbourADD){
+	int PacketType = 0;
 	char packet[128]; //max packet length in bytes
 	RecievePacket(packet);
 
 	char control1 = packet[0];
 	char control2 = packet[1];
 
-	char SCRADD = packet[2];
+	neighbourADD[0] = packet[2];
 
 	char DESTADD = packet[3];
 
@@ -78,7 +85,11 @@ int getPacket(){
 
 	char checkSum1 = packet[126];
 	char checkSum2 = packet[127];
-	
+
+	if(control1 = Control1Hello){
+		PacketType = 1;
+	}
+	return PacketType;
 }
 
 

@@ -99,6 +99,8 @@ void display_char(char c)
 	PGM_P fdata; 
 	uint8_t bits, mask;
 	uint16_t sc=display.x, ec=display.x + 4, sp=display.y, ep=display.y + 7;
+	if (c == 10)
+		display.x=0; display.y+=8; //Added /n to characters
 	if (c < 32 || c > 126) return;
 	fdata = (PGM_P)((c - ' ')*5 + font5x7);
 	write_cmd(PAGE_ADDRESS_SET);

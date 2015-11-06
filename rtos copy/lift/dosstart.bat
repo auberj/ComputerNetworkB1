@@ -1,1 +1,0 @@
-path=%path%;C:\MinGW\bin;C:\msys\1.0\bin;C:\WinAVR-20080610\bin

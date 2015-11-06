@@ -9,8 +9,8 @@ RecieveData(&source, &data);
 
 //Network (NATHAN)
 
-SendSegment(destination, &segment);
-RecieveSegment(&source, &segment);
+SendSegment(char dest, char* ssegment);
+RecieveSegment(char dest, char* rsegment);
 
 //Link (HUW)
 

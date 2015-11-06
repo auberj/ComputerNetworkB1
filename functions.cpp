@@ -9,12 +9,10 @@ SendSegment(destination, segment){
 	case status:
 		RecepientNotAvailable
 			return 0;
-		RecepientAvailableDelivered
+		RecepientAvailable
 			return 1;
-		RecepientAvailableNotDelivered
-			return 2;
 		Timeout
-			return 3;
+			return 2;
 }
 RecieveSegment(destination, segment);
 

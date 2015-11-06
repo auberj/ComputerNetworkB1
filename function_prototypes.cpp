@@ -14,8 +14,8 @@ RecieveSegment(&source, &segment);
 
 //Link (HUW)
 
-SendPacket(destination, &packet);
-RecievePacket(&source, &packet);
+int SendPacket(char dest, char* packet);
+int RecievePacket(char source, char* packet);
 
 //Physical
 

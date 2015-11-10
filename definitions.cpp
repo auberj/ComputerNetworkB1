@@ -15,7 +15,7 @@ int RecieveSegment(char* source, char* rsegment); //return 0 if no segment avail
 //Link (HUW)
 
 int SendPacket(char dest, char* Spacket);
-int RecievePacket(char* rpacket); //the recieved packet will be put in too Rpacket, rpacket will be max packet length of 128
+int RecievePacket(char* rpacket); //the recieved packet will be put in too Rpacket, rpacket will be max packet length of 128, recevied packet should be put in to the first part of rpacket
 
 //Physical
 

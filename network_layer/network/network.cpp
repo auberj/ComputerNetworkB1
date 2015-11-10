@@ -112,18 +112,27 @@ void getNeighbourAdd(char* neighbourADD, char* packet){
 }
 int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	int PacketType = 0;
+	int packetEnd
 
 	char packet[MaxPacketLength]; //max packet length in bytes
 	RecievePacket(packet);
-	int PacketLength = (sizeof(packet)/sizeof(packet[0]));
+	for(i=127;i>0;i--){
+		if(packet[i]!=0){
+			packetEnd=i;
+			break;
+		}
+	}
+	//int PacketLength = (sizeof(packet)/sizeof(packet[0]));
+	int PacketLength = packetEnd+1;
 	display_string("packet recieved\n");
 	char control1 = packet[0];
 	char control2 = packet[1];
 
+	/*
 	char segment[PacketLength-7];
 	for(int i=0;i<(PacketLength-7);i++){
 		segment[i]=packet[i+5];
-	}
+	}*/
 
 	char checkSum1 = packet[PacketLength-1];
 	char checkSum2 = packet[PacketLength];
@@ -141,7 +150,11 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 			PacketType = 2;
 		break;
 		case Control1Message:
-			PacketType = 3;
+			if(packet[3]==SCRADD){
+				PacketType = 3;
+			}
+			else{ PacketType = 4;}
+			
 		break;
 	}
 	
@@ -158,29 +171,41 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	int 	returnval;
 	int 	packetend;
 
-	RecievePacket(packet); //get packet from DLL
+	int packetType = getPacket(packet); //get packet from DLL
 	
 	//determine if I am intended recipient
-	if((packet[3]==SCRADD)&&(packet[0]==Control1Message)){ //If I am recipient & packet contains a message
-		//extract data from packet
-		source[0] = packet[2]; //source of message
-		//detect end of packet
-		for(i=127;i>0;i--){
-			if(packet[i]!=0){
-				packetend=i;
-				break;
-			}
-		}
-		//copy segment data 
-		for(i=4;i<packetend;i++){
-			rsegment[i-4]=packet[i];
-		}
+	switch (packetType){
+		case 1:
+			//CODE
+		break;
 
-		returnval = 1;
+		case 2:
+			//CODE
+		break;
+
+		case 3: //packet is a message for me
+			//extract data from packet
+			source[0] = packet[2]; //source of message
+			//detect end of packet
+			for(i=127;i>0;i--){
+				if(packet[i]!=0){
+					packetend=i;
+					break;
+				}
+			}
+			//copy segment data 
+			for(i=4;i<packetend;i++){
+				rsegment[i-4]=packet[i];
+			}
+			returnval = 1;
+		break;
+
+		case 4: //packet is a message but not for me
+			returnval = 0;
+		break;
 	}
-	else{
-		returnval = 0;
-	}
+	
+	
 	return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

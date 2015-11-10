@@ -153,14 +153,13 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
 	//create variables
-	char 	packet[128]; //assume max length
+	char 	packet[MaxPacketLength] = {0}; //assume max length
 	int 	returnval;
 
 	RecievePacket(packet); //get packet from DLL
 	
 	//determine if I am intended recipient
-	char dest[] = packet[3];
-	if(dest[0]==SCRADD){ //If I am recipient
+	if((packet[3]==SCRADD)&&(packet[0]==Control1Message)){ //If I am recipient & packet contains a message
 		//extract data from packet
 		source[0] = packet[2]; //source of message
 

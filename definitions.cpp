@@ -10,12 +10,12 @@ int RecieveData(char source, char* rdata);
 //Network (NATHAN)
 
 int SendSegment(char dest, char* segment); //return 0
-int RecieveSegment(char* source, char* rsegment); //return 0 if no segment available, return 1 if segment extration is succesful
+int RecieveSegment(char* source, char* rsegment); //return 0 if no segment available, return 1 if segment extration is succesful, rsegment should be of maximum segment length
 
 //Link (HUW)
 
 int SendPacket(char dest, char* Spacket);
-int RecievePacket(char* rpacket); //the recieved packet will be put in too Rpacket
+int RecievePacket(char* rpacket); //the recieved packet will be put in too Rpacket, rpacket will be max packet length of 128
 
 //Physical
 

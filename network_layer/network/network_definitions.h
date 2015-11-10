@@ -4,10 +4,10 @@
 
 #define Control1Neighour 'N'
 
-#define Conrtol1Message 'M'
+#define Control1Message 'M'
 
 //source address (my address)
-#define SCRADD 0x01
+#define SCRADD 'N'
 
 #define MaxSegmentLength 0x79
 

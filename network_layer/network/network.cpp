@@ -107,16 +107,18 @@ void sendHello(){
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){
+	display_string("getting neighbour address\n");
 	neighbourADD[0] = packet[2];
 	return;
 }
 int getPacket(char* packet){ //gets a packet from DLL and returns its type
+	display_string("getting packet\n");
 	int PacketType = 0;
-	int packetEnd
+	int packetEnd;
 
-	char packet[MaxPacketLength]; //max packet length in bytes
+	//char packet[MaxPacketLength]; //max packet length in bytes
 	RecievePacket(packet);
-	for(i=127;i>0;i--){
+	for(int i=127;i>0;i--){
 		if(packet[i]!=0){
 			packetEnd=i;
 			break;
@@ -157,19 +159,19 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 			
 		break;
 	}
-	
+	display_string("done.\n");
 	return PacketType;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
-
+	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
 	//create variables
 	char 	packet[MaxPacketLength] = {0}; //assume max length
-	int 	returnval;
-	int 	packetend;
+	int 	returnval = 0;
+	int 	packetend = 0;
 
 	int packetType = getPacket(packet); //get packet from DLL
 	
@@ -187,14 +189,14 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			//extract data from packet
 			source[0] = packet[2]; //source of message
 			//detect end of packet
-			for(i=127;i>0;i--){
+			for(int i=127;i>0;i--){
 				if(packet[i]!=0){
 					packetend=i;
 					break;
 				}
 			}
 			//copy segment data 
-			for(i=4;i<packetend;i++){
+			for(int i=4;i<packetend;i++){
 				rsegment[i-4]=packet[i];
 			}
 			returnval = 1;

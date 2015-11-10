@@ -2,7 +2,7 @@
 #define Control1Hello 'H'
 #define Control2Hello 'O'
 
-#define Control1Neighour 'N'
+#define Control1Neighbour 'N'
 
 #define Control1Message 'M'
 

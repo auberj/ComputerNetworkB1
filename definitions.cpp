@@ -27,6 +27,7 @@ int RecieveFrame(&source, &frame);
 // Control bits
 // 	SE: Segment
 // 	SX: Segment (encrypted)
+//Use flags here to say which one of which it is and use ports as 0
 
 // To say this is the 1st segment out of 5
 // SRC port

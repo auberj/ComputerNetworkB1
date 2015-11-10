@@ -2,7 +2,7 @@
 
 #ifndef _MASTER_H_
 #define _MASTER_H_
-	#include "../master_include.h"
+#include "../master_include.h"
 #endif
 
 #include "network.h"
@@ -17,19 +17,15 @@ int main(){
 
 	char neighbours[NumNeighbours] = {0};//all set to 0
 	display_string(neighbours);
+	sendHello();
 	gatherNeighbours(neighbours);
 	display_string(neighbours);
 	while(1);
 	return 0;
 }
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gatherNeighbours(char* neighbourtable){
-
-	//send hello message
-	sendHello();
-
-	//calculate number of elements in neighbour table
+//calculate number of elements in neighbour table
 	int neighbourTableSize = (sizeof(neighbourtable)/sizeof(neighbourtable[0]));
 
 	//get responses, check not duplicates 
@@ -80,7 +76,7 @@ void gatherNeighbours(char* neighbourtable){
 	//store in table
 	return;
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendHello(){
 	display_string("sending hello\n");
 	char packet[HelloPacketLength]; //max packet length in bytes
@@ -106,7 +102,7 @@ void sendHello(){
 	display_string("hello sent\n");
 	return;
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int getPacket(char* neighbourADD){
 	int PacketType = 0;
 
@@ -130,15 +126,34 @@ int getPacket(char* neighbourADD){
 
 	char checkSum1 = packet[PacketLength-1];
 	char checkSum2 = packet[PacketLength];
-
-	if(control1 == Control1Hello){
+	
+	/* if(control1 == Control1Hello){
 		PacketType = 1;
 		
+	}*/
+
+	switch (control1){
+		case Control1Hello:
+			PacketType = 1;
+		break;
+		case Control1Neighbour:
+			PacketType = 2;
+		break;
+		case Control1Message:
+			PacketType = 3;
+		break;
 	}
 	
 	return PacketType;
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int SendSegment(char dest, char* segment){
 
-
-
-//pass neighbour details to every neighbour (this needs to recur so each node knows about every other node)
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int RecieveSegment(char* source, char* rsegment){
+	char packet[128];
+	RecievePacket(packet);
+	source[0] = packet[2];
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

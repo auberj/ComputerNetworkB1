@@ -2,6 +2,10 @@
 #define Control1Hello 'H'
 #define Control2Hello 'O'
 
+#define Control1Neighour 'N'
+
+#define Conrtol1Message 'M'
+
 //source address (my address)
 #define SCRADD 0x01
 

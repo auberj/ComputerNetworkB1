@@ -9,8 +9,8 @@ int RecieveData(char source, char* rdata);
 
 //Network (NATHAN)
 
-int SendSegment(char dest, char* ssegment);
-int RecieveSegment(char source, char* rsegment);
+int SendSegment(char dest, char* segment); //return 0
+int RecieveSegment(char* source, char* rsegment); //return 0
 
 //Link (HUW)
 

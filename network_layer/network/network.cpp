@@ -147,13 +147,28 @@ int getPacket(char* neighbourADD){
 	return PacketType;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int SendSegment(char dest, char* segment){
+int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int RecieveSegment(char* source, char* rsegment){
-	char packet[128];
-	RecievePacket(packet);
-	source[0] = packet[2];
+int RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
+	//create variables
+	char 	packet[128]; //assume max length
+	int 	returnval;
+
+	RecievePacket(packet); //get packet from DLL
+	
+	//determine if I am intended recipient
+	char dest[] = packet[3];
+	if(dest[0]==SCRADD){ //If I am recipient
+		//extract data from packet
+		source[0] = packet[2]; //source of message
+
+		returnval = 1;
+	}
+	else{
+		returnval = 0;
+	}
+	return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

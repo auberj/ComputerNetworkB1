@@ -10,7 +10,7 @@ int RecieveData(char source, char* rdata);
 //Network (NATHAN)
 
 int SendSegment(char dest, char* segment); //return 0
-int RecieveSegment(char* source, char* rsegment); //return 0
+int RecieveSegment(char* source, char* rsegment); //return 0 if no segment available, return 1 if segment extration is succesful
 
 //Link (HUW)
 

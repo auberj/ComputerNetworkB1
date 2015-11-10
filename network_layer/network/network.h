@@ -10,3 +10,4 @@ int 	getPacket(char* neighbourADD);
 int 	SendSegment(char dest, char* segment);
 int 	RecieveSegment(char source, char* rsegment);
 void 	getNeighbourAdd(char* neighbourADD, char* packet); //extracts neighbour address from packet
+void 	sendNeighbours(char* neighbourtable);

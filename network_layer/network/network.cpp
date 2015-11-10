@@ -105,6 +105,10 @@ void sendHello(){
 	display_string("hello sent\n");
 	return;
 }
+
+void sendNeighbours(char* neighbourtable){
+	
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){
 	display_string("getting neighbour address\n");
@@ -177,10 +181,9 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	
 	//determine if I am intended recipient
 	switch (packetType){
-		case 1:
-			//CODE
+		case 1: //recieved a HELLO, send one back!
+			sendHello();
 		break;
-
 		case 2:
 			//CODE
 		break;

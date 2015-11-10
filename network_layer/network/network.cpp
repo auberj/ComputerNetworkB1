@@ -26,12 +26,15 @@ int main(){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gatherNeighbours(char* neighbourtable){
 //calculate number of elements in neighbour table
-	int neighbourTableSize = (sizeof(neighbourtable)/sizeof(neighbourtable[0]));
-
+	int 	neighbourTableSize = (sizeof(neighbourtable)/sizeof(neighbourtable[0]));
+	char 	packet[MaxPacketLength];
 	//get responses, check not duplicates 
-	char neighbour[1];
-	int packetType = getPacket(neighbour);
-	if(packetType){ //returns 1 for hello packets
+	char 	neighbour[1];
+	int 	packetType = getPacket(packet); //get a new packet
+
+	getNeighbourAdd(neighbour, packet); //extract neighbour address from packet
+
+	if(packetType==1){ //returns 1 for hello packets
 		display_string("hello packet detected\n");
 		display_string("neighbour found: ");
 		display_char(neighbour[0]); display_string("\n");
@@ -103,7 +106,11 @@ void sendHello(){
 	return;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int getPacket(char* neighbourADD){
+void getNeighbourAdd(char* neighbourADD, char* packet){
+	neighbourADD[0] = packet[2];
+	return;
+}
+int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	int PacketType = 0;
 
 	char packet[MaxPacketLength]; //max packet length in bytes
@@ -112,12 +119,6 @@ int getPacket(char* neighbourADD){
 	display_string("packet recieved\n");
 	char control1 = packet[0];
 	char control2 = packet[1];
-
-	neighbourADD[0] = packet[2];
-
-	char DESTADD = packet[3];
-
-	char Length = packet[4];
 
 	char segment[PacketLength-7];
 	for(int i=0;i<(PacketLength-7);i++){
@@ -155,6 +156,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	//create variables
 	char 	packet[MaxPacketLength] = {0}; //assume max length
 	int 	returnval;
+	int 	packetend;
 
 	RecievePacket(packet); //get packet from DLL
 	
@@ -162,6 +164,17 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	if((packet[3]==SCRADD)&&(packet[0]==Control1Message)){ //If I am recipient & packet contains a message
 		//extract data from packet
 		source[0] = packet[2]; //source of message
+		//detect end of packet
+		for(i=127;i>0;i--){
+			if(packet[i]!=0){
+				packetend=i;
+				break;
+			}
+		}
+		//copy segment data 
+		for(i=4;i<packetend;i++){
+			rsegment[i-4]=packet[i];
+		}
 
 		returnval = 1;
 	}

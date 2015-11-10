@@ -36,7 +36,7 @@ int RecieveFrame(&source, &frame);
 // 	Char which is the number of total segments in message eg 5
 
 // Length
-// 	Length, a char which says length of data in the packet. Eg if message is only 50 characters, length will be 50
+// 	Length, a uint8_t which says length of data in the packet. Eg if message is only 50 characters, length will be 50
 
 // App data
 // 	Up to 114 char array of application data. Anymore than 114 will be split into two packets

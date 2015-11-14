@@ -7,26 +7,29 @@
 
 #include "network.h"
 
-//gather details of neighbours, store in neighbour table
-
+//global vars
+char neighbours[NumNeighbours] = {0};//all set to 0
 
 int main(){
 	init_lcd();
     set_orientation(East);
 	display_string("Initialising...\n");
 
-	char neighbours[NumNeighbours] = {0};//all set to 0
+	
 	display_string(neighbours);
 	sendHello();
-	gatherNeighbours(neighbours);
+	gatherNeighbours();
+	sendHello();
+	gatherNeighbours();
+	clear_screen();
 	display_string(neighbours);
 	while(1);
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void gatherNeighbours(char* neighbourtable){
+void gatherNeighbours(){
 //calculate number of elements in neighbour table
-	int 	neighbourTableSize = (sizeof(neighbourtable)/sizeof(neighbourtable[0]));
+	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
 	char 	packet[MaxPacketLength];
 	//get responses, check not duplicates 
 	char 	neighbour[1];
@@ -42,7 +45,7 @@ void gatherNeighbours(char* neighbourtable){
 		int duplicateFlag=1;
 		//check array element is not the same as neighbour address and =0
 		for(int i=0;i<neighbourTableSize;i++){
-			if(neighbourtable[i]==neighbour[0]){
+			if(neighbours[i]==neighbour[0]){
 				display_string("duplicate neighbour found, move on.\n");
 				duplicateFlag = 0;
 			}
@@ -53,17 +56,18 @@ void gatherNeighbours(char* neighbourtable){
 			int SpaceFlag=0;
 			for(int i=0;i<neighbourTableSize;i++){
 				//find space for neighbour in table
-				if(neighbourtable[i]==0){
+				if(neighbours[i]==0){
 					display_string("space for neighbour\n");
 					neighbourSpace = i;
 					SpaceFlag = 1;
+					break;
 				}
 				if((i==neighbourTableSize)&&(SpaceFlag==0)){
 					display_string("no space for neighbour\n");
 				}
 			}
 			if(SpaceFlag==1){
-				neighbourtable[neighbourSpace] = neighbour[0];
+				neighbours[neighbourSpace] = neighbour[0];
 				display_string("neighbour stored in ");
 				char str[10];
 				sprintf(str, "%d", neighbourSpace);
@@ -106,8 +110,8 @@ void sendHello(){
 	return;
 }
 
-void sendNeighbours(char* neighbourtable){
-	
+void sendNeighbours(){
+	return;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){

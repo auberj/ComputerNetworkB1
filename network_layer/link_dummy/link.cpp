@@ -5,13 +5,22 @@ int SendPacket(char dest, char* packet){
 	return 0;
 }
 
-int RecievePacket(char* packet){
+int called = 0;
 
+
+int RecievePacket(char* packet){
+	
 	//
 	packet[0] = 'H'; //H for hello
 	packet[1] = 'X';
 	//set SRC address
-	packet[2] = 'g';
+	if(called==0){
+		packet[2] = 'g';
+	}
+	if(called==1){
+		packet[2] = 'l';
+	}
+	
 	//set DEST address (doesn't matter for HELLO)
 	packet[3] = 0x01;
 	//set length
@@ -22,5 +31,6 @@ int RecievePacket(char* packet){
 	}
 	packet[126] = 0xFF;
 	packet[127] = 0xFF;
+	called++;
 	return 0;
 }

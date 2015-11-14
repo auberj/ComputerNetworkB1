@@ -15,7 +15,7 @@ int RecievePacket(char* packet){
 	packet[1] = 'X';
 	//set SRC address
 	if(called==0){
-		packet[2] = 'g';
+		packet[2] = 'k';
 	}
 	if(called==1){
 		packet[2] = 'l';

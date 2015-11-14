@@ -16,29 +16,25 @@ int main(){
 	display_string("Initialising...\n");
 
 	
-	display_string(neighbours);
+	//display_string(neighbours);
 	sendHello();
 	gatherNeighbours();
 	sendHello();
 	gatherNeighbours();
 	clear_screen();
-	display_string(neighbours);
+	//display_string(neighbours);
+	sendNeighbours();
 	while(1);
 	return 0;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void gatherNeighbours(){
-//calculate number of elements in neighbour table
-	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
-	char 	packet[MaxPacketLength];
-	//get responses, check not duplicates 
+
+void processHello(char* packet){
 	char 	neighbour[1];
-	int 	packetType = getPacket(packet); //get a new packet
+	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
 
-	getNeighbourAdd(neighbour, packet); //extract neighbour address from packet
+	getNeighbourAdd(neighbour, packet);
 
-	if(packetType==1){ //returns 1 for hello packets
-		display_string("hello packet detected\n");
+	display_string("processing HELLO\n");
 		display_string("neighbour found: ");
 		display_char(neighbour[0]); display_string("\n");
 
@@ -77,7 +73,20 @@ void gatherNeighbours(){
 		}
 		
 	display_string("neighbour processed\n");
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void gatherNeighbours(){
+//calculate number of elements in neighbour table
+	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
+	char 	packet[MaxPacketLength];
+	//get responses, check not duplicates 
+	char 	neighbour[1];
+	int 	packetType = getPacket(packet); //get a new packet
 
+	getNeighbourAdd(neighbour, packet); //extract neighbour address from packet
+
+	if(packetType==1){ //returns 1 for hello packets
+		processHello(packet);
 	} 
 	else{display_string("no hello packet\n");}
 	//store in table
@@ -111,6 +120,28 @@ void sendHello(){
 }
 
 void sendNeighbours(){
+	display_string("sending neighbours\n");
+	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
+	char 	packet[neighbourTableSize+7];
+	packet[0] = Control1Neighbour;
+	packet[1] = '0'; //dont care
+	packet[2] = SCRADD;
+	packet[3] = '0'; //dont care
+	packet[4] = (char)(neighbourTableSize & 0x00FF);
+
+	for(int i=5;i<neighbourTableSize;i++){
+		packet[i] = neighbours[i-5];
+	}
+	
+	uint16_t fullcrc = calcrc(packet, neighbourTableSize+5);
+
+	packet[neighbourTableSize+5] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[neighbourTableSize+6] = (char)(fullcrc & 0x00FF);
+	//display_char(packet[neighbourTableSize+6]);
+	display_string(packet);
+	display_string("\n");
+	display_string("done\n");
+
 	return;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,6 +218,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	switch (packetType){
 		case 1: //recieved a HELLO, send one back!
 			sendHello();
+			processHello(packet);
 		break;
 		case 2:
 			//CODE
@@ -218,3 +250,22 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
+{
+    int  crc;
+    char i;
+    crc = 0;
+    while (--count >= 0)
+    {
+        crc = crc ^ (int) *ptr++ << 8;
+        i = 8;
+        do
+        {
+            if (crc & 0x8000)
+                crc = crc << 1 ^ 0x1021;
+            else
+                crc = crc << 1;
+        } while(--i);
+    }
+    return (crc);
+}

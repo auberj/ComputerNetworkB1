@@ -11,10 +11,6 @@ int SendData(char dest, char* sdata)
 	uint16_t crcbits = calcrc(segment1, 120);
 	int error = SendSegment(dest, segment1);
 	display_segment(dest, segment1);
-
-	display_string("CRC: ");
-	
-	display_hex(crcbits);
 	return 0;
 };
 
@@ -46,6 +42,8 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
 
 void display_segment(char dest, char* segment)
 {
+    uint8_t i = 0;
+
     display_string("Sending segment to ");
     display_char(dest);
     display_string(" that is ");

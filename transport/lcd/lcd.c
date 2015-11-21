@@ -160,5 +160,18 @@ void display_hex(uint16_t hex) //Displys number in hex between 0 and 650000
 	    display_string("0x");
 	    display_string(hexchars);
 	}
-	
+}
+
+void display_binary(uint8_t byte) //Displys a byte in binary
+{
+	char binchars[8];
+	for (int i = 7; i > -1; i--)
+	{
+		if (byte & (1 << i))
+			binchars[7-i]='1';
+		else
+			binchars[7-i]='0'; 
+	}
+    display_string("0b");
+    display_nstring(binchars, 0, 8);
 }

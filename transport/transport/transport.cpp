@@ -4,17 +4,17 @@ uint16_t calcrc(char *ptr, int count);
 
 int SendData(char dest, char* sdata)
 {
-	char segment1[120] = {0};
-	strncpy (segment1, sdata, 100);
+	char segment1[121];
+	strncpy (segment1, sdata, 120);
 
-	uint16_t crcbits = calcrc(segment1, 100);
-	SendSegment(dest, segment1);
+	uint16_t crcbits = calcrc(segment1, 120);
+	int error = SendSegment(dest, segment1);
 
 	display_string("CRC in hex: ");
+	
 	display_hex(crcbits);
-
-	return 0;
-}
+	return 1;
+};
 
 // int RecieveData(char source, char* rdata)
 // {

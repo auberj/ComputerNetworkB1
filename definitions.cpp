@@ -25,19 +25,18 @@ int RecieveFrame(&source, &frame);
 ////////Transport/////////
 
 // Control bits
-// 	SE: Segment
-// 	SX: Segment (encrypted)
-//Use flags here to say which one of which it is and use ports as 0
+// 	First (MSB) bit is always a 1. Next is a 1 if encrpyted
+// Next two bits are for extra functionaility
+// Next 6 say which segment it is
+// Next 6 say which segment it's out of
 
 // To say this is the 1st segment out of 5
-// SRC port
-// 	Char which is which segment this is eg 1
+// SRC port = 0x00
 
-// Dest port
-// 	Char which is the number of total segments in message eg 5
+// Dest port = 0x00
 
 // Length
-// 	Length, a uint8_t which says length of data in the packet. Eg if message is only 50 characters, length will be 50
+// 	Length, a uint8_t which says length of appdata in the packet. Eg if message is only 50 characters, length will be 50
 
 // App data
 // 	Up to 114 char array of application data. Anymore than 114 will be split into two packets

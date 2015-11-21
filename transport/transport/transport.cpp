@@ -1,19 +1,21 @@
 #include <string.h>
 
 uint16_t calcrc(char *ptr, int count);
+void display_segment(char dest, char* segment);
 
 int SendData(char dest, char* sdata)
 {
-	char segment1[121];
+	char segment1[121]; 
 	strncpy (segment1, sdata, 120);
 
 	uint16_t crcbits = calcrc(segment1, 120);
 	int error = SendSegment(dest, segment1);
+	display_segment(dest, segment1);
 
-	display_string("CRC in hex: ");
+	display_string("CRC: ");
 	
 	display_hex(crcbits);
-	return 1;
+	return 0;
 };
 
 // int RecieveData(char source, char* rdata)
@@ -42,10 +44,11 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
     return (crc);
 }
 
-//This function converts to hex
-// char crchex[4];
-
-// if (crc <= 0xFFFF) //Converts CRC to hex array for debugging
-// {
-//     sprintf(&crchex[0], "%04x", crc);
-// }
+void display_segment(char dest, char* segment)
+{
+    display_string("Sending segment to ");
+    display_char(dest);
+    display_string(" that is ");
+    display_number(strlen(segment));
+    display_string(" bytes long.\n");
+}

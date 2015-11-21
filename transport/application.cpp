@@ -15,7 +15,7 @@ int main()
     set_orientation(East);
     display_string("Initialising...\n\n");
     char dest = 'D';
-    char message[1000] = "Bacon short loin, kielbasa porchetta pancetta tongue tail venison. Tongue alcatra rump chicken pork belly. Turducken bresaola jerky drumstick short loin pork chop beef ribs ball tip turkey";
+    char message[1000] = "Venison. Tongue alcatra rump chicken pork belly. Turducken bresaola jerky drumstick short loin pork chop beef ribs ball tip turkey";
 
     display_number(strlen(message));
     display_string(" character long message reads:\n");

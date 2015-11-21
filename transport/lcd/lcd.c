@@ -169,7 +169,7 @@ void display_hex(long hex, uint8_t bytes) //Displys 1 to 4 bytes in hex (if you 
 void display_binary(uint8_t byte) //Displys a byte in binary
 {
 	char binchars[8];
-	for (int i = 7; i > -1; i--)
+	for (int i = 7; i >= 0; i--)
 	{
 		if (byte & (1 << i))
 			binchars[7-i]='1';

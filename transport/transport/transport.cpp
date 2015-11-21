@@ -48,5 +48,18 @@ void display_segment(char dest, char* segment)
     display_char(dest);
     display_string(" that is ");
     display_number(strlen(segment));
-    display_string(" bytes long.\n");
+    display_string(" bytes long.\n\n");
+
+    display_string("Control byte 1: ");
+    display_binary(segment[0]);
+    display_string("\nControl byte 2: ");
+    display_binary(segment[1]);
+
+    display_string("\nSource port: ");
+    display_hex(segment[2], 1);
+    display_string("\nDest port: ");
+    display_hex(segment[3], 1);
+
+    display_string("\nLength: ");
+    display_number(segment[4]);
 }

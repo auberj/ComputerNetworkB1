@@ -2,7 +2,8 @@
  * Licence: This work is licensed under the Creative Commons Attribution License.
  *           View this license at http://creativecommons.org/about/licenses/
  */
- 
+
+#include <stdio.h>
 #include "ili934x.h"
 #include "font.h"
 #include "lcd.h"
@@ -136,3 +137,21 @@ void display_string(char *str)
 		display_char(str[i]);
 }
 
+void display_number(uint16_t number)
+{
+	char numberstring[5];
+  	snprintf(numberstring, 5, "%d", number); //Convert to string so we can display
+  	display_string(numberstring);
+}
+
+void display_hex(uint16_t hex)
+{
+	char hexchars[4];
+	if (hex <= 0xFFFF)
+	{
+	    sprintf(&hexchars[0], "%04x", hex);
+	    display_string("0x");
+	    display_string(hexchars);
+	}
+	
+}

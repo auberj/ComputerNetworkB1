@@ -5,30 +5,14 @@ uint16_t calcrc(char *ptr, int count);
 int SendData(char dest, char* sdata)
 {
 	char segment1[120] = {0};
-	char crc[3] = {0};
 	strncpy (segment1, sdata, 100);
 
 	uint16_t crcbits = calcrc(segment1, 100);
-
-	crc[0] = (char)((crcbits & 0xFF00) >> 8);
-	crc[1] = (char)(crcbits & 0x00FF);
-
 	SendSegment(dest, segment1);
 
-	display_string("CRC: ");
-	display_string(crc);
+	display_string("CRC in hex: ");
+	display_hex(crcbits);
 
-	display_string(" and in hex: ");
-
-	char crchex[4];
-
-	if (crcbits <= 0xFFFF) //Converts CRC to hex array for debugging
-	{
-	    sprintf(&crchex[0], "%04x", crcbits);
-	}
-
-	display_string(crchex);
-	
 	return 0;
 }
 

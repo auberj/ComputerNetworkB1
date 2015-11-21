@@ -1,5 +1,4 @@
-#define MAXMESSAGELENGTH 30
-#define MAXSEGMENTLENGTH 121
+#define MAXMESSAGELENGTH 114
 
 #include <string.h>
 
@@ -9,31 +8,39 @@ void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
         uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr);
 void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
         uint8_t segmentnumber, uint8_t segmenttotal, char* ptr);
-void copyin(char* dest, char* source, );
+void copyin(char* dest, char* source, uint8_t start, uint8_t number);
 
 int SendData(char dest, char* sdata)
 {
     uint8_t encrypted, flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
+    uint8_t messagelength;
+    uint16_t crcbits;
+    uint16_t sdatalength;
+	char segment[MAXMESSAGELENGTH+8] = {'\0'}; //Initialisation is important
 
-	char segment[MAXSEGMENTLENGTH+1] = {0}; //Initialisation is important
+    sdatalength = strlen(sdata);
 
     ctrl_write(0, 0, 0, 1, 1, segment);
-    segment[2] = 0x00; //Source port
-    segment[3] = 0x00; //Source port
-    segment[4] = 30;
+    segment[2] = 0xFF; //Source port
+    segment[3] = 0xFF; //Dest port
 
-    copyin(segment, sdata, 30);
+    if (sdatalength < MAXMESSAGELENGTH)
+        messagelength = sdatalength;
+    else
+        messagelength = MAXMESSAGELENGTH;
 
-    uint16_t crcbits = calcrc(segment, 35);
+    segment[4] = messagelength;
+    copyin(segment, sdata, 5, messagelength);
+    crcbits = calcrc(segment, messagelength+5);
+    segment[messagelength+5] = crcbits >> 8;
+    segment[messagelength+6] = crcbits & 0x00FF;
 
     display_segment(segment);
 
-	uint16_t crcbits = calcrc(segment, 120);
+    //ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
 
-    ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
-
-	int error = SendSegment(dest, segment);
+	//int error = SendSegment(dest, segment);
 	
 	return 0;
 };
@@ -77,9 +84,9 @@ void display_segment(char* segment)
     display_number(strlen(segment));
     display_string(" bytes long.\n\n");
 
-    display_string("Control byte 1: ");
+    display_string("Control Byte 1: ");
     display_binary(segment[0]);
-    display_string("\nControl byte 2: ");
+    display_string("\nControl Byte 2: ");
     display_binary(segment[1]);
 
     display_string("\nSegment: ");
@@ -87,22 +94,29 @@ void display_segment(char* segment)
     display_string(" out of ");
     display_number(segmenttotal);
 
-    display_string("\nSource port: ");
+    display_string("\nSource Port: ");
     display_hex(segment[2], 1);
-    display_string("\nDest port: ");
+    display_string("\nDest Port: ");
     display_hex(segment[3], 1);
 
-    display_string("\nLength: ");
+    display_string("\nMessage Length: ");
     display_number(segment[4]);
 
     display_string("\nMessage: ");
-    for (i = 5; i<(segment[4]+5); i++)
+    for (i = 5; i<(strlen(segment)-2); i++)
         display_char(segment[i]);
 
-    display_string("\nCRC: ");
-    crc = (segment[i] << 8);
-    crc |= (segment[i+1]);
+    display_string("\nCRC: ");;
+    crc = (segment[strlen(segment) - 2] << 8);
+    crc |= (segment[strlen(segment) - 1] & 0x00ff);
     display_hex(crc, 2);
+
+    display_string("\nSegment Valid: ");
+    //display_hex(calcrc(segment, (strlen(segment)-2)), 2);
+    if (crc == calcrc(segment, (strlen(segment)-2)))
+        display_string("Yes");
+    else
+        display_string("No");
 }
 
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
@@ -149,4 +163,10 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
     ptr[0] |= segmentnumber >> 2;
     ptr[1] |= (segmentnumber & 0x03) << 6;
     ptr[1] |= segmenttotal & 0x3f;
+}
+
+void copyin(char* dest, char* source, uint8_t start, uint8_t number)
+{
+    for (int i = 0; i < number; i++)
+        dest[i+start] = source[i];
 }

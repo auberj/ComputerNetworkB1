@@ -41,3 +41,6 @@ void fill_rectangle(rectangle r, uint16_t col);
 void fill_rectangle_indexed(rectangle r, uint16_t* col);
 void display_char(char c);
 void display_string(char *str);
+void display_nstring(char *str, uint8_t start, uint8_t n);
+void display_number(uint16_t number);
+void display_hex(uint16_t hex);

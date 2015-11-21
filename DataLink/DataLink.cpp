@@ -22,23 +22,63 @@
 
 #include <stdio.h>
 #include <avr/io.h>
+#include <string.h>
 #include "lcd/avrlcd.h"
 #include "lcd/font.c"
 #include "lcd/ili934x.c"
 #include "lcd/lcd.c"
 #include "DataLink.h"
-//using namespace std;
+
+
 
 int main() {
     init_lcd();
     set_orientation(East);
     display_string((char*)"Initialising...\n");
     
-    char random[] = "This is a short string that should be 122 characters long, and it continues, it will continue, abcdefghijklmnopqrstuvxyz2";
-    SendPacket('a', random);
+    char random[40] = {'1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k'};
 
+    SendPacket('\xff', random);
     return 0;
 
+}
+
+int bytestuff(char *str, int len) {
+    int i;
+    char temp[100] = "";
+    for(i = 0; i<len; i++) {
+        if(str[i] == HEADER || str[i] == ESCAPE) {
+            display_number(int(str[i]));
+            display_char('\n');
+            sprintf(temp, "%s%c", temp, ESCAPE);
+        }
+        sprintf(temp,"%s%c", temp, str[i]);
+    }
+    strcpy(str,temp);
+    return strlen(str);
+}
+
+uint16_t calccrc(char *str, int len) {
+    int i, r;
+    r = 0;
+    for(i = 0; i < len; i++) {
+        r = r ^ (str[i] << 8);
+        int j;
+        for(j = 0; j < 8; j++) {
+            r = (r&0x8000)? ((r<<1)^GENERATOR):(r<<1);
+            r = r & 0xffff;
+        } 
+    }
+    return r;
+}
+
+void setchecksum(struct frame (*vals)[CHECKSUMLEN]) {
+    int i;
+    for(i = 0; i<FRAMECOUNT; i++) {
+        char checksumcalc[CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN];
+        sprintf(checksumcalc, "%c%s%s%c%s", (*vals[i]).header,(*vals[i]).control, (*vals[i]).address, (*vals[i]).length, (*vals[i]).data);
+        
+    }
 }
 
 void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket) {
@@ -50,8 +90,14 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket) {
     //char temp[DATALEN];
     for(i = 0; i < FRAMECOUNT-1; i++) {
         for(j = 0; j < DATALEN; j++) {
+            if(Spacket[i*DATALEN + j] == 0) {
+                break;
+            }
             (*vals)[i].data[j] = Spacket[i*DATALEN + j];
             display_char(Spacket[i*DATALEN + j]);
+        }
+        if(Spacket[i*DATALEN + j] == 0) {
+            break;
         }
         //display_string((*vals)[i].data);
         display_char('\n');
@@ -93,12 +139,12 @@ void setaddress(struct frame (*vals)[FRAMECOUNT], char* address) {
     }    
 }
 
-void setcontrol(struct frame (*vals)[FRAMECOUNT], char* address) {
+void setcontrol(struct frame (*vals)[FRAMECOUNT]) {
     int i;
     int j;
     for(i = 0; i < FRAMECOUNT; i++) {
         for(j = 0; j < ADDRESSLEN; j++) {
-            (*vals)[i].address[j] = address[j];
+            (*vals)[i].control[j] = INFOFRAME[j];
             display_char((*vals)[i].address[j]);
         }
     }    
@@ -112,13 +158,27 @@ int SendPacket(char dest, char* Spacket) {
     */
     struct frame data[FRAMECOUNT];
     
+    display_string((char*)"\nsetheader \n");
+    setheader(&data);
+
+    display_string((char*)"\nsetcontrol\n");
+    setcontrol(&data);
+
+    display_string((char*)"\nsetaddress \n");
+    setaddress(&data, (char*)"FF");
 
     //correctly set data
-    display_string((char*)"setdata\n");
+    display_string((char*)"\nsetdata\n");
     setdata(&data, Spacket);
-    display_string((char*)"setheader \n");
-    setheader(&data);
     
+    display_string((char*)"\nsetlength \n");
+    setlength(&data);
+
+    display_string((char*)"\nsetfooter \n");
+    setfooter(&data);
+
+
+
 
     return 0;
 }

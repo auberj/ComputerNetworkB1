@@ -2,7 +2,8 @@
  * Licence: This work is licensed under the Creative Commons Attribution License.
  *           View this license at http://creativecommons.org/about/licenses/
  */
- 
+
+#include <stdio.h>
 #include "ili934x.h"
 #include "font.h"
 #include "lcd.h"
@@ -136,3 +137,28 @@ void display_string(char *str)
 		display_char(str[i]);
 }
 
+void display_nstring(char *str, uint8_t start, uint8_t n) //Displays n characters in the string from start point called 'start'
+{
+	uint8_t i;
+	for(i=start; i<(start+n); i++) 
+		display_char(str[i]);
+}
+
+void display_number(uint16_t number) //Displays a number using sprintf. Can display between 0 and 99999
+{
+	char numberstring[5];
+  	snprintf(numberstring, 5, "%d", number); //Convert to string so we can display
+  	display_string(numberstring);
+}
+
+void display_hex(uint16_t hex) //Displys number in hex between 0 and 650000
+{
+	char hexchars[4];
+	if (hex <= 0xFFFF)
+	{
+	    snprintf(&hexchars[0], 4, "%04x", hex);
+	    display_string("0x");
+	    display_string(hexchars);
+	}
+	
+}

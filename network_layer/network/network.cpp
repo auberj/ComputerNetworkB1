@@ -17,7 +17,7 @@ int main(){
     set_orientation(East);
 	display_string("Initialising...\n");
 
-	char source = {0};
+	char source[1] = {0};
 	char segment[10] = {0};
 	
 	//display_string(neighbours);

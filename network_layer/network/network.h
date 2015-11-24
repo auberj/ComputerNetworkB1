@@ -8,7 +8,7 @@ void 	gatherNeighbours();
 void 	sendHello();
 int 	getPacket(char* neighbourADD);
 int 	SendSegment(char dest, char* segment);
-int 	RecieveSegment(char source, char* rsegment);
+int 	RecieveSegment(char* source, char* rsegment);
 void 	getNeighbourAdd(char* neighbourADD, char* packet); //extracts neighbour address from packet
 void 	sendNeighbours();
 void 	processHello(char* packet); //processes a HELLO message detected in a packet

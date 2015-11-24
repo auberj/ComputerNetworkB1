@@ -17,12 +17,16 @@ int main(){
     set_orientation(East);
 	display_string("Initialising...\n");
 
+	char source = {0};
+	char segment[10] = {0};
 	
 	//display_string(neighbours);
 	sendHello();
-	gatherNeighbours();
+	RecieveSegment(source,segment);
+	//gatherNeighbours();
 	sendHello();
-	gatherNeighbours();
+	RecieveSegment(source,segment);
+	//gatherNeighbours();
 	//clear_screen();
 	//display_string(neighbours);
 	//sendNeighbours();
@@ -159,17 +163,30 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 
 	//char packet[MaxPacketLength]; //max packet length in bytes
 	RecievePacket(packet);
+	/*
 	for(int i=127;i>0;i--){
 		if(packet[i]!=0){
 			packetEnd=i;
 			break;
 		}
-	}
-	//int PacketLength = (sizeof(packet)/sizeof(packet[0]));
-	int PacketLength = packetEnd+1;
+	}*/
+	int PacketLength = (sizeof(packet)/sizeof(packet[0]));
+	//int PacketLength = packetEnd+1;
 	display_string("packet recieved\n");
+
+	//check packet is intact
+
+	uint16_t fullcrc = calcrc(packet, PacketLength-2);
+
+	if((packet[PacketLength-2] == (char)((fullcrc & 0xFF00) >> 8))&&(packet[PacketLength-1] == (char)(fullcrc & 0x00FF))){
+		display_string("cheksum failed\n");
+	}
+	
+
 	char control1 = packet[0];
 	char control2 = packet[1];
+
+	//end check packet
 
 	/*
 	char segment[PacketLength-7];
@@ -248,6 +265,9 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			//extract data from packet
 			source[0] = packet[2]; //source of message
 			//detect end of packet
+
+			//int PacketLength = (sizeof(packet)/sizeof(packet[0]));
+			//packetend=PacketLength-1;
 			for(int i=127;i>0;i--){
 				if(packet[i]!=0){ //only works if checksum isn't 0
 					packetend=i;
@@ -264,7 +284,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		case 4: //packet is a message but not for me
 			returnval = 0;
 			//retransmit packet if not done so before
-			int repeatPacketFlag = checkRepeatPacket(packet[packetend-1],packet[packetend])
+			//int repeatPacketFlag = checkRepeatPacket(packet[packetend-1],packet[packetend]);
 		break;
 	}
 	
@@ -291,13 +311,15 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
     }
     return (crc);
 }
+/*
+int	checkRepeatPacket(char* checksum1, char* checksum2){
 
-int	checkRepeatPacket(char checksum1, char checksum2){
+
 	display_string("check checksum\n");
 	int duplicateFlag = 0;
 
 	for(int i=0;i<NumOldPackets;i=i+2){
-		if((oldchecksum[i]==checksum1)&&(oldchecksum[i+1]==checksum2)){
+		if((oldchecksum[i]=='checksum1')&&(oldchecksum[i+1]=='checksum2')){
 			duplicateFlag = 1; //already recently transmitted this packet
 		}
 	}
@@ -310,4 +332,4 @@ int	checkRepeatPacket(char checksum1, char checksum2){
 	}
 	display_string("end check checksum\n");
 	return duplicateFlag;
-}
+}*/

@@ -1,4 +1,5 @@
-#define MAXMESSAGELENGTH 114
+#define MAXMESSAGELENGTH 12
+#define MAXSEGMENTS 5
 
 #include <string.h>
 
@@ -17,26 +18,26 @@ int SendData(char dest, char* sdata)
     uint8_t messagelength;
     uint16_t crcbits;
     uint16_t sdatalength;
-	char segment[MAXMESSAGELENGTH+8] = {'\0'}; //Initialisation is important
+	char segment[MAXSEGMENTS][MAXMESSAGELENGTH+8] = {'\0'}; //Initialisation is important
 
     sdatalength = strlen(sdata);
 
-    ctrl_write(0, 0, 0, 1, 1, segment);
-    segment[2] = 0xFF; //Source port
-    segment[3] = 0xFF; //Dest port
+    ctrl_write(0, 0, 0, 1, 1, segment[0]);
+    segment[0][2] = 0xFF; //Source port
+    segment[0][3] = 0xFF; //Dest port
 
     if (sdatalength < MAXMESSAGELENGTH)
         messagelength = sdatalength;
     else
         messagelength = MAXMESSAGELENGTH;
 
-    segment[4] = messagelength;
-    copyin(segment, sdata, 5, messagelength);
-    crcbits = calcrc(segment, messagelength+5);
-    segment[messagelength+5] = crcbits >> 8;
-    segment[messagelength+6] = crcbits & 0x00FF;
+    segment[0][4] = messagelength;
+    copyin(segment[0], sdata, 5, messagelength);
+    crcbits = calcrc(segment[0], messagelength+5);
+    segment[0][messagelength+5] = crcbits >> 8;
+    segment[0][messagelength+6] = crcbits & 0x00FF;
 
-    display_segment(segment);
+    display_segment(segment[0]);
 
     //ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
 
@@ -91,7 +92,7 @@ void display_segment(char* segment)
 
     display_string("\nSegment: ");
     display_number(segmentnumber);
-    display_string(" out of ");
+    display_string(" of ");
     display_number(segmenttotal);
 
     display_string("\nSource Port: ");

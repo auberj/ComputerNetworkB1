@@ -144,20 +144,20 @@ void display_nstring(char *str, uint8_t start, uint8_t n) //Displays n character
 		display_char(str[i]);
 }
 
-void display_number(uint16_t number) //Displays a number using sprintf. Can display between 0 and 99999
+void display_number(uint16_t number) //Displays a number using sprintf. Can display between 0 and 99999999
 {
-	char numberstring[5];
-  	snprintf(numberstring, 5, "%d", number); //Convert to string so we can display
+	char numberstring[8];
+  	snprintf(numberstring, 8, "%d", number); //Convert to string so we can display
   	display_string(numberstring);
 }
 
-void display_hex(long hex, uint8_t bytes) //Displys 1 to 4 bytes in hex (if you want up to 8, change 'long'to 'long long')
+void display_hex(unsigned long hex, uint8_t bytes) //Displys 1 to 4 bytes in hex (if you want up to 8, change 'long'to 'long long')
 {
 	char hexchars[bytes*2];
 	for (int i = 0; i < bytes*2; i++)
 	{
 		uint8_t temp = 0xF & (hex >> (i*4));
-		if (temp > 10)
+		if (temp >= 10) //A to F
 			hexchars[bytes*2-1-i] = temp + 87;
 		else
 			hexchars[bytes*2-1-i] = temp + 48;

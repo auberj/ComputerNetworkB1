@@ -13,3 +13,4 @@ void 	getNeighbourAdd(char* neighbourADD, char* packet); //extracts neighbour ad
 void 	sendNeighbours();
 void 	processHello(char* packet); //processes a HELLO message detected in a packet
 uint16_t calcrc(char *ptr, int count);
+int		checkRepeatPacket(char* checksum1, char* checksum2); //return 1 if checksum is currently in the checksum table

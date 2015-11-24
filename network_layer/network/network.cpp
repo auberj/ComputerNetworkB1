@@ -9,6 +9,8 @@
 
 //global vars
 char neighbours[NumNeighbours] = {0};//all set to 0
+char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
+char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 
 int main(){
 	init_lcd();
@@ -21,9 +23,9 @@ int main(){
 	gatherNeighbours();
 	sendHello();
 	gatherNeighbours();
-	clear_screen();
+	//clear_screen();
 	//display_string(neighbours);
-	sendNeighbours();
+	//sendNeighbours();
 	while(1);
 	return 0;
 }
@@ -129,7 +131,7 @@ void sendNeighbours(){
 	packet[3] = '0'; //dont care
 	packet[4] = (char)(neighbourTableSize & 0x00FF);
 
-	for(int i=5;i<neighbourTableSize;i++){
+	for(int i=5;i<(neighbourTableSize+5);i++){
 		packet[i] = neighbours[i-5];
 	}
 	
@@ -203,6 +205,24 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
+	int 	segmentLength = (sizeof(segment)/sizeof(segment[0]));
+	char 	packet[segmentLength+7];
+
+	packet[0] = Control1Message;
+	packet[1] = 'X';
+	packet[2] = SCRADD;
+	packet[3] = dest;
+	packet[4] = (char)segmentLength;
+
+	for(int i=5;i<(segmentLength+5);i++){
+		packet[i] = segment[i-5];
+	}
+
+	uint16_t fullcrc = calcrc(packet, segmentLength+5);
+
+	packet[segmentLength+5] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[segmentLength+6] = (char)(fullcrc & 0x00FF);
+
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,10 +237,10 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	//determine if I am intended recipient
 	switch (packetType){
 		case 1: //recieved a HELLO, send one back!
-			sendHello();
+			sendHello(); //only send this if haven't sent one recently
 			processHello(packet);
 		break;
-		case 2:
+		case 2: //details neighbours
 			//CODE
 		break;
 
@@ -229,7 +249,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			source[0] = packet[2]; //source of message
 			//detect end of packet
 			for(int i=127;i>0;i--){
-				if(packet[i]!=0){
+				if(packet[i]!=0){ //only works if checksum isn't 0
 					packetend=i;
 					break;
 				}
@@ -243,6 +263,8 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 		case 4: //packet is a message but not for me
 			returnval = 0;
+			//retransmit packet if not done so before
+			int repeatPacketFlag = checkRepeatPacket(packet[packetend-1],packet[packetend])
 		break;
 	}
 	
@@ -268,4 +290,24 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
         } while(--i);
     }
     return (crc);
+}
+
+int	checkRepeatPacket(char checksum1, char checksum2){
+	display_string("check checksum\n");
+	int duplicateFlag = 0;
+
+	for(int i=0;i<NumOldPackets;i=i+2){
+		if((oldchecksum[i]==checksum1)&&(oldchecksum[i+1]==checksum2)){
+			duplicateFlag = 1; //already recently transmitted this packet
+		}
+	}
+	if(duplicateFlag==0){ //if no duplcates found
+		for(int i=NumOldPackets;i>2;i--){ //make space in the table
+			oldchecksum[i]=oldchecksum[i-1];
+		}
+		oldchecksum[0]=checksum1; //load new checksum into the table
+		oldchecksum[1]=checksum2;
+	}
+	display_string("end check checksum\n");
+	return duplicateFlag;
 }

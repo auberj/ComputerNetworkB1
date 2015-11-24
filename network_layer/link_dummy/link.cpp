@@ -18,7 +18,7 @@ int RecievePacket(char* packet){
 		packet[2] = 'k';
 	}
 	if(called==1){
-		packet[2] = 'l';
+		packet[2] = 'k';
 	}
 	
 	//set DEST address (doesn't matter for HELLO)

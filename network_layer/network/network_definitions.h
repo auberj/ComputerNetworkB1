@@ -18,3 +18,5 @@
 
 #define HelloPacketLength 15
 #define MaxPacketLength 128
+
+#define NumOldPackets 20 //the number of old packets to check for retransmission multiplied by 2

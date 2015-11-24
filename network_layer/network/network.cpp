@@ -15,7 +15,7 @@ char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages 
 int main(){
 	init_lcd();
     set_orientation(East);
-	display_string("Initialising...\n");
+	//display_string("Initialising...\n");
 
 	char source[1] = {0};
 	char segment[10] = {0};
@@ -23,13 +23,11 @@ int main(){
 	//display_string(neighbours);
 	sendHello();
 	RecieveSegment(source,segment);
-	//gatherNeighbours();
+
 	sendHello();
 	RecieveSegment(source,segment);
-	//gatherNeighbours();
-	//clear_screen();
-	//display_string(neighbours);
-	//sendNeighbours();
+	display_string(segment);
+	display_string("\n");
 	while(1);
 	return 0;
 }
@@ -100,7 +98,7 @@ void gatherNeighbours(){
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendHello(){
-	display_string("sending hello\n");
+	display_string("sending hello...");
 	char packet[HelloPacketLength]; //max packet length in bytes
 	//set control bits
 	packet[0] = Control1Hello;
@@ -157,7 +155,11 @@ void getNeighbourAdd(char* neighbourADD, char* packet){
 	return;
 }
 int getPacket(char* packet){ //gets a packet from DLL and returns its type
-	display_string("getting packet\n");
+	display_string("getting packet...");
+	
+	int PacketLength; 
+	//PacketLength = strlen(packet);
+
 	int PacketType = 0;
 	int packetEnd;
 
@@ -170,17 +172,20 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 			break;
 		}
 	}*/
-	int PacketLength = (sizeof(packet)/sizeof(packet[0]));
+	
+	PacketLength = strlen(packet);
 	//int PacketLength = packetEnd+1;
-	display_string("packet recieved\n");
-
+	display_string("packet recieved: ");
+	display_string("packet length: "); display_number(PacketLength); display_string("\n");
 	//check packet is intact
+	display_string("Packet Checksum: "); display_hex(packet[PacketLength-2],1); display_hex(packet[PacketLength-1],1); display_string("\n");
 
 	uint16_t fullcrc = calcrc(packet, PacketLength-2);
 
-	if((packet[PacketLength-2] == (char)((fullcrc & 0xFF00) >> 8))&&(packet[PacketLength-1] == (char)(fullcrc & 0x00FF))){
+	if((packet[PacketLength-2] != (char)((fullcrc & 0xFF00) >> 8))||(packet[PacketLength-1] != (char)(fullcrc & 0x00FF))){
 		display_string("cheksum failed\n");
 	}
+	display_string("Calc Checksum: "); display_hex((char)((fullcrc & 0xFF00) >> 8),1); display_hex((char)(fullcrc & 0x00FF),1); display_string("...");
 	
 
 	char control1 = packet[0];
@@ -213,7 +218,10 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 			if(packet[3]==SCRADD){
 				PacketType = 3;
 			}
-			else{ PacketType = 4;}
+			else if(control2!=Control2SingleMessage){ 
+				PacketType = 4;
+			}
+			else{ PacketType = 5;} //drop the packet
 			
 		break;
 	}
@@ -224,9 +232,24 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int 	segmentLength = (sizeof(segment)/sizeof(segment[0]));
 	char 	packet[segmentLength+7];
+	int singleHopFlag = 0;
+
+	for(int i=0;i<NumNeighbours;i++){
+		if(dest==neighbours[i]){
+			singleHopFlag = 1;
+			break; //no need to check the rest of the table
+		}
+	}
 
 	packet[0] = Control1Message;
-	packet[1] = 'X';
+
+	if(singleHopFlag==1){
+		packet[1] = 'S';
+	}
+	else{
+		packet[1] = 'X';
+	}
+	
 	packet[2] = SCRADD;
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
@@ -240,6 +263,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	packet[segmentLength+5] = (char)((fullcrc & 0xFF00) >> 8);
 	packet[segmentLength+6] = (char)(fullcrc & 0x00FF);
 
+	SendPacket(dest,packet);
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,10 +271,11 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	//create variables
 	char 	packet[MaxPacketLength] = {0}; //assume max length
 	int 	returnval = 0;
-	int 	packetend = 0;
+	//int 	packetend = 0;
+	int repeatPacketFlag;
 
 	int packetType = getPacket(packet); //get packet from DLL
-	
+	int PacketLength = strlen(packet);
 	//determine if I am intended recipient
 	switch (packetType){
 		case 1: //recieved a HELLO, send one back!
@@ -262,29 +287,36 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
+			display_string("message for me...\n");
 			//extract data from packet
-			source[0] = packet[2]; //source of message
+			//source[0] = packet[2]; //source of message
 			//detect end of packet
 
-			//int PacketLength = (sizeof(packet)/sizeof(packet[0]));
+			//int PacketLength = strlen(packet);
 			//packetend=PacketLength-1;
-			for(int i=127;i>0;i--){
-				if(packet[i]!=0){ //only works if checksum isn't 0
-					packetend=i;
-					break;
-				}
-			}
-			//copy segment data 
-			for(int i=4;i<packetend;i++){
+			for(int i=(PacketLength-3);i>4;i--){
 				rsegment[i-4]=packet[i];
 			}
+			//copy segment data 
 			returnval = 1;
 		break;
 
-		case 4: //packet is a message but not for me
+		case 4: //packet is a message but not for me and not a single hop
+			display_string("message not for me...");
 			returnval = 0;
 			//retransmit packet if not done so before
-			//int repeatPacketFlag = checkRepeatPacket(packet[packetend-1],packet[packetend]);
+			repeatPacketFlag = checkRepeatPacket(packet);
+
+			if(repeatPacketFlag!=1){ //if not trasmitted before
+				SendPacket(packet[3],packet);
+				display_string("retransmit\n");
+			}
+			else{};
+		break;
+
+		case 5:
+			//drop the packet
+			display_string("Sing hop message not for me...dropped.\n");
 		break;
 	}
 	
@@ -311,16 +343,22 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
     }
     return (crc);
 }
-/*
-int	checkRepeatPacket(char* checksum1, char* checksum2){
+int	checkRepeatPacket(char* packet){
 
+	int PacketLength = strlen(packet);
+	//display_string("CRP: packet length: "); display_number(PacketLength); display_string("\n");
+	char checksum1 = packet[PacketLength-2];
+	char checksum2 = packet[PacketLength-1];
 
-	display_string("check checksum\n");
+	display_string("Checksum: "); display_hex(checksum1,1); display_hex(checksum2,1); display_string("\n");
+
+	display_string("check checksum...");
 	int duplicateFlag = 0;
 
 	for(int i=0;i<NumOldPackets;i=i+2){
-		if((oldchecksum[i]=='checksum1')&&(oldchecksum[i+1]=='checksum2')){
+		if((oldchecksum[i]==checksum1)&&(oldchecksum[i+1]==checksum2)){
 			duplicateFlag = 1; //already recently transmitted this packet
+			display_string("already transmitted\n");
 		}
 	}
 	if(duplicateFlag==0){ //if no duplcates found
@@ -329,7 +367,8 @@ int	checkRepeatPacket(char* checksum1, char* checksum2){
 		}
 		oldchecksum[0]=checksum1; //load new checksum into the table
 		oldchecksum[1]=checksum2;
+		display_string("cheksum stored\n");
 	}
 	display_string("end check checksum\n");
 	return duplicateFlag;
-}*/
+}

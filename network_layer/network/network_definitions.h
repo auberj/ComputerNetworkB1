@@ -5,6 +5,7 @@
 #define Control1Neighbour 'N'
 
 #define Control1Message 'M'
+#define Control2SingleMessage 'S'
 
 //source address (my address)
 #define SCRADD 'N'

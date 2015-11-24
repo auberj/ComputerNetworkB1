@@ -6,6 +6,9 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
+#include "timer/timer.cpp"
+#include "uart/uart.c"
+
 #include "network/network.cpp"
 #include "transport/transport.cpp"
 
@@ -13,6 +16,9 @@ int main()
 {
     init_lcd();
     set_orientation(East);
+    init_uart0();
+    init_timer();
+    display_number(millis());
     display_string("Initialising...\n\n");
     char dest = 'D';
     char message[1000] = "Hello World! This is a test message written by Dominic Maskell as part of the Computer Networks coursework.";

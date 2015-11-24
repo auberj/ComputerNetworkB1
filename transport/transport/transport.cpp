@@ -81,43 +81,43 @@ void display_segment(char* segment)
 
     ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
 
-    display_string("Decoding segment that is ");
-    display_number(strlen(segment));
-    display_string(" bytes long.\n\n");
+    put_string("Decoding segment that is ");
+    put_number(strlen(segment));
+    put_string(" bytes long.\r\n\r\n");
 
-    display_string("Control Byte 1: ");
-    display_binary(segment[0]);
-    display_string("\nControl Byte 2: ");
-    display_binary(segment[1]);
+    put_string("Control Byte 1: ");
+    put_binary(segment[0]);
+    put_string("\r\nControl Byte 2: ");
+    put_binary(segment[1]);
 
-    display_string("\nSegment: ");
-    display_number(segmentnumber);
-    display_string(" of ");
-    display_number(segmenttotal);
+    put_string("\r\nSegment: ");
+    put_number(segmentnumber);
+    put_string(" of ");
+    put_number(segmenttotal);
 
-    display_string("\nSource Port: ");
-    display_hex(segment[2], 1);
-    display_string("\nDest Port: ");
-    display_hex(segment[3], 1);
+    put_string("\r\nSource Port: ");
+    put_hex(segment[2], 1);
+    put_string("\r\nDest Port: ");
+    put_hex(segment[3], 1);
 
-    display_string("\nMessage Length: ");
-    display_number(segment[4]);
+    put_string("\r\nMessage Length: ");
+    put_number(segment[4]);
 
-    display_string("\nMessage: ");
+    put_string("\r\nMessage: ");
     for (i = 5; i<(strlen(segment)-2); i++)
-        display_char(segment[i]);
+        put_char(segment[i]);
 
-    display_string("\nCRC: ");;
+    put_string("\r\nCRC: ");;
     crc = (segment[strlen(segment) - 2] << 8);
     crc |= (segment[strlen(segment) - 1] & 0x00ff);
-    display_hex(crc, 2);
+    put_hex(crc, 2);
 
-    display_string("\nSegment Valid: ");
-    //display_hex(calcrc(segment, (strlen(segment)-2)), 2);
+    put_string("\r\nSegment Valid: ");
+    //put_hex(calcrc(segment, (strlen(segment)-2)), 2);
     if (crc == calcrc(segment, (strlen(segment)-2)))
-        display_string("Yes");
+        put_string("Yes");
     else
-        display_string("No");
+        put_string("No");
 }
 
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,

@@ -1,7 +1,15 @@
 //link
 
+char DummyPacket[128] = {0};
+
 int SendPacket(char dest, char* packet){
+	int PacketLength = strlen(packet);
 	display_string("packet passed to link layer\n");
+	//display_string("s packet length: "); display_number(PacketLength); display_string("\n");
+	for(int i=0;i<(PacketLength);i++){
+		DummyPacket[i]=packet[i];
+	}
+	//strcpy(DummyPacket,packet);
 	return 0;
 }
 
@@ -47,7 +55,7 @@ int RecievePacket(char* packet){
 	called++;
 	return 0;
 }
-*/
+
 
 int RecievePacket(char* packet){
 	
@@ -78,7 +86,7 @@ int RecievePacket(char* packet){
 		for(int i = 5;i<15;i++){
 			packet[i] = 'm';
 		}
-		packet[15] = 0xf3;
+		packet[15] = 0xd3; //f3
 		packet[16] = 0x7f;
 	}
 	
@@ -90,5 +98,16 @@ int RecievePacket(char* packet){
 	//display_string("packet length: "); display_number(PacketLength); display_string("\n");
 	//display_string("Checksum: "); display_hex(packet[16],1); display_hex(packet[17],1); display_string("\n");
 	called++;
+	return 0;
+}*/
+
+int RecievePacket(char* packet){
+	
+	//strcpy(packet,DummyPacket);
+	int PacketLength = strlen(DummyPacket);
+	//display_string("r packet length: "); display_number(PacketLength); display_string("\n");
+	for(int i=0;i<(PacketLength);i++){
+		packet[i] = DummyPacket[i];
+	}
 	return 0;
 }

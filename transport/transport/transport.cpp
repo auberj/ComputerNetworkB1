@@ -1,6 +1,6 @@
 #define MAXMESSAGELENGTH 50
 #define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
-#define TIMEOUTMILLIS 2000 //milliseconds for timeout
+#define TIMEOUTMILLIS 1000 //milliseconds for timeout
 
 #include <string.h>
 
@@ -55,10 +55,13 @@ int SendData(char dest, char* sdata)
 
         while(i)
         {
-            put_string("\r\nSending segment");
+            put_string("\r\n\r\nSending segment");
             SendSegment(dest, segment[loop]);
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
             i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again
+            if(i)
+                put_string("\r\nNo acknowledgment, resending segment");
+
         }
 
         put_string("\r\n\r\nAcknowledged.");
@@ -72,7 +75,7 @@ int SendData(char dest, char* sdata)
 
 int RecieveData(char* source, char* rdata)
 {
-    if (millis() > 1000)
+    if (millis() > 10000) //This is dummy received data representing Hello World!
     {
         rdata[0] = 0b10000000;
         rdata[1] = 0b01000001;
@@ -227,7 +230,7 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
 
     unsigned long stime = millis(); //start time
     unsigned long elapsedtime = 0;
-    put_string("Current time:\r\n");
+    put_string("Time waited (ms):\r\n");
 
     //TODO add bit that checks if received source is same as destination
 
@@ -245,6 +248,7 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
 
         if (strlen(receivedsegment)) //If anything is actually there
         {
+            put_string("\r\nReceiving segment...\r\n");
             display_segment(receivedsegment);
             for (i = 0; i < strlen(segment); i++)
                 if (segment[i] != receivedsegment[i])

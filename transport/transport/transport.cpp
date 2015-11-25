@@ -231,6 +231,8 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
     unsigned long stime = millis(); //start time
     unsigned long elapsedtime = 0;
     put_string("Time waited (ms):\r\n");
+    put_number(elapsedtime);
+    put_string("\r");
 
     //TODO add bit that checks if received source is same as destination
 
@@ -243,13 +245,11 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
 
         RecieveData(&source, receivedsegment);
 
-        put_number(elapsedtime);
-        put_string("\r");
-
         if (strlen(receivedsegment)) //If anything is actually there
         {
-            put_string("\r\nReceiving segment...\r\n");
+            put_string("\r\n\r\nReceiving segment...");
             display_segment(receivedsegment);
+            //put_string("\r\n");
             for (i = 0; i < strlen(segment); i++)
                 if (segment[i] != receivedsegment[i])
                     errorflag = 1;
@@ -257,7 +257,13 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
             if (!errorflag)
                 return 0;
         }
+        else
+        {
+            put_number(elapsedtime);
+            put_string("\r");
+        }
 
     }
+    put_string("\r\n");
     return 1;
 }

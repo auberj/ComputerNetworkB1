@@ -1,18 +1,24 @@
-#define MAXMESSAGELENGTH 12
-#define MAXSEGMENTS 5
+#define MAXMESSAGELENGTH 50
+#define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
+#define TIMEOUTMILLIS 2000 //milliseconds for timeout
 
 #include <string.h>
 
+int SendData(char dest, char* sdata);
+int RecieveData(char source, char* rdata);
 uint16_t calcrc(char *ptr, int count);
 void display_segment(char* segment);
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
         uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr);
 void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
         uint8_t segmentnumber, uint8_t segmenttotal, char* ptr);
-void copyin(char* dest, char* source, uint8_t start, uint8_t number);
+void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr);
+uint8_t waitacknowledge(char dest, char* segment);
 
 int SendData(char dest, char* sdata)
 {
+    uint8_t loop = 0;
+    uint8_t i = 1;
     uint8_t encrypted, flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
     uint8_t messagelength;
@@ -22,23 +28,41 @@ int SendData(char dest, char* sdata)
 
     sdatalength = strlen(sdata);
 
-    ctrl_write(0, 0, 0, 1, 1, segment[0]);
-    segment[0][2] = 0xFF; //Source port
-    segment[0][3] = 0xFF; //Dest port
+    uint8_t numberofsegments = (uint8_t)(sdatalength/MAXMESSAGELENGTH);
+    if (numberofsegments*MAXMESSAGELENGTH < sdatalength)
+        numberofsegments++;
 
-    if (sdatalength < MAXMESSAGELENGTH)
-        messagelength = sdatalength;
-    else
-        messagelength = MAXMESSAGELENGTH;
+    for (loop = 0; loop < numberofsegments; loop++)
+    {
+        ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
+        segment[loop][2] = 0xFF; //Source port
+        segment[loop][3] = 0xFF; //Dest port
 
-    segment[0][4] = messagelength;
-    copyin(segment[0], sdata, 5, messagelength);
-    crcbits = calcrc(segment[0], messagelength+5);
-    segment[0][messagelength+5] = crcbits >> 8;
-    segment[0][messagelength+6] = crcbits & 0x00FF;
+        if (loop != numberofsegments - 1)
+            messagelength = MAXMESSAGELENGTH;
+        else
+            messagelength = sdatalength - (loop*MAXMESSAGELENGTH);
 
-    display_segment(segment[0]);
+        segment[loop][4] = messagelength;
+        copyin(segment[loop], sdata, 5, messagelength, (loop*MAXMESSAGELENGTH));
+        crcbits = calcrc(segment[loop], messagelength+5);
 
+        segment[loop][messagelength+5] = crcbits >> 8;
+        segment[loop][messagelength+6] = crcbits & 0x00FF;
+
+        display_segment(segment[loop]);
+        put_string("\r\n");
+
+        while(i)
+        {
+            put_string("\r\nSending segment");
+            SendSegment(dest, segment[loop]);
+            put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
+            i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again
+        }
+
+        put_string("\r\n\r\nAcknowledged.");
+    }
     //ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
 
 	//int error = SendSegment(dest, segment);
@@ -46,10 +70,32 @@ int SendData(char dest, char* sdata)
 	return 0;
 };
 
-// int RecieveData(char source, char* rdata)
-// {
-
-// }
+int RecieveData(char* source, char* rdata)
+{
+    if (millis() > 1000)
+    {
+        rdata[0] = 0b10000000;
+        rdata[1] = 0b01000001;
+        rdata[2] = 0b11111111;
+        rdata[3] = 0b11111111;
+        rdata[4] = 0b00001100;
+        rdata[5] = 0b01001000;
+        rdata[6] = 0b01100101;
+        rdata[7] = 0b01101100;
+        rdata[8] = 0b01101100;
+        rdata[9] = 0b01101111;
+        rdata[10] = 0b00100000;
+        rdata[11] = 0b01010111;
+        rdata[12] = 0b01101111;
+        rdata[13] = 0b01110010;
+        rdata[14] = 0b01101100;
+        rdata[15] = 0b01100100;
+        rdata[16] = 0b00100001;
+        rdata[17] = 0b10011000;
+        rdata[18] = 0b11100011;
+    }
+    return 0;
+}
 
 //To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html
 uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
@@ -81,11 +127,11 @@ void display_segment(char* segment)
 
     ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
 
-    put_string("Decoding segment that is ");
+    put_string("\r\n\r\nDecoding segment that is ");
     put_number(strlen(segment));
-    put_string(" bytes long.\r\n\r\n");
+    put_string(" bytes long.");
 
-    put_string("Control Byte 1: ");
+    put_string("\r\n\r\nControl Byte 1: ");
     put_binary(segment[0]);
     put_string("\r\nControl Byte 2: ");
     put_binary(segment[1]);
@@ -104,8 +150,8 @@ void display_segment(char* segment)
     put_number(segment[4]);
 
     put_string("\r\nMessage: ");
-    for (i = 5; i<(strlen(segment)-2); i++)
-        put_char(segment[i]);
+    for (i = 0; i<(strlen(segment)-7); i++)
+        put_char(segment[i+5]);
 
     put_string("\r\nCRC: ");;
     crc = (segment[strlen(segment) - 2] << 8);
@@ -166,8 +212,48 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
     ptr[1] |= segmenttotal & 0x3f;
 }
 
-void copyin(char* dest, char* source, uint8_t start, uint8_t number)
+void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr)
 {
     for (int i = 0; i < number; i++)
-        dest[i+start] = source[i];
+        dest[i+start] = source[i+srcptr];
+}
+
+uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go round the loop again
+{
+    char receivedsegment[MAXMESSAGELENGTH];
+    char source;
+    uint8_t errorflag = 0; //if any byte is different, errorflag = 1
+    uint8_t i;
+
+    unsigned long stime = millis(); //start time
+    unsigned long elapsedtime = 0;
+    put_string("Current time:\r\n");
+
+    //TODO add bit that checks if received source is same as destination
+
+    while(elapsedtime <= TIMEOUTMILLIS)
+    {
+        elapsedtime = millis() - stime;
+        errorflag = 0;
+        for (i = 0; i < MAXMESSAGELENGTH; i++)
+            receivedsegment[i] = '\0';
+
+        RecieveData(&source, receivedsegment);
+
+        put_number(elapsedtime);
+        put_string("\r");
+
+        if (strlen(receivedsegment)) //If anything is actually there
+        {
+            display_segment(receivedsegment);
+            for (i = 0; i < strlen(segment); i++)
+                if (segment[i] != receivedsegment[i])
+                    errorflag = 1;
+
+            if (!errorflag)
+                return 0;
+        }
+
+    }
+    return 1;
 }

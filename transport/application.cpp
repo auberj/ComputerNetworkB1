@@ -19,14 +19,13 @@ int main()
 {
     init_uart0();
     init_timer();
-    put_string("\r\n\r\nInitialising...\r\n\r\n");
+    put_string("\r\n\r\n\r\n\r\nInitialising...\r\n\r\n");
     char dest = 'D';
-    char message[1000] = "Hello World! This is a test message written by Dominic Maskell as part of the Computer Networks coursework.";
-
+    char message[1000] = "Hello World!";
+    //Above message is 107 characters
     put_number(strlen(message));
     put_string(" character long message reads:\r\n");
     put_string(message);
-    put_string("\r\n\r\n");
 
     int error = SendData(dest, message);
     if (error) put_string("Error sending message");

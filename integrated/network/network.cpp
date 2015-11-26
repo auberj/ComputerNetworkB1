@@ -322,47 +322,39 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-<<<<<<< HEAD
-			put_string("message for me.\r\n");
-			//displaySegment(packet);
-=======
 			put_string("Message for me.\r\n");
-			displaySegment(packet);
->>>>>>> origin/master
+			//displaySegment(packet);
+
 			//extract data from packet
 			//source[0] = packet[2]; //source of message
 			//detect end of packet
 
 			//int PacketLength = strlen(packet);
 			//packetend=PacketLength-1;
-<<<<<<< HEAD
+
 			for(int i=0;i<(PacketLength-7);i++){
 				rsegment[i]=packet[i+4];
-			}/*
-=======
-			// for(int i=(PacketLength-3);i>4;i--){
-			// 	rsegment[i-4]=packet[i];
-			// }
->>>>>>> origin/master
-			rsegment[0] = 0b10000000;
-	        rsegment[1] = 0b01000001;
-	        rsegment[2] = 0b11111111;
-	        rsegment[3] = 0b11111111;
-	        rsegment[4] = 0b00001100;
-	        rsegment[5] = 0b01001000;
-	        rsegment[6] = 0b01100101;
-	        rsegment[7] = 0b01101100;
-	        rsegment[8] = 0b01101100;
-	        rsegment[9] = 0b01101111;
-	        rsegment[10] = 0b00100000;
-	        rsegment[11] = 0b01010111;
-	        rsegment[12] = 0b01101111;
-	        rsegment[13] = 0b01110010;
-	        rsegment[14] = 0b01101100;
-	        rsegment[15] = 0b01100100;
-	        rsegment[16] = 0b00100001;
-	        rsegment[17] = 0b10011000;
-	        rsegment[18] = 0b11100011;*/
+			}
+
+			// rsegment[0] = 0b10000000;
+	  //       rsegment[1] = 0b01000001;
+	  //       rsegment[2] = 0b11111111;
+	  //       rsegment[3] = 0b11111111;
+	  //       rsegment[4] = 0b00001100;
+	  //       rsegment[5] = 0b01001000;
+	  //       rsegment[6] = 0b01100101;
+	  //       rsegment[7] = 0b01101100;
+	  //       rsegment[8] = 0b01101100;
+	  //       rsegment[9] = 0b01101111;
+	  //       rsegment[10] = 0b00100000;
+	  //       rsegment[11] = 0b01010111;
+	  //       rsegment[12] = 0b01101111;
+	  //       rsegment[13] = 0b01110010;
+	  //       rsegment[14] = 0b01101100;
+	  //       rsegment[15] = 0b01100100;
+	  //       rsegment[16] = 0b00100001;
+	  //       rsegment[17] = 0b10011000;
+	  //       rsegment[18] = 0b11100011;
 
 			//copy segment data 
 			returnval = 1;

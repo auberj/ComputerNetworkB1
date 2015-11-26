@@ -335,12 +335,9 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-<<<<<<< HEAD
+
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
-			
-=======
-			put_string("Message for me.\r\n");
->>>>>>> origin/master
+
 			//displaySegment(packet);
 			//extract data from packet 
 			//source[0] = packet[2]; //source of message

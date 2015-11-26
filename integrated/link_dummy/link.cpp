@@ -7,16 +7,18 @@
 char DummyPacket[128];
 
 int SendPacket(char dest, char* packet){
+	put_string("BEGIN SEND PACKET\r\n");
 	int PacketLength = strlen(packet);
 	for(int i=0;i<128;i++){
 		DummyPacket[i]=0;
 	}
-	put_string("packet passed to link layer\r\n");
+	
 	//display_string("s packet length: "); display_number(PacketLength); display_string("\n");
 	for(int i=0;i<(PacketLength);i++){
 		DummyPacket[i]=packet[i];
 	}
 	//strcpy(DummyPacket,packet);
+	put_string("END SEND PACKET\r\n");
 	return 0;
 }
 
@@ -109,7 +111,7 @@ int RecievePacket(char* packet){
 }*/
 
 int RecievePacket(char* packet){
-	
+	put_string("BEGIN REC PACKET\r\n");
 	//strcpy(packet,DummyPacket);
 	int PacketLength = strlen(DummyPacket);
 	//display_string("r packet length: "); display_number(PacketLength); display_string("\n");
@@ -119,5 +121,6 @@ int RecievePacket(char* packet){
 	for(int i=0;i<(128);i++){
 		DummyPacket[i] = 0;
 	}
+	put_string("END REC PACKET\r\n");
 	return 0;
 }

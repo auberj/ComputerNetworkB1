@@ -257,9 +257,9 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
-	int 	segmentLength = strlen(segment);
-
 	put_string("\r\nBEGIN SEND SEGMENT\r\n");
+
+	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[segmentLength+9]; //only 7 other bits but need a null!
 	int 	packetLength = strlen(packet);
@@ -309,10 +309,12 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
 
 	SendPacket(dest,packet);
+	put_string("\r\nEND SEND SEGMENT\r\n");
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
+	put_string("\r\nBEGIN RECEIVE SEGMENT\r\n");
 	//create variables
 	char 	packet[MaxPacketLength] = {0}; //assume max length
 	int 	returnval = 0;
@@ -393,7 +395,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 	}
 	
-	
+	put_string("\r\nEND RECEIVE SEGMENT\r\n");
 	return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

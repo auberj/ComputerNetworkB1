@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <string.h>
 
 //#include "lcd/avrlcd.h"
 //#include "lcd/font.c"
@@ -10,22 +11,19 @@
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
+#include "link_dummy/link.cpp"
 #include "network/network.cpp"
 #include "transport/transport.cpp"
 
 //C232HM Pinout. Yellow - D1. Orange - D0. Black - Ground.
 
-//global vars
-char neighbours[NumNeighbours] = {0};//all set to 0
-char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
-char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 
 int main()
 {
     init_uart0();
     init_timer();
     put_string("\r\n\r\n\r\n\r\nInitialising...\r\n\r\n");
-    char dest = 'D';
+    char dest = 'N';
     char temp = '\0';
     char message[1000] = {0};
     uint16_t i = 0;

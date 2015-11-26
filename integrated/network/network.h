@@ -1,7 +1,6 @@
 //network.h
 // https://docs.google.com/document/d/1VcHl5GLs-VoUbCynElk380cPVeAX4LO5zO68r2fjCKA/edit
 
-#include "network_definitions.h"
 #include "../link_dummy/link.h"
 
 void 	gatherNeighbours();

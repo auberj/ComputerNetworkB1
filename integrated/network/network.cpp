@@ -1,21 +1,40 @@
 //#include "class_definitions.h"
 
-#ifndef _MASTER_H_
-#define _MASTER_H_
-#include "../master_include.h"
-#endif
+//control bit definitions
+#define Control1Hello 'H'
+#define Control2Hello 'O'
+
+#define Control1Neighbour 'N'
+
+#define Control1Message 'M'
+#define Control2SingleMessage 'S'
+
+//source address (my address)
+#define SCRADD 'N'
+
+#define MaxSegmentLength 0x79
+
+//checksum definitions
+#define HelloChecksum 0x00
+
+#define NumNeighbours 10 //can have up to ten neighbours
+
+#define HelloPacketLength 15
+#define MaxPacketLength 128
+
+#define NumOldPackets 20 //the number of old packets to check for retransmission multiplied by 2
 
 #include "network.h"
-
+#include <stdio.h>
 //global vars
-/*char neighbours[NumNeighbours] = {0};//all set to 0
+char neighbours[NumNeighbours] = {0};//all set to 0
 char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
 char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
-
+/*
  int main(){
 	init_lcd();
     set_orientation(East);
-	//put_string("Initialising...\n");
+	//put_string("Initialising...\r\n");
 
 	char source[1] = {0};
 	char segment[20] = {'1','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','9',0};
@@ -28,7 +47,7 @@ char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages 
 	//sendHello();
 	RecieveSegment(source,segment);
 	//put_string(segment);
-	put_string("\n");
+	put_string("\r\n");
 	while(1);
 	return 0;
 }*/
@@ -39,32 +58,32 @@ void processHello(char* packet){
 
 	getNeighbourAdd(neighbour, packet);
 
-	put_string("processing HELLO\n");
+	put_string("processing HELLO\r\n");
 		put_string("neighbour found: ");
-		put_char(neighbour[0]); put_string("\n");
+		put_char(neighbour[0]); put_string("\r\n");
 
 		int duplicateFlag=1;
 		//check array element is not the same as neighbour address and =0
 		for(int i=0;i<neighbourTableSize;i++){
 			if(neighbours[i]==neighbour[0]){
-				put_string("duplicate neighbour found, move on.\n");
+				put_string("duplicate neighbour found, move on.\r\n");
 				duplicateFlag = 0;
 			}
 		}
 		if(duplicateFlag==1){
-			put_string("no duplicate neighbour found\n");
+			put_string("no duplicate neighbour found\r\n");
 			int neighbourSpace;
 			int SpaceFlag=0;
 			for(int i=0;i<neighbourTableSize;i++){
 				//find space for neighbour in table
 				if(neighbours[i]==0){
-					put_string("space for neighbour\n");
+					put_string("space for neighbour\r\n");
 					neighbourSpace = i;
 					SpaceFlag = 1;
 					break;
 				}
 				if((i==neighbourTableSize)&&(SpaceFlag==0)){
-					put_string("no space for neighbour\n");
+					put_string("no space for neighbour\r\n");
 				}
 			}
 			if(SpaceFlag==1){
@@ -72,12 +91,12 @@ void processHello(char* packet){
 				put_string("neighbour stored in ");
 				char str[10];
 				sprintf(str, "%d", neighbourSpace);
-				put_string(str); put_string("\n");
+				put_string(str); put_string("\r\n");
 			}
 			
 		}
 		
-	put_string("neighbour processed\n");
+	put_string("neighbour processed\r\n");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gatherNeighbours(){
@@ -93,7 +112,7 @@ void gatherNeighbours(){
 	if(packetType==1){ //returns 1 for hello packets
 		processHello(packet);
 	} 
-	else{put_string("no hello packet\n");}
+	else{put_string("no hello packet\r\n");}
 	//store in table
 	return;
 }
@@ -120,16 +139,16 @@ void sendHello(){
 	char destination = 0;
 	int PacketLength = strlen(packet);
 	put_hex(packet[15],1);
-	put_string("h packet length: "); put_number(PacketLength); put_string("\n");
+	put_string("h packet length: "); put_number(PacketLength); put_string("\r\n");
 
 	SendPacket(destination, packet);
 
-	put_string("hello sent\n");
+	put_string("hello sent\r\n");
 	return;
 }
 
 void sendNeighbours(){
-	put_string("sending neighbours\n");
+	put_string("sending neighbours\r\n");
 	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
 	char 	packet[neighbourTableSize+7];
 	packet[0] = Control1Neighbour;
@@ -148,14 +167,14 @@ void sendNeighbours(){
 	packet[neighbourTableSize+6] = (char)(fullcrc & 0x00FF);
 	//put_char(packet[neighbourTableSize+6]);
 	put_string(packet);
-	put_string("\n");
-	put_string("done\n");
+	put_string("\r\n");
+	put_string("done\r\n");
 
 	return;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){
-	put_string("getting neighbour address\n");
+	put_string("getting neighbour address\r\n");
 	neighbourADD[0] = packet[2];
 	return;
 }
@@ -181,14 +200,14 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	PacketLength = strlen(packet);
 	//int PacketLength = packetEnd+1;
 	put_string("packet recieved: ");
-	put_string("packet length: "); put_number(PacketLength); put_string("\n");
+	put_string("packet length: "); put_number(PacketLength); put_string("\r\n");
 	//check packet is intact
-	put_string("Packet Checksum: "); put_hex(packet[PacketLength-2],1); put_string(" "); put_hex(packet[PacketLength-1],1); put_string("\n");
+	put_string("Packet Checksum: "); put_hex(packet[PacketLength-2],1); put_string(" "); put_hex(packet[PacketLength-1],1); put_string("\r\n");
 
 	uint16_t fullcrc = calcrc(packet, PacketLength-2);
 
 	if((packet[PacketLength-2] != (char)((fullcrc & 0xFF00) >> 8))||(packet[PacketLength-1] != (char)(fullcrc & 0x00FF))){
-		put_string("cheksum failed\n");
+		put_string("cheksum failed\r\n");
 		PacketType = 0;
 	}
 	put_string("Calc Checksum: "); put_hex((char)((fullcrc & 0xFF00) >> 8),1);put_string(" "); put_hex((char)(fullcrc & 0x00FF),1); put_string("...");
@@ -233,13 +252,13 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 		}
 	}
 	
-	put_string("done.\n");
+	put_string("done.\r\n");
 	return PacketType;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int 	segmentLength = strlen(segment);
-	put_string("segment length: ");put_number(segmentLength);put_string("\n");
+	put_string("segment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[segmentLength+8]; //only 7 other bits but need a null!
 	int singleHopFlag = 0;
 
@@ -292,7 +311,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	//determine if I am intended recipient
 	switch (packetType){
 		case 0:
-			put_string("packet corrupted, droped.\n");
+			put_string("packet corrupted, dropped.\r\n");
 		break;
 		case 1: //recieved a HELLO, send one back!
 			sendHello(); //only send this if haven't sent one recently
@@ -303,7 +322,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-			put_string("message for me.\n");
+			put_string("message for me.\r\n");
 			displaySegment(packet);
 			//extract data from packet
 			//source[0] = packet[2]; //source of message
@@ -319,7 +338,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 4: //packet is a message but not for me and not a single hop
-			put_string("message not for me.\n");
+			put_string("message not for me.\r\n");
 			returnval = 0;
 			//retransmit packet if not done so before
 			repeatPacketFlag = checkRepeatPacket(packet);
@@ -333,7 +352,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 		case 5:
 			//drop the packet
-			put_string("Single hop message not for me...dropped.\n");
+			put_string("Single hop message not for me...dropped.\r\n");
 		break;
 	}
 	
@@ -364,11 +383,11 @@ int	checkRepeatPacket(char* packet){
 	put_string("check checksum,");
 
 	int PacketLength = strlen(packet);
-	//put_string("CRP: packet length: "); put_number(PacketLength); put_string("\n");
+	//put_string("CRP: packet length: "); put_number(PacketLength); put_string("\r\n");
 	char checksum1 = packet[PacketLength-2];
 	char checksum2 = packet[PacketLength-1];
 
-	put_string("Checksum: "); put_hex(checksum1,1); put_string(" "); put_hex(checksum2,1); put_string("\n");
+	put_string("Checksum: "); put_hex(checksum1,1); put_string(" "); put_hex(checksum2,1); put_string("\r\n");
 
 	int duplicateFlag = 0;
 
@@ -386,7 +405,7 @@ int	checkRepeatPacket(char* packet){
 		oldchecksum[1]=checksum2;
 		put_string("cheksum stored,");
 	}
-	put_string("END.\n");
+	put_string("END.\r\n");
 	return duplicateFlag;
 }
 

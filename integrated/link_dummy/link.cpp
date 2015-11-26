@@ -1,10 +1,14 @@
+#include <stdio.h>
+
+#include "link.h"
+
 //link
 
 char DummyPacket[128] = {0};
 
 int SendPacket(char dest, char* packet){
 	int PacketLength = strlen(packet);
-	display_string("packet passed to link layer\n");
+	put_string("packet passed to link layer\r\n");
 	//display_string("s packet length: "); display_number(PacketLength); display_string("\n");
 	for(int i=0;i<(PacketLength);i++){
 		DummyPacket[i]=packet[i];

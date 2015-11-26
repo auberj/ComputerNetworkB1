@@ -2,11 +2,9 @@
 #define MAXSEGMENTS 10 //This times the above number shouldn't be less than chars in message
 #define TIMEOUTMILLIS 1000 //milliseconds for timeout
 
-#include <string.h>
-
 int SendData(char dest, char* sdata);
 int RecieveData(char source, char* rdata);
-uint16_t calcrc(char *ptr, int count);
+//uint16_t calcrc(char *ptr, int count);
 void display_segment(char* segment);
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
         uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr);
@@ -75,51 +73,52 @@ int SendData(char dest, char* sdata)
 
 int RecieveData(char* source, char* rdata)
 {
-    if (millis() > 10000) //This is dummy received data representing Hello World!
-    {
-        rdata[0] = 0b10000000;
-        rdata[1] = 0b01000001;
-        rdata[2] = 0b11111111;
-        rdata[3] = 0b11111111;
-        rdata[4] = 0b00001100;
-        rdata[5] = 0b01001000;
-        rdata[6] = 0b01100101;
-        rdata[7] = 0b01101100;
-        rdata[8] = 0b01101100;
-        rdata[9] = 0b01101111;
-        rdata[10] = 0b00100000;
-        rdata[11] = 0b01010111;
-        rdata[12] = 0b01101111;
-        rdata[13] = 0b01110010;
-        rdata[14] = 0b01101100;
-        rdata[15] = 0b01100100;
-        rdata[16] = 0b00100001;
-        rdata[17] = 0b10011000;
-        rdata[18] = 0b11100011;
-    }
+    RecieveSegment(source, rdata);
+    // if (millis() > 10000) //This is dummy received data representing Hello World!
+    // {
+    //     rdata[0] = 0b10000000;
+    //     rdata[1] = 0b01000001;
+    //     rdata[2] = 0b11111111;
+    //     rdata[3] = 0b11111111;
+    //     rdata[4] = 0b00001100;
+    //     rdata[5] = 0b01001000;
+    //     rdata[6] = 0b01100101;
+    //     rdata[7] = 0b01101100;
+    //     rdata[8] = 0b01101100;
+    //     rdata[9] = 0b01101111;
+    //     rdata[10] = 0b00100000;
+    //     rdata[11] = 0b01010111;
+    //     rdata[12] = 0b01101111;
+    //     rdata[13] = 0b01110010;
+    //     rdata[14] = 0b01101100;
+    //     rdata[15] = 0b01100100;
+    //     rdata[16] = 0b00100001;
+    //     rdata[17] = 0b10011000;
+    //     rdata[18] = 0b11100011;
+    // }
     return 0;
 }
 
 //To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html
-uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
-{
-    int  crc;
-    char i;
-    crc = 0;
-    while (--count >= 0)
-    {
-        crc = crc ^ (int) *ptr++ << 8;
-        i = 8;
-        do
-        {
-            if (crc & 0x8000)
-                crc = crc << 1 ^ 0x1021;
-            else
-                crc = crc << 1;
-        } while(--i);
-    }
-    return (crc);
-}
+// uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
+// {
+//     int  crc;
+//     char i;
+//     crc = 0;
+//     while (--count >= 0)
+//     {
+//         crc = crc ^ (int) *ptr++ << 8;
+//         i = 8;
+//         do
+//         {
+//             if (crc & 0x8000)
+//                 crc = crc << 1 ^ 0x1021;
+//             else
+//                 crc = crc << 1;
+//         } while(--i);
+//     }
+//     return (crc);
+// }
 
 void display_segment(char* segment)
 {

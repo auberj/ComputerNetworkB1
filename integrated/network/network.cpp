@@ -224,8 +224,8 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 			segment[i]=packet[i+5];
 		}*/
 
-		char checkSum1 = packet[PacketLength-1];
-		char checkSum2 = packet[PacketLength];
+		// char checkSum1 = packet[PacketLength-1];
+		// char checkSum2 = packet[PacketLength];
 		
 		/* if(control1 == Control1Hello){
 			PacketType = 1;
@@ -258,14 +258,19 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int 	segmentLength = strlen(segment);
-	put_string("segment length: ");put_number(segmentLength);put_string("\r\n");
-	char 	packet[segmentLength+8]; //only 7 other bits but need a null!
+	put_string("\r\nBEGIN SEND SEGMENT\r\n");
+	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
+	char 	packet[segmentLength+9]; //only 7 other bits but need a null!
+	int 	packetLength = strlen(packet);
+	put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
 	int singleHopFlag = 0;
 
 	for(int i=0;i<(segmentLength+8);i++){
-		packet[i] = 0;
+		packet[i] = '0';
 	}
-
+	packet[segmentLength+7] = '\0';
+	packetLength = strlen(packet);
+	put_string("2. packet length: ");put_number(packetLength);put_string("\r\n");
 	for(int i=0;i<NumNeighbours;i++){
 		if(dest==neighbours[i]){
 			singleHopFlag = 1;
@@ -286,14 +291,18 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
 
-	for(int i=5;i<(segmentLength+5);i++){
-		packet[i] = segment[i-5];
+	for(int i=0;i<segmentLength;i++){
+		packet[i+5] = segment[i];
 	}
+	packetLength = strlen(packet);
+	put_string("3. packet length: ");put_number(packetLength);put_string("\r\n");
+	uint16_t fullcrc = calcrc(packet, packetLength-2);
 
-	uint16_t fullcrc = calcrc(packet, segmentLength+5);
-
-	packet[segmentLength+5] = (char)((fullcrc & 0xFF00) >> 8);
-	packet[segmentLength+6] = (char)(fullcrc & 0x00FF);
+	packet[packetLength-2] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[packetLength-1] = (char)(fullcrc & 0x00FF);
+	packet[packetLength] = '\0';
+	packetLength = strlen(packet);
+	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
 
 	SendPacket(dest,packet);
 	return 0;
@@ -322,9 +331,10 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-			put_string("message for me.\r\n");
+			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
+			
 			//displaySegment(packet);
-			//extract data from packet
+			//extract data from packet 
 			//source[0] = packet[2]; //source of message
 			//detect end of packet
 
@@ -332,7 +342,9 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			//packetend=PacketLength-1;
 			for(int i=0;i<(PacketLength-7);i++){
 				rsegment[i]=packet[i+5];
-			}/*
+			}
+			rsegment[PacketLength-7] = '\0';
+			/*
 			rsegment[0] = 0b10000000;
 	        rsegment[1] = 0b01000001;
 	        rsegment[2] = 0b11111111;

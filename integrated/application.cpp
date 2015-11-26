@@ -20,38 +20,41 @@
 
 int main()
 {
-    init_uart0();
-    init_timer();
-    put_string("\r\n\r\n\r\n\r\nInitialising...\r\n\r\n");
-    char dest = 'N';
-    char temp = '\0';
-    char message[1000] = {0};
-    uint16_t i = 0;
+    while(1){
+        init_uart0();
+        init_timer();
+        put_string("\r\n\r\n\r\n\r\nInitialising...\r\n\r\n");
+        char dest = 'N';
+        char temp = '\0';
+        char message[1000] = {0};
+        uint16_t i = 0;
 
-    put_string("Enter message: ");
+        put_string("Enter message: ");
 
-    while(temp != '\r')
-    {
-        temp = get_char();
-        if (temp >= 32 && temp <= 126)
+        while(temp != '\r')
         {
-            put_char(temp);
-            message[i] = temp;
-            i++;
+            temp = get_char();
+            if (temp >= 32 && temp <= 126)
+            {
+                put_char(temp);
+                message[i] = temp;
+                i++;
+            }
+            _delay_ms(1);
         }
-        _delay_ms(1);
+
+        //get message over UART...
+        //Above message is 107 characters
+        put_string("\r\n");
+        put_number(strlen(message));
+        put_string(" character long message reads:\r\n");
+        put_string(message);
+
+        int error = SendData(dest, message);
+        if (error) put_string("Error sending message");
+
+        //while(1);
+       
     }
-
-    //get message over UART...
-    //Above message is 107 characters
-    put_string("\r\n");
-    put_number(strlen(message));
-    put_string(" character long message reads:\r\n");
-    put_string(message);
-
-    int error = SendData(dest, message);
-    if (error) put_string("Error sending message");
-
-    while(1);
-    return 0;
+     return 0;
 }

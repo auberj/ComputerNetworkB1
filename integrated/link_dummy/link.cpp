@@ -8,6 +8,9 @@ char DummyPacket[128] = {0};
 
 int SendPacket(char dest, char* packet){
 	int PacketLength = strlen(packet);
+	for(int i=0;i<128;i++){
+		DummyPacket[i]=0;
+	}
 	put_string("packet passed to link layer\r\n");
 	//display_string("s packet length: "); display_number(PacketLength); display_string("\n");
 	for(int i=0;i<(PacketLength);i++){
@@ -17,7 +20,7 @@ int SendPacket(char dest, char* packet){
 	return 0;
 }
 
-int called = 0;
+//int called = 0;
 
 /*
 int RecievePacket(char* packet){

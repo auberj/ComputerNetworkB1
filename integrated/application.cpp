@@ -15,6 +15,11 @@
 
 //C232HM Pinout. Yellow - D1. Orange - D0. Black - Ground.
 
+//global vars
+char neighbours[NumNeighbours] = {0};//all set to 0
+char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
+char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
+
 int main()
 {
     init_uart0();

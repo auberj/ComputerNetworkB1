@@ -4,7 +4,7 @@
 
 //link
 
-char DummyPacket[128] = {0};
+char DummyPacket[128];
 
 int SendPacket(char dest, char* packet){
 	int PacketLength = strlen(packet);
@@ -112,6 +112,9 @@ int RecievePacket(char* packet){
 	//display_string("r packet length: "); display_number(PacketLength); display_string("\n");
 	for(int i=0;i<(PacketLength);i++){
 		packet[i] = DummyPacket[i];
+	}
+	for(int i=0;i<(128);i++){
+		DummyPacket[i] = 0;
 	}
 	return 0;
 }

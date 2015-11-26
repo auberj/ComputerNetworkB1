@@ -258,7 +258,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int 	segmentLength = strlen(segment);
-	put_string("segment length: ");put_number(segmentLength);put_string("\r\n");
+	put_string("\r\nSegment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[segmentLength+8]; //only 7 other bits but need a null!
 	int singleHopFlag = 0;
 
@@ -322,7 +322,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-			put_string("message for me.\r\n");
+			put_string("Message for me.\r\n");
 			//displaySegment(packet);
 			//extract data from packet
 			//source[0] = packet[2]; //source of message

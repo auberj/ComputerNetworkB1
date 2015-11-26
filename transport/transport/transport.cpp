@@ -6,7 +6,7 @@
 
 int SendData(char dest, char* sdata);
 int RecieveData(char source, char* rdata);
-uint16_t calcrc(char *ptr, int count);
+// uint16_t calcrc(char *ptr, int count);
 void display_segment(char* segment);
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
         uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr);
@@ -100,26 +100,26 @@ int RecieveData(char* source, char* rdata)
     return 0;
 }
 
-//To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html
-uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
-{
-    int  crc;
-    char i;
-    crc = 0;
-    while (--count >= 0)
-    {
-        crc = crc ^ (int) *ptr++ << 8;
-        i = 8;
-        do
-        {
-            if (crc & 0x8000)
-                crc = crc << 1 ^ 0x1021;
-            else
-                crc = crc << 1;
-        } while(--i);
-    }
-    return (crc);
-}
+// //To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html
+// uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
+// {
+//     int  crc;
+//     char i;
+//     crc = 0;
+//     while (--count >= 0)
+//     {
+//         crc = crc ^ (int) *ptr++ << 8;
+//         i = 8;
+//         do
+//         {
+//             if (crc & 0x8000)
+//                 crc = crc << 1 ^ 0x1021;
+//             else
+//                 crc = crc << 1;
+//         } while(--i);
+//     }
+//     return (crc);
+// }
 
 void display_segment(char* segment)
 {

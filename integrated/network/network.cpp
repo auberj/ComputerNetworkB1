@@ -323,16 +323,16 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 		case 3: //packet is a message for me
 			put_string("message for me.\r\n");
-			displaySegment(packet);
+			//displaySegment(packet);
 			//extract data from packet
 			//source[0] = packet[2]; //source of message
 			//detect end of packet
 
 			//int PacketLength = strlen(packet);
 			//packetend=PacketLength-1;
-			for(int i=(PacketLength-3);i>4;i--){
-				rsegment[i-4]=packet[i];
-			}
+			for(int i=0;i<(PacketLength-7);i++){
+				rsegment[i]=packet[i+4];
+			}/*
 			rsegment[0] = 0b10000000;
 	        rsegment[1] = 0b01000001;
 	        rsegment[2] = 0b11111111;
@@ -351,7 +351,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	        rsegment[15] = 0b01100100;
 	        rsegment[16] = 0b00100001;
 	        rsegment[17] = 0b10011000;
-	        rsegment[18] = 0b11100011;
+	        rsegment[18] = 0b11100011;*/
 
 			//copy segment data 
 			returnval = 1;

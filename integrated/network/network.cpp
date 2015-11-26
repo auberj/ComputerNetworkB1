@@ -179,7 +179,7 @@ void getNeighbourAdd(char* neighbourADD, char* packet){
 	return;
 }
 int getPacket(char* packet){ //gets a packet from DLL and returns its type
-	put_string("\r\nGetting packet...");
+	put_string("getting packet...");
 	
 	int PacketLength; 
 	//PacketLength = strlen(packet);
@@ -207,7 +207,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	uint16_t fullcrc = calcrc(packet, PacketLength-2);
 
 	if((packet[PacketLength-2] != (char)((fullcrc & 0xFF00) >> 8))||(packet[PacketLength-1] != (char)(fullcrc & 0x00FF))){
-		put_string("checksum failed\r\n");
+		put_string("cheksum failed\r\n");
 		PacketType = 0;
 	}
 	put_string("Calc Checksum: "); put_hex((char)((fullcrc & 0xFF00) >> 8),1);put_string(" "); put_hex((char)(fullcrc & 0x00FF),1); put_string("...");
@@ -322,39 +322,36 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-			put_string("Message for me.\r\n");
+			put_string("message for me.\r\n");
 			//displaySegment(packet);
-
 			//extract data from packet
 			//source[0] = packet[2]; //source of message
 			//detect end of packet
 
 			//int PacketLength = strlen(packet);
 			//packetend=PacketLength-1;
-
 			for(int i=0;i<(PacketLength-7);i++){
-				rsegment[i]=packet[i+4];
-			}
-
-			// rsegment[0] = 0b10000000;
-	  //       rsegment[1] = 0b01000001;
-	  //       rsegment[2] = 0b11111111;
-	  //       rsegment[3] = 0b11111111;
-	  //       rsegment[4] = 0b00001100;
-	  //       rsegment[5] = 0b01001000;
-	  //       rsegment[6] = 0b01100101;
-	  //       rsegment[7] = 0b01101100;
-	  //       rsegment[8] = 0b01101100;
-	  //       rsegment[9] = 0b01101111;
-	  //       rsegment[10] = 0b00100000;
-	  //       rsegment[11] = 0b01010111;
-	  //       rsegment[12] = 0b01101111;
-	  //       rsegment[13] = 0b01110010;
-	  //       rsegment[14] = 0b01101100;
-	  //       rsegment[15] = 0b01100100;
-	  //       rsegment[16] = 0b00100001;
-	  //       rsegment[17] = 0b10011000;
-	  //       rsegment[18] = 0b11100011;
+				rsegment[i]=packet[i+5];
+			}/*
+			rsegment[0] = 0b10000000;
+	        rsegment[1] = 0b01000001;
+	        rsegment[2] = 0b11111111;
+	        rsegment[3] = 0b11111111;
+	        rsegment[4] = 0b00001100;
+	        rsegment[5] = 0b01001000;
+	        rsegment[6] = 0b01100101;
+	        rsegment[7] = 0b01101100;
+	        rsegment[8] = 0b01101100;
+	        rsegment[9] = 0b01101111;
+	        rsegment[10] = 0b00100000;
+	        rsegment[11] = 0b01010111;
+	        rsegment[12] = 0b01101111;
+	        rsegment[13] = 0b01110010;
+	        rsegment[14] = 0b01101100;
+	        rsegment[15] = 0b01100100;
+	        rsegment[16] = 0b00100001;
+	        rsegment[17] = 0b10011000;
+	        rsegment[18] = 0b11100011;*/
 
 			//copy segment data 
 			returnval = 1;

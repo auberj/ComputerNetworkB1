@@ -1,5 +1,5 @@
-#define MAXMESSAGELENGTH 50
-#define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
+#define MAXMESSAGELENGTH 20
+#define MAXSEGMENTS 10 //This times the above number shouldn't be less than chars in message
 #define TIMEOUTMILLIS 1000 //milliseconds for timeout
 
 #include <string.h>
@@ -234,7 +234,7 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
     put_number(elapsedtime);
     put_string("\r");
 
-    //TODO add bit that checks if received source is same as destination
+    //TODO add function that checks if received source is same as destination
 
     while(elapsedtime <= TIMEOUTMILLIS)
     {

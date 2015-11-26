@@ -1,7 +1,4 @@
 /*
- * HelloWorld.c
- *
- *  Created on: 11 Dec 2013
  *      Author: dm6g13
  */
 

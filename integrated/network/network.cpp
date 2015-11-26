@@ -179,7 +179,7 @@ void getNeighbourAdd(char* neighbourADD, char* packet){
 	return;
 }
 int getPacket(char* packet){ //gets a packet from DLL and returns its type
-	put_string("getting packet...");
+	put_string("\r\nGetting packet...");
 	
 	int PacketLength; 
 	//PacketLength = strlen(packet);
@@ -207,7 +207,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	uint16_t fullcrc = calcrc(packet, PacketLength-2);
 
 	if((packet[PacketLength-2] != (char)((fullcrc & 0xFF00) >> 8))||(packet[PacketLength-1] != (char)(fullcrc & 0x00FF))){
-		put_string("cheksum failed\r\n");
+		put_string("checksum failed\r\n");
 		PacketType = 0;
 	}
 	put_string("Calc Checksum: "); put_hex((char)((fullcrc & 0xFF00) >> 8),1);put_string(" "); put_hex((char)(fullcrc & 0x00FF),1); put_string("...");
@@ -322,7 +322,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
-			put_string("message for me.\r\n");
+			put_string("Message for me.\r\n");
 			displaySegment(packet);
 			//extract data from packet
 			//source[0] = packet[2]; //source of message
@@ -330,9 +330,9 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 			//int PacketLength = strlen(packet);
 			//packetend=PacketLength-1;
-			for(int i=(PacketLength-3);i>4;i--){
-				rsegment[i-4]=packet[i];
-			}
+			// for(int i=(PacketLength-3);i>4;i--){
+			// 	rsegment[i-4]=packet[i];
+			// }
 			rsegment[0] = 0b10000000;
 	        rsegment[1] = 0b01000001;
 	        rsegment[2] = 0b11111111;

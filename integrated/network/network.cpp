@@ -258,11 +258,15 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int 	segmentLength = strlen(segment);
+
 	put_string("\r\nBEGIN SEND SEGMENT\r\n");
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[segmentLength+9]; //only 7 other bits but need a null!
 	int 	packetLength = strlen(packet);
 	put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
+
+	char 	packet[segmentLength+8]; //only 7 other bits but need a null!
+
 	int singleHopFlag = 0;
 
 	for(int i=0;i<(segmentLength+8);i++){
@@ -331,8 +335,12 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		break;
 
 		case 3: //packet is a message for me
+<<<<<<< HEAD
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
 			
+=======
+			put_string("Message for me.\r\n");
+>>>>>>> origin/master
 			//displaySegment(packet);
 			//extract data from packet 
 			//source[0] = packet[2]; //source of message

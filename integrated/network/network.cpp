@@ -8,11 +8,11 @@
 #include "network.h"
 
 //global vars
-char neighbours[NumNeighbours] = {0};//all set to 0
+/*char neighbours[NumNeighbours] = {0};//all set to 0
 char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
 char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 
-/* int main(){
+ int main(){
 	init_lcd();
     set_orientation(East);
 	//put_string("Initialising...\n");

@@ -275,7 +275,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	}
 	packetLength = strlen(packet);
 	put_string("3. packet length: ");put_number(packetLength);put_string("\r\n");
-	uint16_t fullcrc = calcrc(packet, packetLength-2);
+	uint16_t fullcrc = calcrc(packet, packetLength);
 
 	packet[packetLength] = (char)((fullcrc & 0xFF00) >> 8);
 	packet[packetLength+1] = (char)(fullcrc & 0x00FF);

@@ -32,8 +32,6 @@ int SendData(char dest, char* sdata)
 
     while (loop < numberofsegments)
     {
-        put_char('.');
-        _delay_ms(1);
         i = 1;
         for (int j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
@@ -47,12 +45,11 @@ int SendData(char dest, char* sdata)
         else
             messagelength = sdatalength - (loop*MAXMESSAGELENGTH);
 
-
-        put_number(sdatalength);
-        put_char('.');
-        put_number(loop);
-        put_char('.');
-        put_number(messagelength);
+        // put_number(sdatalength);
+        // put_char('.');
+        // put_number(loop);
+        // put_char('.');
+        // put_number(messagelength);
 
         segment[loop][4] = messagelength;
         copyin(segment[loop], sdata, 5, messagelength, (loop*MAXMESSAGELENGTH));

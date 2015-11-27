@@ -114,6 +114,7 @@ int RecievePacket(char* packet){
 	put_string("BEGIN REC PACKET\r\n");
 	//strcpy(packet,DummyPacket);
 	int PacketLength = strlen(DummyPacket);
+	put_string("Dummy packet length: "); put_number(PacketLength); put_string("\r\n");
 	//display_string("r packet length: "); display_number(PacketLength); display_string("\n");
 	for(int i=0;i<(PacketLength);i++){
 		packet[i] = DummyPacket[i];
@@ -121,6 +122,8 @@ int RecievePacket(char* packet){
 	for(int i=0;i<(128);i++){
 		DummyPacket[i] = 0;
 	}
+	PacketLength = strlen(packet);
+	put_string("Real packet length: "); put_number(PacketLength); put_string("\r\n");
 	put_string("END REC PACKET\r\n");
 	return 0;
 }

@@ -151,14 +151,31 @@ void display_number(uint16_t number) //Displays a number using sprintf. Can disp
   	display_string(numberstring);
 }
 
-void display_hex(uint16_t hex) //Displys number in hex between 0 and 650000
+void display_hex(long hex, uint8_t bytes) //Displys 1 to 4 bytes in hex (if you want up to 8, change 'long'to 'long long')
 {
-	char hexchars[4];
-	if (hex <= 0xFFFF)
+	char hexchars[bytes*2];
+	for (int i = 0; i < bytes*2; i++)
 	{
-	    snprintf(&hexchars[0], 4, "%04x", hex);
-	    display_string("0x");
-	    display_string(hexchars);
+		uint8_t temp = 0xF & (hex >> (i*4));
+		if (temp > 10)
+			hexchars[bytes*2-1-i] = temp + 87;
+		else
+			hexchars[bytes*2-1-i] = temp + 48;
 	}
-	
+	display_string("0x");
+	display_nstring(hexchars, 0, bytes*2);
+}
+
+void display_binary(uint8_t byte) //Displys a byte in binary
+{
+	char binchars[8];
+	for (int i = 7; i >= 0; i--)
+	{
+		if (byte & (1 << i))
+			binchars[7-i]='1';
+		else
+			binchars[7-i]='0'; 
+	}
+    display_string("0b");
+    display_nstring(binchars, 0, 8);
 }

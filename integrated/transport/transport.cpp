@@ -245,7 +245,7 @@ void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t sr
 
 uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go round the loop again
 {
-    char receivedsegment[MAXMESSAGELENGTH];
+    char receivedsegment[MAXMESSAGELENGTH+8] = {0};
     char source;
     uint8_t errorflag = 0; //if any byte is different, errorflag = 1
     uint8_t i;

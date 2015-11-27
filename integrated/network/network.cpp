@@ -239,16 +239,17 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
-	char 	packet[segmentLength+9]; //only 7 other bits but need a null!
+	char 	packet[segmentLength+8]; //only 7 other bits but need a null!
 	int 	packetLength = strlen(packet);
 	put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
 
 	int singleHopFlag = 0;
 
-	for(int i=0;i<(segmentLength+8);i++){
-		packet[i] = '0';
-	}
+	// for(int i=0;i<(segmentLength+7);i++){
+	// 	packet[i] = '\0';
+	// }
 	packet[segmentLength+7] = '\0';
+	//packet[segmentLength+7] = '\0';
 	packetLength = strlen(packet);
 	put_string("2. packet length: ");put_number(packetLength);put_string("\r\n");
 	for(int i=0;i<NumNeighbours;i++){
@@ -316,7 +317,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
 
-			for(int i=0;i<(PacketLength-7);i++){
+			for(int i=0;i<(PacketLength-8);i++){
 				rsegment[i]=packet[i+5];
 			}
 			//rsegment[PacketLength-7] = '\0';

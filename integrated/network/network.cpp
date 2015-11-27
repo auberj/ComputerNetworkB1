@@ -248,7 +248,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int singleHopFlag = 0;
 
 	for(int i=0;i<(segmentLength+8);i++){
-		packet[i] = '0';
+		packet[i] = 0;
 	}
 	packet[segmentLength+7] = '\0';
 	packetLength = strlen(packet);

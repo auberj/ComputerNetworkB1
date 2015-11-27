@@ -54,7 +54,7 @@ int main()
         //Above message is 107 characters
         put_string("\r\n");
         put_number(strlen(message));
-        put_string(" character long message reads:\r\n");
+        put_string(" character long message reads: \r\n");
         put_string(message);
 
         int error = SendData(dest, message);

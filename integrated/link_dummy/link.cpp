@@ -4,7 +4,7 @@
 
 //link
 
-char DummyPacket[128];
+char DummyPacket[129];
 
 int SendPacket(char dest, char* packet){
 	put_string("BEGIN SEND PACKET\r\n");
@@ -16,6 +16,14 @@ int SendPacket(char dest, char* packet){
 	//display_string("s packet length: "); display_number(PacketLength); display_string("\n");
 	for(int i=0;i<(PacketLength);i++){
 		DummyPacket[i]=packet[i];
+	}
+
+	put_string("Dom debug");
+	put_string(".");
+	put_number(strlen(DummyPacket));
+	for(int i=0;i<(PacketLength);i++){
+		put_number(DummyPacket[i]);
+		put_string(".");
 	}
 	//strcpy(DummyPacket,packet);
 	put_string("END SEND PACKET\r\n");

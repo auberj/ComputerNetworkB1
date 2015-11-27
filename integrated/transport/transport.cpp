@@ -27,11 +27,15 @@ int SendData(char dest, char* sdata)
     sdatalength = strlen(sdata);
 
     uint8_t numberofsegments = (uint8_t)(sdatalength/MAXMESSAGELENGTH);
-    if (numberofsegments*MAXMESSAGELENGTH < sdatalength)
+    if (numberofsegments*MAXMESSAGELENGTH < sdatalength) 
         numberofsegments++;
 
     for (loop = 0; loop < numberofsegments; loop++)
     {
+        i = 1;
+        for (int j = 0; j < MAXMESSAGELENGTH+8; j++)
+            segment[loop][j] = 0;
+
         ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
         segment[loop][2] = 0xFF; //Source port
         segment[loop][3] = 0xFF; //Dest port

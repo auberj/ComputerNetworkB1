@@ -239,7 +239,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
-	char 	packet[MaxPacketLength] = {0}; //only 7 other bits but need a null!
+	char 	packet[MaxPacketLength]; //only 7 other bits but need a null!
 	int 	packetLength = strlen(packet);
 	put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
 
@@ -247,10 +247,6 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	int singleHopFlag = 0;
 
-	for(int i=0;i<(segmentLength+8);i++){
-		packet[i] = 0;
-	}
-	packet[segmentLength+7] = '\0';
 	packetLength = strlen(packet);
 	put_string("2. packet length: ");put_number(packetLength);put_string("\r\n");
 	for(int i=0;i<NumNeighbours;i++){
@@ -273,6 +269,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
 
+	put_string("Copying in ");put_number(segmentLength);put_string(" segment bytes\r\n");
 	for(int i=0;i<segmentLength;i++){
 		packet[i+5] = segment[i];
 	}

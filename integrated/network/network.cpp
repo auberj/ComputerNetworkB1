@@ -414,6 +414,13 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
                 crc = crc << 1;
         } while(--i);
     }
+
+    if ((crc >> 8) == 0x00) //If top byte of crc is 0x00
+    	crc |= 0xFF00; //Set byte to 0xFF
+
+    if (!(crc & 0x00FF)) //if bottom byte of crc is 0x00
+    	crc |= 0x00FF; //Set bottom byte to 0xFF
+
     return (crc);
 }
 int	checkRepeatPacket(char* packet){

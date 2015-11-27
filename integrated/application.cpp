@@ -20,16 +20,17 @@
 
 int main()
 {
+    init_uart0();
+    init_timer();
+    put_string("\r\n\r\n\r\n\r\nInitialising...");
+    
     while(1){
-        init_uart0();
-        init_timer();
-        put_string("\r\n\r\n\r\n\r\nInitialising...\r\n\r\n");
         char dest = 'N';
         char temp = '\0';
         char message[1000] = {0};
         uint16_t i = 0;
 
-        put_string("Enter message: ");
+        put_string("\r\n\r\nEnter message: ");
 
         while(temp != '\r')
         {
@@ -39,6 +40,12 @@ int main()
                 put_char(temp);
                 message[i] = temp;
                 i++;
+            }
+            else if ((temp == 8) || (temp == 127)) //Backspace or delete
+            {
+                put_char(temp);
+                i--;
+                message[i] = 0;
             }
             _delay_ms(1);
         }

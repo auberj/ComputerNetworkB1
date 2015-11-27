@@ -63,6 +63,7 @@ int SendData(char dest, char* sdata)
         }
 
         put_string("\r\n\r\nAcknowledged.");
+        _delay_ms(1);
     }
     //ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
 

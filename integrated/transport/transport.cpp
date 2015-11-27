@@ -33,9 +33,9 @@ int SendData(char dest, char* sdata)
 
     while (loop < numberofsegments)
     {
-        put_char(' ');
+        put_string("Loop:");
         put_number(loop);
-        put_char(' ');
+        put_char('!');
         i = 1;
         for (j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
@@ -44,18 +44,18 @@ int SendData(char dest, char* sdata)
         segment[loop][2] = 100; //Source port
         segment[loop][3] = 255; //Dest port
 
-        j = 2;
+        // j = 2;
 
-        put_hex(segment[loop][j], 1);
-        put_char('.');
+        // put_hex(segment[loop][j], 1);
+        // put_char('.');
 
-        for (j = 0; j < 28; j++)
-        {
-            put_hex(segment[loop][j], 1);
-            put_char('.');
-        }
+        // for (j = 0; j < 28; j++)
+        // {
+        //     put_hex(segment[loop][j], 1);
+        //     put_char('.');
+        // }
 
-        put_number(segment[loop][2]);
+        // put_number(segment[loop][2]);
 
         if (loop != numberofsegments - 1)
             messagelength = MAXMESSAGELENGTH;

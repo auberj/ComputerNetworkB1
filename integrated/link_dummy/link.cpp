@@ -2,14 +2,16 @@
 
 #include "link.h"
 
+#define MAXPACKETSIZE
+
 //link
 
-char DummyPacket[129];
+char DummyPacket[MAXPACKETSIZE+1];
 
 int SendPacket(char dest, char* packet){
 	put_string("BEGIN SEND PACKET\r\n");
 	int PacketLength = strlen(packet);
-	for(int i=0;i<128;i++){
+	for(int i=0;i<(MAXPACKETSIZE+1);i++){
 		DummyPacket[i]=0;
 	}
 	
@@ -21,6 +23,7 @@ int SendPacket(char dest, char* packet){
 	put_string("Dom debug");
 	put_string(".");
 	put_number(strlen(DummyPacket));
+	put_string(".");
 	for(int i=0;i<(PacketLength);i++){
 		put_number(DummyPacket[i]);
 		put_string(".");
@@ -127,7 +130,7 @@ int RecievePacket(char* packet){
 	for(int i=0;i<(PacketLength);i++){
 		packet[i] = DummyPacket[i];
 	}
-	for(int i=0;i<(128);i++){
+	for(int i=0;i<(MAXPACKETSIZE+1);i++){
 		DummyPacket[i] = 0;
 	}
 	PacketLength = strlen(packet);

@@ -267,7 +267,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	
 	packet[2] = SCRADD;
 	packet[3] = dest;
-	packet[4] = (char)segmentLength; 
+	packet[4] = (char)segmentLength;
 
 	put_string("Copying in ");put_number(segmentLength);put_string(" segment bytes\r\n");
 	for(int i=0;i<segmentLength;i++){
@@ -277,9 +277,9 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("3. packet length: ");put_number(packetLength);put_string("\r\n");
 	uint16_t fullcrc = calcrc(packet, packetLength-2);
 
-	packet[packetLength-2] = (char)((fullcrc & 0xFF00) >> 8);
-	packet[packetLength-1] = (char)(fullcrc & 0x00FF);
-	packet[packetLength] = '\0';
+	packet[packetLength] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[packetLength+1] = (char)(fullcrc & 0x00FF);
+	//packet[packetLength] = '\0';
 	packetLength = strlen(packet);
 	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
 

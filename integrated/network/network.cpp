@@ -189,13 +189,6 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 
 	//char packet[MaxPacketLength]; //max packet length in bytes
 	RecievePacket(packet);
-	/*
-	for(int i=127;i>0;i--){
-		if(packet[i]!=0){
-			packetEnd=i;
-			break;
-		}
-	}*/
 	
 	PacketLength = strlen(packet);
 	//int PacketLength = packetEnd+1;
@@ -216,22 +209,6 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 		char control1 = packet[0];
 		char control2 = packet[1];
 
-		//end check packet
-
-		/*
-		char segment[PacketLength-7];
-		for(int i=0;i<(PacketLength-7);i++){
-			segment[i]=packet[i+5];
-		}*/
-
-		// char checkSum1 = packet[PacketLength-1];
-		// char checkSum2 = packet[PacketLength];
-		
-		/* if(control1 == Control1Hello){
-			PacketType = 1;
-			
-		}*/
-
 		switch (control1){
 			case Control1Hello:
 				PacketType = 1;
@@ -241,10 +218,10 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 			break;
 			case Control1Message:
 				if(packet[3]==SCRADD){
-					PacketType = 3;
+					PacketType = 3; //message is for me
 				}
 				else if(control2!=Control2SingleMessage){ 
-					PacketType = 4;
+					PacketType = 4; //message is not a single hop and not for me
 				}
 				else{ PacketType = 5;} //drop the packet
 				
@@ -340,37 +317,10 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
 
-			//displaySegment(packet);
-			//extract data from packet 
-			//source[0] = packet[2]; //source of message
-			//detect end of packet
-
-			//int PacketLength = strlen(packet);
-			//packetend=PacketLength-1;
 			for(int i=0;i<(PacketLength-7);i++){
 				rsegment[i]=packet[i+5];
 			}
 			rsegment[PacketLength-7] = '\0';
-			/*
-			rsegment[0] = 0b10000000;
-	        rsegment[1] = 0b01000001;
-	        rsegment[2] = 0b11111111;
-	        rsegment[3] = 0b11111111;
-	        rsegment[4] = 0b00001100;
-	        rsegment[5] = 0b01001000;
-	        rsegment[6] = 0b01100101;
-	        rsegment[7] = 0b01101100;
-	        rsegment[8] = 0b01101100;
-	        rsegment[9] = 0b01101111;
-	        rsegment[10] = 0b00100000;
-	        rsegment[11] = 0b01010111;
-	        rsegment[12] = 0b01101111;
-	        rsegment[13] = 0b01110010;
-	        rsegment[14] = 0b01101100;
-	        rsegment[15] = 0b01100100;
-	        rsegment[16] = 0b00100001;
-	        rsegment[17] = 0b10011000;
-	        rsegment[18] = 0b11100011;*/
 
 			//copy segment data 
 			returnval = 1;
@@ -383,10 +333,10 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			repeatPacketFlag = checkRepeatPacket(packet);
 
 			if(repeatPacketFlag!=1){ //if not trasmitted before
-				put_string("retransmiting: ");
+				put_string("retransmiting.\r\n");
 				SendPacket(packet[3],packet);
 			}
-			else{};
+			else{put_string("already retransmitted\r\n");};
 		break;
 
 		case 5:

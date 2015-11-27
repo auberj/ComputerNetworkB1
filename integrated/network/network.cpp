@@ -318,8 +318,8 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			put_number(strlen(rsegment));
 			put_string("\r\n");
 
-			for(int i=0;i<(PacketLength-8);i++){
-				rsegment[i]=packet[i+5];
+			for(int i=5;i<(PacketLength-3);i++){
+				rsegment[i-5]=packet[i];
 			}
 
 			put_number(strlen(rsegment));

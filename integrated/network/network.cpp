@@ -267,7 +267,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	
 	packet[2] = SCRADD;
 	packet[3] = dest;
-	packet[4] = (char)segmentLength;
+	packet[4] = (char)segmentLength; 
 
 	put_string("Copying in ");put_number(segmentLength);put_string(" segment bytes\r\n");
 	for(int i=0;i<segmentLength;i++){

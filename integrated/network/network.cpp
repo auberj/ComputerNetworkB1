@@ -239,7 +239,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
-	char 	packet[MaxPacketLength]; //only 7 other bits but need a null!
+	char 	packet[MaxPacketLength] = {0}; //only 7 other bits but need a null!
 	int 	packetLength = strlen(packet);
 	put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
 

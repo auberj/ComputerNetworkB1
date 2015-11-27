@@ -243,8 +243,6 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	int 	packetLength = strlen(packet);
 	put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
 
-	//char 	packet[segmentLength+8]; //only 7 other bits but need a null!
-
 	int singleHopFlag = 0;
 
 	for(int i=0;i<(segmentLength+8);i++){
@@ -282,7 +280,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	packet[packetLength-2] = (char)((fullcrc & 0xFF00) >> 8);
 	packet[packetLength-1] = (char)(fullcrc & 0x00FF);
-	packet[packetLength] = '\0';
+	//packet[packetLength] = '\0';
 	packetLength = strlen(packet);
 	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
 

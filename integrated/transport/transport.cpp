@@ -15,7 +15,7 @@ uint8_t waitacknowledge(char dest, char* segment);
 
 int SendData(char dest, char* sdata)
 {
-    uint8_t loop = 0;
+    uint16_t loop = 0;
     uint8_t i = 1;
     uint8_t encrypted, flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
@@ -30,8 +30,10 @@ int SendData(char dest, char* sdata)
     if (numberofsegments*MAXMESSAGELENGTH < sdatalength) 
         numberofsegments++;
 
-    for (loop = 0; loop < numberofsegments; loop++)
+    while (loop < numberofsegments)
     {
+        put_char('.');
+        _delay_ms(1);
         i = 1;
         for (int j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
@@ -44,6 +46,13 @@ int SendData(char dest, char* sdata)
             messagelength = MAXMESSAGELENGTH;
         else
             messagelength = sdatalength - (loop*MAXMESSAGELENGTH);
+
+
+        put_number(sdatalength);
+        put_char('.');
+        put_number(loop);
+        put_char('.');
+        put_number(messagelength);
 
         segment[loop][4] = messagelength;
         copyin(segment[loop], sdata, 5, messagelength, (loop*MAXMESSAGELENGTH));
@@ -65,9 +74,10 @@ int SendData(char dest, char* sdata)
                 put_string("\r\nNo acknowledgment, resending segment");
 
         }
-
+        
         put_string("\r\n\r\nAcknowledged.");
         _delay_ms(1);
+        loop = loop + 1;
     }
     //ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
 

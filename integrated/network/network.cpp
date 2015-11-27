@@ -321,7 +321,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			for(int i=0;i<(PacketLength-7);i++){
 				rsegment[i]=packet[i+5];
 			}
-			rsegment[PacketLength-7] = '\0';
+			//rsegment[PacketLength-7] = '\0';
 
 			//copy segment data 
 			returnval = 1;

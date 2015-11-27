@@ -2,7 +2,7 @@
 
 #include "link.h"
 
-#define MAXPACKETSIZE
+#define MAXPACKETSIZE 128
 
 //link
 

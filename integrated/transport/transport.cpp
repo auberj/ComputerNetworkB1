@@ -15,8 +15,9 @@ uint8_t waitacknowledge(char dest, char* segment);
 
 int SendData(char dest, char* sdata)
 {
-    uint16_t loop = 0;
+    volatile uint8_t loop = 0;
     uint8_t i = 1;
+    uint8_t j;
     uint8_t encrypted, flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
     uint8_t messagelength;
@@ -32,24 +33,34 @@ int SendData(char dest, char* sdata)
 
     while (loop < numberofsegments)
     {
+        put_char(' ');
+        put_number(loop);
+        put_char(' ');
         i = 1;
-        for (int j = 0; j < MAXMESSAGELENGTH+8; j++)
+        for (j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
 
         ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
-        segment[loop][2] = 0xFF; //Source port
-        segment[loop][3] = 0xFF; //Dest port
+        segment[loop][2] = 100; //Source port
+        segment[loop][3] = 255; //Dest port
+
+        j = 2;
+
+        put_hex(segment[loop][j], 1);
+        put_char('.');
+
+        for (j = 0; j < 28; j++)
+        {
+            put_hex(segment[loop][j], 1);
+            put_char('.');
+        }
+
+        put_number(segment[loop][2]);
 
         if (loop != numberofsegments - 1)
             messagelength = MAXMESSAGELENGTH;
         else
             messagelength = sdatalength - (loop*MAXMESSAGELENGTH);
-
-        // put_number(sdatalength);
-        // put_char('.');
-        // put_number(loop);
-        // put_char('.');
-        // put_number(messagelength);
 
         segment[loop][4] = messagelength;
         copyin(segment[loop], sdata, 5, messagelength, (loop*MAXMESSAGELENGTH));

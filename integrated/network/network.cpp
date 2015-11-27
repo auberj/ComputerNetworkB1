@@ -316,10 +316,16 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		case 3: //packet is a message for me
 
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
+			put_string("\r\n");
+			put_number(strlen(rsegment));
+			put_string("\r\n");
 
 			for(int i=0;i<(PacketLength-8);i++){
 				rsegment[i]=packet[i+5];
 			}
+
+			put_number(strlen(rsegment));
+			put_string("\r\n");
 			//rsegment[PacketLength-7] = '\0';
 
 			//copy segment data 

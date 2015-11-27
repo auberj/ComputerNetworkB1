@@ -33,7 +33,7 @@ int SendData(char dest, char* sdata)
 
     while (loop < numberofsegments)
     {
-        put_string("Loop:");
+        put_string("\r\nLoop:");
         put_number(loop);
         put_char('!');
         i = 1;

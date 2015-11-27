@@ -154,7 +154,7 @@ void display_segment(char* segment)
     put_hex(segment[3], 1);
 
     put_string("\r\nMessage Length: ");
-    put_number(segment[4]);
+    put_number((uint8_t)segment[4]);
 
     put_string("\r\nMessage: ");
     for (i = 0; i<(strlen(segment)-7); i++)

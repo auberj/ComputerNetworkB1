@@ -179,7 +179,7 @@ void getNeighbourAdd(char* neighbourADD, char* packet){
 	return;
 }
 int getPacket(char* packet){ //gets a packet from DLL and returns its type
-	put_string("getting packet...");
+	put_string("\r\nBEGIN GET PACKET\r\n");
 	
 	int PacketLength; 
 	//PacketLength = strlen(packet);
@@ -230,6 +230,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	}
 	
 	put_string("done.\r\n");
+	put_string("\r\nEND GET PACKET\r\n");
 	return PacketType;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -30,6 +30,10 @@
 
 int main()
 {
+    _delay_ms(100);  //little delay for the rfm12 to initialize properly
+    rfm12_init();    //init the RFM12
+    _delay_ms(100);
+    sei();
     init_uart0();
     init_timer();
     put_string("\r\n\r\n\r\n\r\nInitialising...");

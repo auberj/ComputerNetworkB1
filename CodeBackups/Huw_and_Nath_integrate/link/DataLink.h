@@ -42,7 +42,7 @@
 
 //built in addresses
 #define BROADCAST '\xff'
-#define THISDEVICE '\x74'
+#define THISDEVICE 'N' //0x74
 
 //CRC stuff
 #define GENERATOR 0x1021

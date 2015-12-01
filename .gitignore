@@ -1,6 +1,5 @@
-
-Documents/Courework Brief.pdf
-
+*.hex
+*.elf
 *.hex
 
 *.elf

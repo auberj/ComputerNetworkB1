@@ -50,7 +50,7 @@ int main() {
     init_timer();
     sei(); 
     set_orientation(East);
-    display_string((char*)"Initialising...\n");
+    put_string((char*)"Initialising...\n");
     
     char random[120] = "hello aaron rowland, this is a string which should ";
     char test[26] = "0123456789012345678901234";
@@ -60,8 +60,8 @@ int main() {
     SendPacket(THISDEVICE, random);
     // while(1) {
     //     if(RecievePacket(Rpacket)) {
-    //         display_string("PACKET RECEIVED!!!!!\n");
-    //         display_string(Rpacket);
+    //         put_string("PACKET RECEIVED!!!!!\n");
+    //         put_string(Rpacket);
     //     }
     // }
     return 0;
@@ -73,8 +73,8 @@ int bytestuff(char *str, int len) {
     char temp[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN + CHECKSUMLEN + FOOTERLEN + 10] = "";
     for(i = 0; i<len; i++) {
         if(str[i] == HEADER || str[i] == ESCAPE) {
-            // display_number(int(str[i]));
-            // display_char('\n');
+            // put_number(int(str[i]));
+            // put_char('\n');
             sprintf(temp, "%s%c", temp, ESCAPE);
         }
         sprintf(temp,"%s%c", temp, str[i]);
@@ -108,11 +108,11 @@ int SendPacket(char dest, char* Spacket) {
     */
     struct frame data[FRAMECOUNT];
     int no_frames;
-    display_number(millis());
-    display_char('\n');
+    put_number(millis());
+    put_char('\n');
     no_frames = makeframe(&data, dest, Spacket, 0);
-    display_number(millis());
-    display_char('\n');    
+    put_number(millis());
+    put_char('\n');    
 
     uint8_t *bufptr;
     char temp[50];
@@ -129,7 +129,7 @@ int SendPacket(char dest, char* Spacket) {
             rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
             for (uint8_t j = 0; j < 100; j++)   
             {   
-                //display_string(". ");
+                //put_string(". ");
                 rfm12_tick();   
                 _delay_us(500); 
             }
@@ -146,13 +146,13 @@ int SendPacket(char dest, char* Spacket) {
                     }
                     temp[rfm12_rx_len()] = '\0';
                     rfm12_rx_clear();
-                    // display_string("\nRECEIVED: ");
-                    // display_string(temp);
-                    // display_string("\n\n");
+                    // put_string("\nRECEIVED: ");
+                    // put_string(temp);
+                    // put_string("\n\n");
                     ////////////////check if acknowledgemnt valid////////////////
                     if(decode_frame(ack, temp) & (1<<1)) {
                         //if(ack.checksum[0] == data[i].checksum[0]) {
-                        display_string("\nSend Complete!\n");
+                        put_string("\nSend Complete!\n");
                         send_complete = 1;
                         break;  
                         //}
@@ -160,7 +160,7 @@ int SendPacket(char dest, char* Spacket) {
                  }
             }
             if(!send_complete) {
-                display_string("\nTIMEOUT\n");
+                put_string("\nTIMEOUT\n");
             }
 
         }
@@ -211,11 +211,11 @@ int RecievePacket(char* Rpacket) {
             }
             Rframe[rfm12_rx_len()] = '\0';
             rfm12_rx_clear();
-            display_string(Rframe);
+            put_string(Rframe);
             strcpy(ackstr, Rframe);
             int Rframe_check = decode_frame(Nrframe[i], Rframe);
-            display_string("\nRframe_check: ");
-            display_number(Rframe_check);
+            put_string("\nRframe_check: ");
+            put_number(Rframe_check);
             if(Rframe_check & (1<<1)) {
                 if(Rframe_check & 1<<3) {
                     Received_Final_frame = 1;
@@ -227,7 +227,7 @@ int RecievePacket(char* Rpacket) {
                 rfm12_tx(strlen(ackstr), 0, (uint8_t*)ackstr);
                 for (uint8_t j = 0; j < 100; j++)   
                 {   
-                    //display_string(". ");
+                    //put_string(". ");
                     rfm12_tick();   
                     _delay_us(500); 
                 }
@@ -244,7 +244,7 @@ int RecievePacket(char* Rpacket) {
         }
     }
     // if(i && i < FRAMECOUNT) {
-    //     display_string("\nPacketComplete");
+    //     put_string("\nPacketComplete");
     //     strcpy(Rpacket, Nrframe[0].frame);
     
     //     for(int l = 1; l<i; l++) {
@@ -259,7 +259,7 @@ int RecievePacket(char* Rpacket) {
 void unbytestuff(char *Rframe) {
     uint16_t i;
     int cnt = 0;
-    // display_number(strlen(Rframe));
+    // put_number(strlen(Rframe));
     for(i = 0; i < strlen(Rframe); i++) {
         if(Rframe[i] == ESCAPE) {
             i++;
@@ -288,7 +288,7 @@ int decode_frame(struct frame framedata, char * Rframe) {
         strncpy(Rframe, Rframe, strlen(Rframe)-1);
         Rframe[strlen(Rframe)-1] = '\0';
         if(!((long unsigned int)calccrc(Rframe, strlen(Rframe)))) {
-            //display_string("\nNo Errors!\n");
+            //put_string("\nNo Errors!\n");
             retval |= 1;
             int i;
             for(i = 0; i < 10; i++) {
@@ -309,10 +309,10 @@ int decode_frame(struct frame framedata, char * Rframe) {
                 framedata.data[i] = Rframe[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + i];
             }
             framedata.data[(int)framedata.length[0]] = 0;
-            display_string("           ");
-            display_string(framedata.data);
+            put_string("           ");
+            put_string(framedata.data);
             if(framedata.address[0] == BROADCAST || framedata.address[0] == THISDEVICE) {
-                display_string("\nPacket for me!");
+                put_string("\nPacket for me!");
                 retval |= 1 << 1;
                 if(framedata.data[0] == START) {
                     retval |= 1<< 3;
@@ -326,7 +326,7 @@ int decode_frame(struct frame framedata, char * Rframe) {
             }
             else {
                 // not intended recepient
-                display_string("\nNot for me!\n");
+                put_string("\nNot for me!\n");
                 //retval = 1;
             }
 

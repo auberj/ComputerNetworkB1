@@ -140,9 +140,9 @@ void sendHello(){
 	int PacketLength = strlen(packet);
 	put_hex(packet[15],1);
 	put_string("h packet length: "); put_number(PacketLength); put_string("\r\n");
-
+	put_string("passing to DLL\r\n");
 	SendPacket(destination, packet);
-
+	put_string("returning from DLL\r\n");
 	put_string("hello sent\r\n");
 	return;
 }
@@ -282,8 +282,9 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	//packet[packetLength] = '\0';
 	packetLength = strlen(packet);
 	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
-
+	put_string("passing to DLL\r\n");
 	SendPacket(dest,packet);
+	put_string("return from DLL\r\n");
 	put_string("\r\nEND SEND SEGMENT\r\n");
 	return 0;
 }

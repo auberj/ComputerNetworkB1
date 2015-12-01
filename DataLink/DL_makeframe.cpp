@@ -14,7 +14,7 @@ void setchecksum(struct frame (*vals)[FRAMECOUNT]) {
             strcat(checksumcalc,(*vals)[i].control);
             strcat(checksumcalc,(*vals)[i].address);
             strcat(checksumcalc,(char*)(*vals)[i].length);
-            strcat(checksumcalc,(char*)(*vals)[i].header);
+            //strcat(checksumcalc,(char*)(*vals)[i].header);
             strcat(checksumcalc,(*vals)[i].data);
             
             uint16_t crc = calccrc(checksumcalc, strlen(checksumcalc));
@@ -48,13 +48,13 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket) {
             }
             if(Spacket[cnt] == '\0') {
                 (*vals)[i].data[j] = END;
-                display_char((*vals)[i].data[j]);
+                //display_char((*vals)[i].data[j]);
                 end = 1;
                 j++;
                 break;
             }
             (*vals)[i].data[j] = Spacket[cnt++];
-            display_char((*vals)[i].data[j]);
+            //display_char((*vals)[i].data[j]);
         }
         // display_number(j);
         (*vals)[i].length[0] = j;
@@ -63,7 +63,7 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket) {
             break;
         }
         //display_string((*vals)[i].data);
-        display_char('\n');
+        //display_char('\n');
     }
 }
 
@@ -72,7 +72,7 @@ void setheader(struct frame (*vals)[FRAMECOUNT]) {
     for(i = 0; i < FRAMECOUNT; i++) {
         (*vals)[i].header[0] = HEADER;
         (*vals)[i].header[1] = '\0';
-        display_char((*vals)[i].header[0]);
+        //display_char((*vals)[i].header[0]);
     }
 }
 
@@ -81,7 +81,7 @@ void setfooter(struct frame (*vals)[FRAMECOUNT]) {
     for(i = 0; i < FRAMECOUNT; i++) {
         (*vals)[i].footer[0] = FOOTER;
         (*vals)[i].footer[1] = '\0';        
-        display_char((*vals)[i].footer[0]);
+        //display_char((*vals)[i].footer[0]);
     }
 }
 
@@ -95,52 +95,57 @@ void dataInit(struct frame (*vals)[FRAMECOUNT]) {
     }    
 }
 
-void setaddress(struct frame (*vals)[FRAMECOUNT], char* address) {
+void setaddress(struct frame (*vals)[FRAMECOUNT], char address) {
     int i;
     int j;
     for(i = 0; i < FRAMECOUNT; i++) {
         if((*vals)[i].length[0]) {
-            for(j = 0; j < ADDRESSLEN; j++) {
-                (*vals)[i].address[j] = address[j];
-                display_char((*vals)[i].address[j]);
-            }
+            (*vals)[i].address[0] = THISDEVICE;
+            (*vals)[i].address[1] = address;
             (*vals)[i].address[ADDRESSLEN] = '\0';
         }
     }    
 }
 
-void setcontrol(struct frame (*vals)[FRAMECOUNT]) {
+void setcontrol(struct frame (*vals)[FRAMECOUNT], int ack) {
     int i;
     int j;
     for(i = 0; i < FRAMECOUNT; i++) {
         if((*vals)[i].length[0]) {
             for(j = 0; j < CONTROLLEN; j++) {
-                (*vals)[i].control[j] = INFOFRAME[j];
-                display_char((*vals)[i].control[j]);
+                if(!ack) {
+                    (*vals)[i].control[j] = INFOFRAME[j];
+                }
+                else {
+                    (*vals)[i].control[j] = SUPEFRAME[j];
+                }
+
+                //display_char((*vals)[i].control[j]);
             }
             (*vals)[i].control[CONTROLLEN] = '\0';
         }
     }    
 }
 
-void makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket) {
+int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack) {
     dataInit(data);    
 
     setdata(data, Spacket);
 
     setheader(data);
 
-    setcontrol(data);
+    setcontrol(data, ack);
 
-    setaddress(data, (char*)"FF");    
+    setaddress(data, dest);    
 
     setchecksum(data);
 
     setfooter(data);
     int i;
+    int retval = 0;
     for(i = 0; i < FRAMECOUNT; i++) {
         if((*data)[i].length[0]) {
-            display_string("\nMAke the string: \n");
+            // display_string("\nMAke the string: \n");
             char temp[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN + CHECKSUMLEN + FOOTERLEN + 10] = "";
             sprintf(temp,"%s%s%s%s%s",(*data)[i].control,(*data)[i].address,(*data)[i].length,(*data)[i].data,(*data)[i].checksum);
 
@@ -150,11 +155,13 @@ void makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket) {
             strcat((*data)[i].frame, temp);
             strcat((*data)[i].frame, (*data)[i].footer);
 
-            display_string((*data)[i].frame);
-            display_char('\n');
-            display_number(strlen((*data)[i].frame));
-            display_char('\n');
+            // display_string((*data)[i].frame);
+            // display_char('\n');
+            // display_number(strlen((*data)[i].frame));
+            // display_char('\n');
+            retval = i;
 
         }
-    }  
+    }
+    return retval;  
 }

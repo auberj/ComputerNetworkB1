@@ -28,10 +28,10 @@
 #include "network.h"
 #include <stdio.h>
 //global vars
-char neighbours[NumNeighbours] = {0};//all set to 0
-char twohops[NumNeighbours][NumNeighbours] = {0}; //list of nodes two hops away
-char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
-char oldchecksumrecieved[NumOldPackets] = {0};
+char 	neighbours[NumNeighbours] = {0};//all set to 0
+char 	twohops[NumNeighbours][NumNeighbours] = {0}; //list of nodes two hops away [neighbour][2hops]
+char 	oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
+char 	oldchecksumrecieved[NumOldPackets] = {0};
 /*
  int main(){
 	init_lcd();
@@ -101,7 +101,7 @@ void processHello(char* packet){
 	put_string("neighbour processed\r\n");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void gatherNeighbours(){
+/*void gatherNeighbours(){ //REDUNDANT
 //calculate number of elements in neighbour table
 	//int 	NumNeighbours = (sizeof(neighbours)/sizeof(neighbours[0]));
 	char 	packet[MaxPacketLength];
@@ -117,7 +117,7 @@ void gatherNeighbours(){
 	else{put_string("no hello packet\r\n");}
 	//store in table
 	return;
-}
+}*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendHello(){
 	put_string("sending hello...");
@@ -150,7 +150,7 @@ void sendHello(){
 }
 
 void sendNeighbours(){
-	put_string("sending neighbours\r\n");
+	put_string("SENDING NEIGHBOURS\r\n");
 	
 	char 	packet[NumNeighbours+8] = {'0'};
 	packet[0] = Control1Neighbour;
@@ -172,12 +172,28 @@ void sendNeighbours(){
 	SendPacket(DLLFLOOD, packet);
 	put_string(packet);
 	put_string("\r\n");
-	put_string("done\r\n");
-
+	put_string("END SENDING NEIGHBOURS\r\n");
 	return;
 }
-void processDoubleHop(char* packet){
-	int PacketLength = strlen(packet);
+void processNeighbours(char* packet){ //processes a packet detailing neighbours (ie, 2 hops away)
+	int 	PacketLength = strlen(packet);
+	char 	1hopadd = packet[2]; //the neighbour that sent the packet
+	char 	2hoparray[NumNeighbours];
+
+	for(int i=0;i<NumNeighbours;i++){
+		2hoparray[i] = packet[i+5]; //2hoparray now contains details of neighbour's neighbours
+	}
+
+	int twohopsrow = 0;
+	for(int i=0;i<NumNeighbours;i++){ //find space in this array
+		if(twohops[i][0]=='0'){
+			twohopsrow = i;
+			break;
+		}
+	}
+}
+void processDoubleHop(char* packet){ //processes a double packet that is not for me
+	int 	PacketLength = strlen(packet);
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,15 +286,20 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	if(singleHopFlag==1){
 		packet[1] = 'S';
+		dlladdress = 'dest';
+		put_string("single hop flag\r\n");
 	}
 	else if(doubleHopFlag==1){
 		packet[1] = 'D';
+		put_string("double hop flag\r\n");
 		// TO DO:
 		// -set up to know what the next hop is 
 
 	}
 	else{
 		packet[1] = 'F';
+		put_string("flood\r\n");
+		dlladdress = DLLFLOOD;
 	}
 	
 	packet[2] = SCRADD;
@@ -298,9 +319,9 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	//packet[packetLength] = '\0';
 	packetLength = strlen(packet);
 	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
-	put_string("passing to DLL\r\n");
-	SendPacket(dest,packet);
-	put_string("return from DLL\r\n");
+	put_string("***passing to DLL***\r\n");
+	SendPacket(dlladdress,packet);
+	put_string("***return from DLL8**\r\n");
 	put_string("\r\nEND SEND SEGMENT\r\n");
 	return 0;
 }

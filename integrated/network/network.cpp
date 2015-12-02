@@ -285,6 +285,7 @@ char calcNextHop(char dest){ //returns the next node to send data to
 		for(int j=1;j<(NumNeighbours+1);j++){
 			if(twohops[i][j]==dest){
 				nextHop = twohops[i][0];
+				put_string("next hop is: ");put_char(nextHop);put_string("\r\n");
 				foundHopFlag = 1;
 				break;
 			}
@@ -296,6 +297,7 @@ char calcNextHop(char dest){ //returns the next node to send data to
 	}
 	if(foundHopFlag==0){ //if i cant work it out then flood the packet
 		nextHop = 0xFF;
+		put_string("couldn't find next hop. flood.\r\n");
 	}
 	put_string("\r\nEND CALC NEXT HOP\r\n");
 	return nextHop;
@@ -384,13 +386,16 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	switch (packetType){
 		case 0:
 			put_string("packet corrupted, dropped.\r\n");
+			returnval = 0;
 		break;
 		case 1: //recieved a HELLO, send one back!
 			sendHello(); //only send this if haven't sent one recently
 			processHello(packet);
+			returnval = 0;
 		break;
 		case 2: //details neighbours
-			//CODE
+			processNeighbours(packet);
+			returnval = 0;
 		break;
 
 		case 3: //packet is a message for me

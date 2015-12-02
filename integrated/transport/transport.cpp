@@ -91,30 +91,30 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag)
 
     receiveflag = RecieveSegment(source, segment);
 
-    if (millis() > 2000); //This is dummy received data representing Hello World!
-    {
-        segment[0] = 0b10000000;
-        segment[1] = 0b01000001;
-        segment[2] = 0b11111111;
-        segment[3] = 0b11111111;
-        segment[4] = 0b00001100;
-        segment[5] = 0b01001000;
-        segment[6] = 0b01100101;
-        segment[7] = 0b01101100;
-        segment[8] = 0b01101100;
-        segment[9] = 0b01101111;
-        segment[10] = 0b00100000;
-        segment[11] = 0b01010111;
-        segment[12] = 0b01101111;
-        segment[13] = 0b01110010;
-        segment[14] = 0b01101100;
-        segment[15] = 0b01100100;
-        segment[16] = 0b00100001;
-        segment[17] = 0b10011000;
-        segment[18] = 0b11100011;
-        *source = 'D';
-        receiveflag = 1;
-    }
+    // if (millis() > 2000); //This is dummy received data representing Hello World!
+    // {
+    //     segment[0] = 0b10000000;
+    //     segment[1] = 0b01000001;
+    //     segment[2] = 0b11111111;
+    //     segment[3] = 0b11111111;
+    //     segment[4] = 0b00001100;
+    //     segment[5] = 0b01001000;
+    //     segment[6] = 0b01100101;
+    //     segment[7] = 0b01101100;
+    //     segment[8] = 0b01101100;
+    //     segment[9] = 0b01101111;
+    //     segment[10] = 0b00100000;
+    //     segment[11] = 0b01010111;
+    //     segment[12] = 0b01101111;
+    //     segment[13] = 0b01110010;
+    //     segment[14] = 0b01101100;
+    //     segment[15] = 0b01100100;
+    //     segment[16] = 0b00100001;
+    //     segment[17] = 0b10011000;
+    //     segment[18] = 0b11100011;
+    //     *source = 'D';
+    //     receiveflag = 1;
+    // }
 
     if (receiveflag) //if something has been received
     {

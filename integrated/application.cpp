@@ -20,8 +20,7 @@
 
 //#include "link/timer/timer.cpp"
 //#include "link_dummy/link.cpp"
-#include "physical/rfm12.h"
-#include "physical/rfm12.cpp"
+#include "physical/physical.cpp"
 #include "link/link.cpp"
 #include "network/network.cpp"
 #include "transport/transport.cpp"

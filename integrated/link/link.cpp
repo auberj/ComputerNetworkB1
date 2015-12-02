@@ -161,7 +161,8 @@ int RecievePacket(char* Rpacket) {
             pass to network
     */
     int i = 0;
-    if (rfm12_rx_status() == STATUS_COMPLETE) {
+    if (rfm12_rx_status() == STATUS_COMPLETE) { //Status complete 1 - passes this section
+        put_char('.');
         uint8_t* bufptr;
         char Rframe[50], ackstr[50];
         struct frame ack, decode;
@@ -169,10 +170,11 @@ int RecievePacket(char* Rpacket) {
         struct frame ackarr[FRAMECOUNT];
         int Received_Final_frame = 0;
         int timeout = millis() + 1000;
-        while(!Received_Final_frame && (millis() < timeout)){
+        while(!Received_Final_frame && (millis() < timeout)){ //never passes this while statement
+                                                                //Also maybe add RFM12B tick??
             //int Rframe_len;
-            put_string("Trying to receive data")
-            if (rfm12_rx_status() == STATUS_COMPLETE) {
+            put_string("Trying to receive data");
+            if (rfm12_rx_status() == STATUS_COMPLETE) { //Status complete 2 - why?
                 bufptr = rfm12_rx_buffer();
                 put_string("Raw data received: ");
                 put_string((char*)bufptr);

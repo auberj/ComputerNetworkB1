@@ -9,9 +9,7 @@
 #define Control1Message 'M'
 #define Control2SingleMessage 'S'
 
-//source address (my address)
-//#define callsign 'N'
-#define DLLFLOOD 0xFF
+#define DLLFLOOD 0xFF //address to send to DLL when I want everyone to get the packet
 
 #define MaxSegmentLength 0x79
 
@@ -32,27 +30,6 @@ char 	neighbours[NumNeighbours] = {0};//all set to 0
 char 	twohops[NumNeighbours][NumNeighbours+1] = {0}; //list of nodes two hops away [neighbour][2hops]
 char 	oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 char 	oldchecksumrecieved[NumOldPackets] = {0};
-/*
- int main(){
-	init_lcd();
-    set_orientation(East);
-	//put_string("Initialising...\r\n");
-
-	char source[1] = {0};
-	char segment[20] = {'1','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','9',0};
-	
-	//put_string(neighbours);
-	sendHello();
-	RecieveSegment(source,segment);
-
-	SendSegment('N',segment);
-	//sendHello();
-	RecieveSegment(source,segment);
-	//put_string(segment);
-	put_string("\r\n");
-	while(1);
-	return 0;
-}*/
 
 void processHello(char* packet){
 	char 	neighbour[1];

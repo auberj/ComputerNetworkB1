@@ -159,80 +159,82 @@ int RecievePacket(char* Rpacket) {
             acknowledge
             pass to network
     */
-    uint8_t* bufptr;
-    char Rframe[50], ackstr[50];
-    struct frame ack, decode;
-    struct frame Nrframe[FRAMECOUNT];
-    struct frame ackarr[FRAMECOUNT];
-    int Received_Final_frame = 0;
     int i = 0;
-    int timeout = millis() + 1000;
-    while(!Received_Final_frame && (millis() < timeout)){
-        //int Rframe_len;
-        if (rfm12_rx_status() == STATUS_COMPLETE) {
-            bufptr = rfm12_rx_buffer();
-            for(uint8_t k = 0; k < (rfm12_rx_len()); k++) {
-                Rframe[k] = bufptr[k];
-            }
-            Rframe[rfm12_rx_len()] = '\0';
-            rfm12_rx_clear();
-            // put_string("\r\nRframe: ");
-            // put_string(Rframe);
-            //strcpy(ackstr, Rframe);
-            decode = Nrframe[i];
-            int Rframe_check = decode_frame(&decode, Rframe);
-            Nrframe[i] = decode;
-            // put_string("\r\nRframe.address: ");
-            // put_string(Nrframe[i].address);
-            // put_string("\r\nRframe.length");
-            // put_number(Nrframe[i].length[0]);
-            // put_string("\r\nNrframe[i]: ");
-            // put_number(i);
-            // put_string("\r\nRframe.data: ");
-            // put_string(Nrframe[i].data);
-            // put_string("\r\nRframe_check: ");
-            // put_number(Rframe_check);
-            if(Rframe_check & (1<<1)) {
-                if(Rframe_check & 1<<4) {
-                    Received_Final_frame = 1;
+    if (rfm12_rx_status() == STATUS_COMPLETE) {
+        uint8_t* bufptr;
+        char Rframe[50], ackstr[50];
+        struct frame ack, decode;
+        struct frame Nrframe[FRAMECOUNT];
+        struct frame ackarr[FRAMECOUNT];
+        int Received_Final_frame = 0;
+        int timeout = millis() + 1000;
+        while(!Received_Final_frame && (millis() < timeout)){
+            //int Rframe_len;
+            if (rfm12_rx_status() == STATUS_COMPLETE) {
+                bufptr = rfm12_rx_buffer();
+                for(uint8_t k = 0; k < (rfm12_rx_len()); k++) {
+                    Rframe[k] = bufptr[k];
                 }
-                put_string("\r\nFrame Number; ");
-                put_number(i);
-                /*
-                frame received, frame for me
-                acknowledge
-                */
-                ackarr[0] = Nrframe[i];
-                makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
-                put_string("\r\nacknowledgement: ");
-                put_string(ackarr[0].frame);
-                rfm12_tx(strlen(ackarr[0].frame), 0, (uint8_t*)ackarr[0].frame);
-                for (uint8_t j = 0; j < 100; j++)   
-                {   
-                    //put_string(". ");
-                    rfm12_tick();   
-                    _delay_us(500); 
+                Rframe[rfm12_rx_len()] = '\0';
+                rfm12_rx_clear();
+                // put_string("\r\nRframe: ");
+                // put_string(Rframe);
+                //strcpy(ackstr, Rframe);
+                decode = Nrframe[i];
+                int Rframe_check = decode_frame(&decode, Rframe);
+                Nrframe[i] = decode;
+                // put_string("\r\nRframe.address: ");
+                // put_string(Nrframe[i].address);
+                // put_string("\r\nRframe.length");
+                // put_number(Nrframe[i].length[0]);
+                // put_string("\r\nNrframe[i]: ");
+                // put_number(i);
+                // put_string("\r\nRframe.data: ");
+                // put_string(Nrframe[i].data);
+                // put_string("\r\nRframe_check: ");
+                // put_number(Rframe_check);
+                if(Rframe_check & (1<<1)) {
+                    if(Rframe_check & 1<<4) {
+                        Received_Final_frame = 1;
+                    }
+                    put_string("\r\nFrame Number; ");
+                    put_number(i);
+                    /*
+                    frame received, frame for me
+                    acknowledge
+                    */
+                    ackarr[0] = Nrframe[i];
+                    makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
+                    put_string("\r\nacknowledgement: ");
+                    put_string(ackarr[0].frame);
+                    rfm12_tx(strlen(ackarr[0].frame), 0, (uint8_t*)ackarr[0].frame);
+                    for (uint8_t j = 0; j < 100; j++)   
+                    {   
+                        //put_string(". ");
+                        rfm12_tick();   
+                        _delay_us(500); 
+                    }
+                    i++;
+                    timeout = millis() + 1000;
+                    
                 }
-                i++;
-                timeout = millis() + 1000;
-                
-            }
-            else if(!Rframe_check) {
-                ;
-            }
-            else {
-                break;
-            }
+                else if(!Rframe_check) {
+                    ;
+                }
+                else {
+                    break;
+                }
 
+            }
         }
-    }
-    if(i && i < FRAMECOUNT) {
-        put_string("\r\nPacketComplete\n\r");
-        strcpy(Rpacket, Nrframe[0].data);
-        for(int l = 1; l<i; l++) {
-            strcat(Rpacket, Nrframe[l].data);
+        if(i && i < FRAMECOUNT) {
+            put_string("\r\nPacketComplete\n\r");
+            strcpy(Rpacket, Nrframe[0].data);
+            for(int l = 1; l<i; l++) {
+                strcat(Rpacket, Nrframe[l].data);
+            }
+            strcat(Rpacket, "\0");
         }
-        strcat(Rpacket, "\0");
     }
     return i;
 
@@ -273,6 +275,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             //put_string("\nNo Errors!\n");
             retval |= 1;
             int i;
+            
             for(i = 0; i < 10; i++) {
                 if(i < CONTROLLEN) {
                     framedata->control[i] = Rframe[HEADERLEN + i]; 
@@ -288,20 +291,20 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             framedata->address[ADDRESSLEN] = 0;
             framedata->length[LENGTHLEN] = 0;
             for(i = 0; i < framedata->length[0]; i++) {
-                // int j;
-                // if(Rframe[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN] == START) {
-                //     j = i-1;
-                //     continue;
-                // }
-                // else {
-                //     j = i;
-                // }
+
 
                 framedata->data[i] = Rframe[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + i];
             }
+
+            //get rid of start and end bits//////
+            // if(Rframe[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN] == START) {
+            //     strcpy(framedata->data, framedata->data);
+            // }
             // if(framedata->data[(int)framedata->length[0] - 1] == END) {
             //     framedata->data[(int)framedata->length[0] - 1] = 0;
             // }
+            /////////////////////////////////////
+
             framedata->data[(int)framedata->length[0]] = 0;
             put_string("\r\nRframe.data: ");
             put_string(framedata->data);
@@ -310,9 +313,12 @@ int decode_frame(struct frame *framedata, char * Rframe) {
                 retval |= 1 << 1;
                 if(framedata->data[0] == START) {
                     retval |= 1<< 3;
+                    strcpy(framedata->data, framedata->data);
+
                 }
                 if(framedata->data[strlen(framedata->data)-1] == END) {
                     retval |= 1<<4;
+                    framedata->data[(int)framedata->length[0] - 1] = 0;
                 }
                 if(!strcmp(framedata->control, INFOFRAME)) {
                     retval |= 1 << 2;

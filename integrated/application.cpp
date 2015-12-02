@@ -41,9 +41,11 @@ int main()
     put_string("\r\n\r\n\r\n\r\nInitialising...");
     
     while(1){
-        char dest;
+        char dest, source;
         char mode;
-        char temp = '\0';
+        char rmessageflag;
+
+        char temp = '\0'; //temporary character for receiving over uart
         char message[1000] = {0};
         uint16_t i = 0;
 
@@ -66,49 +68,47 @@ int main()
 
         temp = 0;
 
-        put_string("\r\n\r\nEnter destination: ");
-        while(temp != '\r')
-        {
-            temp = get_char();
-            if (temp >= 32 && temp <= 126)
-            {
-                put_char(temp);
-                dest = temp;
-            }
-            else if ((temp == 8) || (temp == 127)) //Backspace or delete
-            {
-                put_char(temp);
-                dest = 0;
-            }
-            _delay_ms(1);
-        }
-
-        temp = 0;
-
-        put_string("\r\n\r\nEnter message: ");
-
-        while(temp != '\r')
-        {
-            temp = get_char();
-            if (temp >= 32 && temp <= 126)
-            {
-                put_char(temp);
-                message[i] = temp;
-                i++;
-            }
-            else if ((temp == 8) || (temp == 127)) //Backspace or delete
-            {
-                put_char(temp);
-                i--;
-                message[i] = 0;
-            }
-            _delay_ms(1);
-        }
-
-        //get message over UART...
-        //Above message is 107 characters
         if (mode == 'S')
         {
+            put_string("\r\n\r\nEnter destination: ");
+            while(temp != '\r')
+            {
+                temp = get_char();
+                if (temp >= 32 && temp <= 126)
+                {
+                    put_char(temp);
+                    dest = temp;
+                }
+                else if ((temp == 8) || (temp == 127)) //Backspace or delete
+                {
+                    put_char(temp);
+                    dest = 0;
+                }
+                _delay_ms(1);
+            }
+
+            temp = 0;
+
+            put_string("\r\n\r\nEnter message: ");
+
+            while(temp != '\r')
+            {
+                temp = get_char();
+                if (temp >= 32 && temp <= 126)
+                {
+                    put_char(temp);
+                    message[i] = temp;
+                    i++;
+                }
+                else if ((temp == 8) || (temp == 127)) //Backspace or delete
+                {
+                    put_char(temp);
+                    i--;
+                    message[i] = 0;
+                }
+                _delay_ms(1);
+            }
+            
             put_string("\r\n");
             put_number(strlen(message));
             put_string(" character long message reads: \r\n");
@@ -117,12 +117,23 @@ int main()
             int error = SendData(dest, message);
             if (error) put_string("Error sending message");
         }
+
         else if (mode == 'R')
         {
-            RecieveData(char* source, char* rdata);
+            while(1)
+            {
+                rmessageflag = RecieveData(&source, message);
+                if (rmessageflag)
+                {
+                    put_string("\r\n");
+                    put_number(strlen(message));
+                    put_string(" character long message from ");
+                    put_char(source);
+                    put_string(" reads: \r\n");
+                    put_string(message);
+                } 
+            }
         }
-        
-
         //while(1);
        
     }

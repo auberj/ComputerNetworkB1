@@ -11,6 +11,7 @@
 
 //source address (my address)
 #define SCRADD 'N'
+#define DLLFLOOD 0xFF
 
 #define MaxSegmentLength 0x79
 
@@ -28,7 +29,7 @@
 #include <stdio.h>
 //global vars
 char neighbours[NumNeighbours] = {0};//all set to 0
-char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
+char twohops[NumNeighbours] = {0}; //list of nodes two hops away
 char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 char oldchecksumrecieved[NumOldPackets] = {0};
 /*
@@ -137,12 +138,12 @@ void sendHello(){
 	}
 	packet[13] = 0xcd;
 	packet[14] = 0x69;
-	char destination = 0;
+	//char destination = 0xFF; //this is to flood a packet
 	int PacketLength = strlen(packet);
 	put_hex(packet[15],1);
 	put_string("h packet length: "); put_number(PacketLength); put_string("\r\n");
 	put_string("passing to DLL\r\n");
-	SendPacket(destination, packet);
+	SendPacket(DLLFLOOD, packet);
 	put_string("returning from DLL\r\n");
 	put_string("hello sent\r\n");
 	return;
@@ -167,6 +168,8 @@ void sendNeighbours(){
 	packet[neighbourTableSize+6] = (char)((fullcrc & 0xFF00) >> 8);
 	packet[neighbourTableSize+7] = (char)(fullcrc & 0x00FF);
 	//put_char(packet[neighbourTableSize+6]);
+
+	SendPacket(DLLFLOOD, packet);
 	put_string(packet);
 	put_string("\r\n");
 	put_string("done\r\n");

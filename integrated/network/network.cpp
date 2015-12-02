@@ -151,11 +151,11 @@ void sendHello(){
 void sendNeighbours(){
 	put_string("sending neighbours\r\n");
 	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
-	char 	packet[neighbourTableSize+7];
+	char 	packet[neighbourTableSize+8] = {'0'};
 	packet[0] = Control1Neighbour;
-	packet[1] = '0'; //dont care
+	packet[1] = 'X'; //dont care
 	packet[2] = SCRADD;
-	packet[3] = '0'; //dont care
+	packet[3] = 'X'; //dont care
 	packet[4] = (char)(neighbourTableSize & 0x00FF);
 
 	for(int i=5;i<(neighbourTableSize+5);i++){
@@ -164,14 +164,17 @@ void sendNeighbours(){
 	
 	uint16_t fullcrc = calcrc(packet, neighbourTableSize+5);
 
-	packet[neighbourTableSize+5] = (char)((fullcrc & 0xFF00) >> 8);
-	packet[neighbourTableSize+6] = (char)(fullcrc & 0x00FF);
+	packet[neighbourTableSize+6] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[neighbourTableSize+7] = (char)(fullcrc & 0x00FF);
 	//put_char(packet[neighbourTableSize+6]);
 	put_string(packet);
 	put_string("\r\n");
 	put_string("done\r\n");
 
 	return;
+}
+void processDoubleHop(){
+	
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){
@@ -262,8 +265,11 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	if(singleHopFlag==1){
 		packet[1] = 'S';
 	}
+	else if(doubleHopFlag==1){
+		packet[1] = 'D';
+	}
 	else{
-		packet[1] = 'X';
+		packet[1] = 'F';
 	}
 	
 	packet[2] = SCRADD;

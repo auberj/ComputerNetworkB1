@@ -120,6 +120,7 @@ void sendHello(){
 	put_hex(packet[15],1);
 	put_string("h packet length: "); put_number(PacketLength); put_string("\r\n");
 	put_string("passing to DLL\r\n");
+	put_string(packet);put_string("\r\n");
 	SendPacket(DLLFLOOD, packet);
 	put_string("returning from DLL\r\n");
 	put_string("hello sent\r\n");
@@ -146,6 +147,7 @@ void sendNeighbours(){
 	packet[NumNeighbours+7] = (char)(fullcrc & 0x00FF);
 	//put_char(packet[NumNeighbours+6]);
 	put_string("passing to DLL\r\n");
+	put_string(packet);put_string("\r\n");
 	SendPacket(DLLFLOOD, packet);
 	put_string("return from DLL\r\n");
 	put_string(packet);
@@ -205,6 +207,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 
 	//char packet[MaxPacketLength]; //max packet length in bytes
 	int continueflag = RecievePacket(packet);
+	put_string(packet);put_string("\r\n");
 	
 	if(continueflag==1){
 		PacketLength = strlen(packet);
@@ -343,6 +346,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	packetLength = strlen(packet);
 	put_string("4. packet length: ");put_number(packetLength);put_string("\r\n");
 	put_string("***passing to DLL***\r\n");
+	put_string(packet);put_string("\r\n");
 	SendPacket(dlladdress,packet);
 	put_string("***return from DLL8**\r\n");
 	put_string("\r\nEND SEND SEGMENT\r\n");
@@ -410,6 +414,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 			if(repeatPacketFlag!=1){ //if not trasmitted before
 				put_string("retransmiting.\r\n");
+				put_string(packet);put_string("\r\n");
 				SendPacket(packet[3],packet); //destination address is used here as messages can only be sent 2 hops directly
 			}
 			else{put_string("already retransmitted\r\n");};

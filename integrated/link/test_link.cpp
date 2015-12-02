@@ -13,11 +13,11 @@
 
 #include "../timer/timer.cpp"
 #include "../uart/uart.c"
+#include "../physical/physical.cpp"
 
 #include "DataLink.h"
 #include "link.cpp"
-#include "rfm12.h"
-#include "rfm12.cpp"
+//#include "../physical/rfm12.h"
 
 //#include "link/timer/timer.cpp"
 //#include "link_dummy/link.cpp"
@@ -42,7 +42,19 @@ int main()
     put_string("\r\n\r\n\r\n\r\nInitialising...");
 
     //send();
-    receive();
+    //receive();
+
+    char test[50] = "this is a long string which will be split";
+    struct frame frames[FRAMECOUNT];
+    int count = makeframe(&frames, BROADCAST, test, 0);
+    struct frame receivestuff;
+    for(int i = 0; i < count; i++) {
+        put_string("\r\nBeforeDecode: ");
+        put_string(frames[i].frame);
+        decode_frame(&receivestuff, frames[i].frame);
+        put_string("\r\ndecoded data: ");
+        put_string(receivestuff.data);
+    }
     
 
 }

@@ -3,7 +3,7 @@
 #define TIMEOUTMILLIS 1000 //milliseconds for timeout
 
 int SendData(char dest, char* sdata);
-int RecieveData(char source, char* rdata);
+int RecieveData(char* source, char* rdata, uint8_t messageflag);
 //uint16_t calcrc(char *ptr, int count);
 void display_segment(char* segment);
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
@@ -79,66 +79,66 @@ int SendData(char dest, char* sdata)
 	return 0;
 };
 
-int RecieveData(char* source, char* rdata)
+int RecieveData(char* source, char* rdata, uint8_t* rmessageflag)
 {
     int receiveflag = 0;
+    char segment[MAXMESSAGELENGTH+8] = {'\0'};
+    uint8_t encrypted, flag1, flag2;
+    uint8_t segmentnumber, segmenttotal;
+    uint16_t crc = 0;
 
-    receiveflag = RecieveSegment(source, rdata);
+    receiveflag = RecieveSegment(source, segment);
 
-    if ((millis() > 5000) && (millis() < 5500)) //This is dummy received data representing Hello World!
+    if (millis() > 2000); //This is dummy received data representing Hello World!
     {
-        rdata[0] = 0b10000000;
-        rdata[1] = 0b01000001;
-        rdata[2] = 0b11111111;
-        rdata[3] = 0b11111111;
-        rdata[4] = 0b00001100;
-        rdata[5] = 0b01001000;
-        rdata[6] = 0b01100101;
-        rdata[7] = 0b01101100;
-        rdata[8] = 0b01101100;
-        rdata[9] = 0b01101111;
-        rdata[10] = 0b00100000;
-        rdata[11] = 0b01010111;
-        rdata[12] = 0b01101111;
-        rdata[13] = 0b01110010;
-        rdata[14] = 0b01101100;
-        rdata[15] = 0b01100100;
-        rdata[16] = 0b00100001;
-        rdata[17] = 0b10011000;
-        rdata[18] = 0b11100011;
+        segment[0] = 0b10000000;
+        segment[1] = 0b01000001;
+        segment[2] = 0b11111111;
+        segment[3] = 0b11111111;
+        segment[4] = 0b00001100;
+        segment[5] = 0b01001000;
+        segment[6] = 0b01100101;
+        segment[7] = 0b01101100;
+        segment[8] = 0b01101100;
+        segment[9] = 0b01101111;
+        segment[10] = 0b00100000;
+        segment[11] = 0b01010111;
+        segment[12] = 0b01101111;
+        segment[13] = 0b01110010;
+        segment[14] = 0b01101100;
+        segment[15] = 0b01100100;
+        segment[16] = 0b00100001;
+        segment[17] = 0b10011000;
+        segment[18] = 0b11100011;
         *source = 'D';
         receiveflag = 1;
     }
 
-    if (receiveflag)
+    if (receiveflag) //if something has been received
     {
-        display_segment(rdata);
+        uint8_t segmentlength = strlen(segment);
+        ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
+
         put_string("\r\n");
+        put_number(strlen(segment));
+        put_string(" byte long segment from ");
+        put_char(*source);
+        put_string(" received.");
+        display_segment(segment);
+        put_string("\r\n");
+
+        SendSegment(source, segment); //Acknowledge the segment
+        //TODO read flags properly
+        //TODO check segment valid
+
+        //todo receive flag = 2 if message incomplete
+        copyin(rdata, segment, 0, segmentlength-7, 5);
+        *rmessageflag = segmenttotal - segmentnumber;
     }
     
+
     return receiveflag;
 }
-
-//To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html
-// uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
-// {
-//     int  crc;
-//     char i;
-//     crc = 0;
-//     while (--count >= 0)
-//     {
-//         crc = crc ^ (int) *ptr++ << 8;
-//         i = 8;
-//         do
-//         {
-//             if (crc & 0x8000)
-//                 crc = crc << 1 ^ 0x1021;
-//             else
-//                 crc = crc << 1;
-//         } while(--i);
-//     }
-//     return (crc);
-// }
 
 void display_segment(char* segment)
 {
@@ -253,8 +253,6 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
     put_number(elapsedtime);
     put_string("\r");
 
-    //TODO add function that checks if received source is same as destination
-
     while(elapsedtime <= TIMEOUTMILLIS)
     {
         elapsedtime = millis() - stime;
@@ -262,13 +260,16 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
         for (i = 0; i < MAXMESSAGELENGTH; i++)
             receivedsegment[i] = '\0';
 
-        RecieveData(&source, receivedsegment);
+        RecieveSegment(&source, receivedsegment);
 
         if (strlen(receivedsegment)) //If anything is actually there
         {
             put_string("\r\n\r\nReceiving segment...");
             display_segment(receivedsegment);
             //put_string("\r\n");
+
+            //TODO add function that checks if received source is same as destination
+
             for (i = 0; i < strlen(segment); i++)
                 if (segment[i] != receivedsegment[i])
                     errorflag = 1;

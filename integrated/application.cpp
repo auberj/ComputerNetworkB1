@@ -43,7 +43,6 @@ int main()
     while(1){
         char dest, source;
         char mode;
-        char rmessageflag;
 
         char temp = '\0'; //temporary character for receiving over uart
         char message[1000] = {0};
@@ -120,18 +119,28 @@ int main()
 
         else if (mode == 'R')
         {
+            uint8_t rmessageflag = 0; //0 if end of message. 1 if stuff still to come
+            uint8_t tempflag = 0; //0 if nothing received, 1 if something received
+
             while(1)
             {
-                rmessageflag = RecieveData(&source, message);
-                if (rmessageflag)
+                tempflag = RecieveData(&source, message, &rmessageflag);
+                if (tempflag == 1) //if something has been received
                 {
-                    put_string("\r\n");
-                    put_number(strlen(message));
-                    put_string(" character long message from ");
-                    put_char(source);
-                    put_string(" reads: \r\n");
-                    put_string(message);
-                    return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
+                    if (rmessageflag == 0)
+                    {
+                        put_string("\r\n");
+                        put_number(strlen(message));
+                        put_string(" character long message from ");
+                        put_char(source);
+                        put_string(" reads: \r\n");
+                        put_string(message);
+                        return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
+                    }
+                    else
+                    {
+                        put_string("\r\nWaiting for next segment\r\n");
+                    }
                 } 
             }
         }

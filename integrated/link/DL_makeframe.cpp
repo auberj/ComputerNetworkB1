@@ -102,7 +102,7 @@ void setaddress(struct frame (*vals)[FRAMECOUNT], char address) {
     int j;
     for(i = 0; i < FRAMECOUNT; i++) {
         if((*vals)[i].length[0]) {
-            (*vals)[i].address[0] = THISDEVICE;
+            (*vals)[i].address[0] = callsign;
             (*vals)[i].address[1] = address;
             (*vals)[i].address[ADDRESSLEN] = '\0';
         }

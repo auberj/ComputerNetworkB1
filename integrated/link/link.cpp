@@ -171,6 +171,7 @@ int RecievePacket(char* Rpacket) {
         int timeout = millis() + 1000;
         while(!Received_Final_frame && (millis() < timeout)){
             //int Rframe_len;
+            put_string("Trying to receive data")
             if (rfm12_rx_status() == STATUS_COMPLETE) {
                 bufptr = rfm12_rx_buffer();
                 put_string("Raw data received: ");

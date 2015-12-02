@@ -58,7 +58,7 @@ int main()
 
         temp = 0;
 
-        put_string("\r\n\r\nSend or receive ('S' or 'R'): ");
+        put_string("\r\nSend or receive ('S' or 'R'): ");
         while(temp != '\r')
         {
             temp = get_char();
@@ -79,7 +79,7 @@ int main()
 
         if (mode == 'S')
         {
-            put_string("\r\n\r\nEnter destination: ");
+            put_string("\r\nEnter destination: ");
             while(temp != '\r')
             {
                 temp = get_char();
@@ -98,7 +98,7 @@ int main()
 
             temp = 0;
 
-            put_string("\r\n\r\nEnter message: ");
+            put_string("\r\nEnter message: ");
 
             while(temp != '\r')
             {
@@ -118,7 +118,7 @@ int main()
                 _delay_ms(1);
             }
 
-            put_string("\r\n");
+            put_string("\r\n\r\n");
             put_number(strlen(message));
             put_string(" character long message reads: \r\n");
             put_string(message);

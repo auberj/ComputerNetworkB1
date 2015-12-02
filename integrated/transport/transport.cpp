@@ -55,13 +55,14 @@ int SendData(char dest, char* sdata)
         segment[loop][messagelength+5] = crcbits >> 8;
         segment[loop][messagelength+6] = crcbits & 0x00FF;
 
+        put_string("\r\nSending segment to ");
+        put_char(dest);
         display_segment(segment[loop]);
         put_string("\r\n");
 
         while(i)
         {
-            put_string("\r\n\r\nSending segment to ");
-            put_char(dest);
+            
             SendSegment(dest, segment[loop]);
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
             i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again

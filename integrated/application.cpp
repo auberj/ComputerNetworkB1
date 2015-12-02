@@ -58,6 +58,25 @@ int main()
 
         temp = 0;
 
+        put_string("\r\n\r\nEnter your callsign: ");
+        while(temp != '\r')
+        {
+            temp = get_char();
+            if (temp >= 32 && temp <= 126)
+            {
+                put_char(temp);
+                callsign = temp;
+            }
+            else if ((temp == 8) || (temp == 127)) //Backspace or delete
+            {
+                put_char(temp);
+                callsign = 0;
+            }
+            _delay_ms(1);
+        }
+
+        temp = 0;
+
         if (mode == 'S')
         {
             put_string("\r\n\r\nEnter destination: ");
@@ -112,23 +131,6 @@ int main()
         {
             uint8_t rmessageflag = 0; //0 if end of message. 1 if stuff still to come
             uint8_t tempflag = 0; //0 if nothing received, 1 if something received
-
-            put_string("\r\n\r\nEnter your callsign: ");
-            while(temp != '\r')
-            {
-                temp = get_char();
-                if (temp >= 32 && temp <= 126)
-                {
-                    put_char(temp);
-                    callsign = temp;
-                }
-                else if ((temp == 8) || (temp == 127)) //Backspace or delete
-                {
-                    put_char(temp);
-                    callsign = 0;
-                }
-                _delay_ms(1);
-            }
 
             //TODO pass callsign down layers
 

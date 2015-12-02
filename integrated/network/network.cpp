@@ -30,6 +30,7 @@
 char neighbours[NumNeighbours] = {0};//all set to 0
 char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
 char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
+char oldchecksumrecieved[NumOldPackets] = {0};
 /*
  int main(){
 	init_lcd();
@@ -315,6 +316,14 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		case 3: //packet is a message for me
 
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
+			repeatPacketFlag = checkRecievedPacket(packet)
+			if(repeatPacketFlag==0){ //if not recieved before
+				returnval = 1;
+			}
+			else {
+				returnval = 0;
+				put_string("Packet dropped\r\n");
+			}
 			put_string("\r\n");
 			put_number(strlen(rsegment));
 			put_string("\r\n");
@@ -410,7 +419,7 @@ int	checkRepeatPacket(char* packet){ //for sending packets in a flood
 	return duplicateFlag;
 }
 
-int	checkRecievedPacket(char* packet){ //for sending packets in a flood
+int	checkRecievedPacket(char* packet){ //for recieving a flooded packet
 	put_string("Checking if packet has already been recieved.\r\n");
 
 	int PacketLength = strlen(packet);
@@ -423,17 +432,17 @@ int	checkRecievedPacket(char* packet){ //for sending packets in a flood
 	int duplicateFlag = 0;
 
 	for(int i=0;i<NumOldPackets;i=i+2){
-		if((oldchecksum[i]==checksum1)&&(oldchecksum[i+1]==checksum2)){
+		if((oldchecksumrecieved[i]==checksum1)&&(oldchecksumrecieved[i+1]==checksum2)){
 			duplicateFlag = 1; //already recently transmitted this packet
-			put_string("already transmitted,");
+			put_string("already recieved");
 		}
 	}
 	if(duplicateFlag==0){ //if no duplcates found
 		for(int i=NumOldPackets;i>2;i--){ //make space in the table
-			oldchecksum[i]=oldchecksum[i-1];
+			oldchecksumrecieved[i]=oldchecksumrecieved[i-1];
 		}
-		oldchecksum[0]=checksum1; //load new checksum into the table
-		oldchecksum[1]=checksum2;
+		oldchecksumrecieved[0]=checksum1; //load new checksum into the table
+		oldchecksumrecieved[1]=checksum2;
 		put_string("cheksum stored,");
 	}
 	put_string("END.\r\n");

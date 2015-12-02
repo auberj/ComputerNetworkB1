@@ -410,7 +410,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 			if(repeatPacketFlag!=1){ //if not trasmitted before
 				put_string("retransmiting.\r\n");
-				SendPacket(packet[3],packet);
+				SendPacket(packet[3],packet); //destination address is used here as messages can only be sent 2 hops directly
 			}
 			else{put_string("already retransmitted\r\n");};
 		break;

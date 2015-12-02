@@ -348,7 +348,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("***passing to DLL***\r\n");
 	put_string(packet);put_string("\r\n");
 	SendPacket(dlladdress,packet);
-	put_string("***return from DLL8**\r\n");
+	put_string("***return from DLL***\r\n");
 	put_string("\r\nEND SEND SEGMENT\r\n");
 	return 0;
 }

@@ -82,28 +82,28 @@ int SendData(char dest, char* sdata)
 int RecieveData(char* source, char* rdata)
 {
     return RecieveSegment(source, rdata);
-    // if (millis() > 10000) //This is dummy received data representing Hello World!
-    // {
-        // rdata[0] = 0b10000000;
-        // rdata[1] = 0b01000001;
-        // rdata[2] = 0b11111111;
-        // rdata[3] = 0b11111111;
-        // rdata[4] = 0b00001100;
-        // rdata[5] = 0b01001000;
-        // rdata[6] = 0b01100101;
-        // rdata[7] = 0b01101100;
-        // rdata[8] = 0b01101100;
-        // rdata[9] = 0b01101111;
-        // rdata[10] = 0b00100000;
-        // rdata[11] = 0b01010111;
-        // rdata[12] = 0b01101111;
-        // rdata[13] = 0b01110010;
-        // rdata[14] = 0b01101100;
-        // rdata[15] = 0b01100100;
-        // rdata[16] = 0b00100001;
-        // rdata[17] = 0b10011000;
-        // rdata[18] = 0b11100011;
-    // }
+    if (millis() > 10000) //This is dummy received data representing Hello World!
+    {
+        rdata[0] = 0b10000000;
+        rdata[1] = 0b01000001;
+        rdata[2] = 0b11111111;
+        rdata[3] = 0b11111111;
+        rdata[4] = 0b00001100;
+        rdata[5] = 0b01001000;
+        rdata[6] = 0b01100101;
+        rdata[7] = 0b01101100;
+        rdata[8] = 0b01101100;
+        rdata[9] = 0b01101111;
+        rdata[10] = 0b00100000;
+        rdata[11] = 0b01010111;
+        rdata[12] = 0b01101111;
+        rdata[13] = 0b01110010;
+        rdata[14] = 0b01101100;
+        rdata[15] = 0b01100100;
+        rdata[16] = 0b00100001;
+        rdata[17] = 0b10011000;
+        rdata[18] = 0b11100011;
+    }
 }
 
 //To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html

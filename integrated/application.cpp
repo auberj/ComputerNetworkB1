@@ -1,25 +1,16 @@
 #define __PLATFORM_AVR__
 
+char callsign;
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <string.h>
 #include <stdio.h>
 
-//#include "lcd/avrlcd.h"
-//#include "lcd/font.c"
-//#include "lcd/ili934x.c"
-//#include "lcd/lcd.c"
-
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
-// #include "link/DataLink.h"
-// #include "link/rfm12.h"
-// #include "link/rfm12.cpp"
-
-//#include "link/timer/timer.cpp"
-//#include "link_dummy/link.cpp"
 #include "physical/physical.cpp"
 #include "link/link.cpp"
 #include "network/network.cpp"
@@ -121,6 +112,25 @@ int main()
         {
             uint8_t rmessageflag = 0; //0 if end of message. 1 if stuff still to come
             uint8_t tempflag = 0; //0 if nothing received, 1 if something received
+
+            put_string("\r\n\r\nEnter your callsign: ");
+            while(temp != '\r')
+            {
+                temp = get_char();
+                if (temp >= 32 && temp <= 126)
+                {
+                    put_char(temp);
+                    callsign = temp;
+                }
+                else if ((temp == 8) || (temp == 127)) //Backspace or delete
+                {
+                    put_char(temp);
+                    callsign = 0;
+                }
+                _delay_ms(1);
+            }
+
+            //TODO pass callsign down layers
 
             while(1)
             {

@@ -110,8 +110,12 @@ int RecieveData(char* source, char* rdata)
         receiveflag = 1;
     }
 
-
-
+    if (receiveflag)
+    {
+        display_segment(rdata);
+        put_string("\r\n");
+    }
+    
     return receiveflag;
 }
 

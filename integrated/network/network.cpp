@@ -251,7 +251,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 		PacketType = 6;
 	}
 	//put_string("done.\r\n");
-	put_string("\r\nEND GET PACKET\r\n");
+	put_string("\r\nEND GET PACKET. Packet Type: ");put_number(PacketType);put_string("\r\n");
 	return PacketType;
 }
 char calcNextHop(char dest){ //returns the next node to send data to

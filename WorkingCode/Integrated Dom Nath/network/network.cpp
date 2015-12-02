@@ -24,33 +24,15 @@
 
 #define NumOldPackets 20 //the number of old packets to check for retransmission multiplied by 2
 
+//network message frequencies
+#define HELLOFREQ 10
+
 #include "network.h"
 #include <stdio.h>
 //global vars
 char neighbours[NumNeighbours] = {0};//all set to 0
 char twohops[NumNeighbours*NumNeighbours] = {0}; //list of nodes two hops away
 char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
-/*
- int main(){
-	init_lcd();
-    set_orientation(East);
-	//put_string("Initialising...\r\n");
-
-	char source[1] = {0};
-	char segment[20] = {'1','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','i','9',0};
-	
-	//put_string(neighbours);
-	sendHello();
-	RecieveSegment(source,segment);
-
-	SendSegment('N',segment);
-	//sendHello();
-	RecieveSegment(source,segment);
-	//put_string(segment);
-	put_string("\r\n");
-	while(1);
-	return 0;
-}*/
 
 void processHello(char* packet){
 	char 	neighbour[1];
@@ -236,7 +218,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("\r\nBEGIN SEND SEGMENT\r\n");
-
+	int 	sendcounter;
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[MaxPacketLength] = {0}; //only 7 other bits but need a null!
@@ -285,12 +267,18 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	SendPacket(dest,packet);
 	put_string("\r\nEND SEND SEGMENT\r\n");
+	if(sendcounter==HELLOFREQ){
+		sendHello();
+		sendcounter=0;
+	}
+	sendcounter++;
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
 	put_string("\r\nBEGIN RECEIVE SEGMENT\r\n");
 	//create variables
+	int 	recievecounter;
 	char 	packet[MaxPacketLength] = {0}; //assume max length
 	int 	returnval = 0;
 	//int 	packetend = 0;
@@ -304,7 +292,11 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			put_string("packet corrupted, dropped.\r\n");
 		break;
 		case 1: //recieved a HELLO, send one back!
-			sendHello(); //only send this if haven't sent one recently
+			if(recievecounter==HELLOFREQ){
+				sendHello();
+				recievecounter=0;
+			}
+			recievecounter++;
 			processHello(packet);
 		break;
 		case 2: //details neighbours

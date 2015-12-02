@@ -380,8 +380,38 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
 
     return (crc);
 }
-int	checkRepeatPacket(char* packet){
+int	checkRepeatPacket(char* packet){ //for sending packets in a flood
 	put_string("check checksum,");
+
+	int PacketLength = strlen(packet);
+	//put_string("CRP: packet length: "); put_number(PacketLength); put_string("\r\n");
+	char checksum1 = packet[PacketLength-2];
+	char checksum2 = packet[PacketLength-1];
+
+	put_string("Checksum: "); put_hex(checksum1,1); put_string(" "); put_hex(checksum2,1); put_string("\r\n");
+
+	int duplicateFlag = 0;
+
+	for(int i=0;i<NumOldPackets;i=i+2){
+		if((oldchecksum[i]==checksum1)&&(oldchecksum[i+1]==checksum2)){
+			duplicateFlag = 1; //already recently transmitted this packet
+			put_string("already transmitted,");
+		}
+	}
+	if(duplicateFlag==0){ //if no duplcates found
+		for(int i=NumOldPackets;i>2;i--){ //make space in the table
+			oldchecksum[i]=oldchecksum[i-1];
+		}
+		oldchecksum[0]=checksum1; //load new checksum into the table
+		oldchecksum[1]=checksum2;
+		put_string("cheksum stored,");
+	}
+	put_string("END.\r\n");
+	return duplicateFlag;
+}
+
+int	checkRecievedPacket(char* packet){ //for sending packets in a flood
+	put_string("Checking if packet has already been recieved.\r\n");
 
 	int PacketLength = strlen(packet);
 	//put_string("CRP: packet length: "); put_number(PacketLength); put_string("\r\n");

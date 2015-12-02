@@ -29,7 +29,7 @@
 #include <stdio.h>
 //global vars
 char 	neighbours[NumNeighbours] = {0};//all set to 0
-char 	twohops[NumNeighbours][NumNeighbours] = {0}; //list of nodes two hops away [neighbour][2hops]
+char 	twohops[NumNeighbours][NumNeighbours+1] = {0}; //list of nodes two hops away [neighbour][2hops]
 char 	oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 char 	oldchecksumrecieved[NumOldPackets] = {0};
 /*
@@ -146,7 +146,7 @@ void sendHello(){
 	SendPacket(DLLFLOOD, packet);
 	put_string("returning from DLL\r\n");
 	put_string("hello sent\r\n");
-	return;
+	return; //done
 }
 
 void sendNeighbours(){
@@ -168,12 +168,13 @@ void sendNeighbours(){
 	packet[NumNeighbours+6] = (char)((fullcrc & 0xFF00) >> 8);
 	packet[NumNeighbours+7] = (char)(fullcrc & 0x00FF);
 	//put_char(packet[NumNeighbours+6]);
-
+	put_string("passing to DLL\r\n");
 	SendPacket(DLLFLOOD, packet);
+	put_string("return from DLL\r\n");
 	put_string(packet);
 	put_string("\r\n");
 	put_string("END SENDING NEIGHBOURS\r\n");
-	return;
+	return; //done
 }
 void processNeighbours(char* packet){ //processes a packet detailing neighbours (ie, 2 hops away)
 	put_string("PROCESSING 2HOP NEIGHBOURS\r\n");
@@ -186,15 +187,24 @@ void processNeighbours(char* packet){ //processes a packet detailing neighbours 
 	}
 
 	int twohopsrow = 0;
+	int SpaceFlag = 0;
 	for(int i=0;i<NumNeighbours;i++){ //find space in this array
 		if(twohops[i][0]=='0'){
 			twohopsrow = i;
+			SpaceFlag = 1;
 			twohops[i][0] = onehopadd;
-			put_string("1hop neighbour: ");put_char(onehopadd);put_string(" stoerd in: ");put_number(i);
+			put_string("1hop neighbour: ");put_char(onehopadd);put_string(" stoerd in: ");put_number(i);put_string("\r\n");
 			break;
 		}
 	}
-	put_string("PROCESSING 2HOP NEIGHBOURS\r\n");
+	if(SpaceFlag==1){
+		put_string("now putting 2hop neighbours in\r\n");
+		for(int i=0;i<NumNeighbours;i++){
+			twohops[twohopsrow][i+1] = twohoparray[i];
+		}
+		put_string("done putting 2hop neighbours in\r\n");
+	}
+	put_string("END PROCESSING 2HOP NEIGHBOURS\r\n");
 	return;
 }
 void processDoubleHop(char* packet){ //processes a double packet that is not for me
@@ -217,50 +227,78 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	int packetEnd;
 
 	//char packet[MaxPacketLength]; //max packet length in bytes
-	RecievePacket(packet);
+	int continueflag = RecievePacket(packet);
 	
-	PacketLength = strlen(packet);
-	//int PacketLength = packetEnd+1;
-	put_string("packet recieved: ");
-	put_string("packet length: "); put_number(PacketLength); put_string("\r\n");
-	//check packet is intact
-	put_string("Packet Checksum: "); put_hex(packet[PacketLength-2],1); put_string(" "); put_hex(packet[PacketLength-1],1); put_string("\r\n");
+	if(continueflag==1){
+		PacketLength = strlen(packet);
+		//int PacketLength = packetEnd+1;
+		put_string("packet recieved: ");
+		put_string("packet length: "); put_number(PacketLength); put_string("\r\n");
+		//check packet is intact
+		put_string("Packet Checksum: "); put_hex(packet[PacketLength-2],1); put_string(" "); put_hex(packet[PacketLength-1],1); put_string("\r\n");
 
-	uint16_t fullcrc = calcrc(packet, PacketLength-2);
+		uint16_t fullcrc = calcrc(packet, PacketLength-2);
 
-	if((packet[PacketLength-2] != (char)((fullcrc & 0xFF00) >> 8))||(packet[PacketLength-1] != (char)(fullcrc & 0x00FF))){
-		put_string("cheksum failed\r\n");
-		PacketType = 0;
+		if((packet[PacketLength-2] != (char)((fullcrc & 0xFF00) >> 8))||(packet[PacketLength-1] != (char)(fullcrc & 0x00FF))){
+			put_string("cheksum failed\r\n");
+			PacketType = 0;
+		}
+		put_string("Calc Checksum: "); put_hex((char)((fullcrc & 0xFF00) >> 8),1);put_string(" "); put_hex((char)(fullcrc & 0x00FF),1); put_string("...");
+		
+		if(PacketType!=0){
+			char control1 = packet[0];
+			char control2 = packet[1];
+
+			switch (control1){
+				case Control1Hello:
+					PacketType = 1;
+				break;
+				case Control1Neighbour:
+					PacketType = 2;
+				break;
+				case Control1Message:
+					if(packet[3]==SCRADD){
+						PacketType = 3; //message is for me
+					}
+					else if(control2!=Control2SingleMessage){ 
+						PacketType = 4; //message is not a single hop and not for me
+					}
+					else{ PacketType = 5;} //drop the packet
+					
+				break;
+			}
+		}
+		
 	}
-	put_string("Calc Checksum: "); put_hex((char)((fullcrc & 0xFF00) >> 8),1);put_string(" "); put_hex((char)(fullcrc & 0x00FF),1); put_string("...");
-	
-	if(PacketType!=0){
-		char control1 = packet[0];
-		char control2 = packet[1];
-
-		switch (control1){
-			case Control1Hello:
-				PacketType = 1;
-			break;
-			case Control1Neighbour:
-				PacketType = 2;
-			break;
-			case Control1Message:
-				if(packet[3]==SCRADD){
-					PacketType = 3; //message is for me
-				}
-				else if(control2!=Control2SingleMessage){ 
-					PacketType = 4; //message is not a single hop and not for me
-				}
-				else{ PacketType = 5;} //drop the packet
-				
+	else{
+		PacketType = 6;
+	}
+	//put_string("done.\r\n");
+	put_string("\r\nEND GET PACKET\r\n");
+	return PacketType;
+}
+char calcNextHop(char* dest){ //returns the next node to send data to
+	put_string("\r\nBEGIN CALC NEXT HOP\r\n");
+	char 	nextHop;
+	int 	foundHopFlag = 0;
+	for(int i=0;i<NumNeighbours;i++){
+		for(int j=1;j<(NumNeighbours+1);j++){
+			if(twohops[i][j]==dest){
+				nextHop = twohops[i][0];
+				foundHopFlag = 1;
+				break;
+			}
+			
+		}
+		if(foundHopFlag==1){
 			break;
 		}
 	}
-	
-	put_string("done.\r\n");
-	put_string("\r\nEND GET PACKET\r\n");
-	return PacketType;
+	if(foundHopFlag==0){ //if i cant work it out then flood the packet
+		nextHop = 0xFF;
+	}
+	put_string("\r\nEND CALC NEXT HOP\r\n");
+	return nextHop;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
@@ -297,6 +335,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	else if(doubleHopFlag==1){
 		packet[1] = 'D';
 		put_string("double hop flag\r\n");
+		dlladdress = calcNextHop(dest);
 		// TO DO:
 		// -set up to know what the next hop is 
 
@@ -397,6 +436,9 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		case 5:
 			//drop the packet
 			put_string("Single hop message not for me...dropped.\r\n");
+		case 6:
+			put_string("no packet.\r\n");
+		break;
 		break;
 	}
 	

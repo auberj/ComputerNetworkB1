@@ -33,29 +33,13 @@ int SendData(char dest, char* sdata)
 
     while (loop < numberofsegments)
     {
-        put_string("\r\nLoop:");
-        put_number(loop);
-        put_char('!');
         i = 1;
         for (j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
 
         ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
-        segment[loop][2] = 100; //Source port
-        segment[loop][3] = 255; //Dest port
-
-        // j = 2;
-
-        // put_hex(segment[loop][j], 1);
-        // put_char('.');
-
-        // for (j = 0; j < 28; j++)
-        // {
-        //     put_hex(segment[loop][j], 1);
-        //     put_char('.');
-        // }
-
-        // put_number(segment[loop][2]);
+        segment[loop][2] = 0xFF; //Source port
+        segment[loop][3] = 0xFF; //Dest port
 
         if (loop != numberofsegments - 1)
             messagelength = MAXMESSAGELENGTH;
@@ -74,7 +58,8 @@ int SendData(char dest, char* sdata)
 
         while(i)
         {
-            put_string("\r\n\r\nSending segment");
+            put_string("\r\n\r\nSending segment to ");
+            put_char(dest);
             SendSegment(dest, segment[loop]);
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
             i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again

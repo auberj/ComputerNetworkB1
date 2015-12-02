@@ -41,10 +41,49 @@ int main()
     put_string("\r\n\r\n\r\n\r\nInitialising...");
     
     while(1){
-        char dest = 'N';
+        char dest;
+        char mode;
         char temp = '\0';
         char message[1000] = {0};
         uint16_t i = 0;
+
+        put_string("\r\n\r\nSend or receive ('S' or 'R'): ");
+        while(temp != '\r')
+        {
+            temp = get_char();
+            if (temp >= 32 && temp <= 126)
+            {
+                put_char(temp);
+                mode = temp;
+            }
+            else if ((temp == 8) || (temp == 127)) //Backspace or delete
+            {
+                put_char(temp);
+                mode = 0;
+            }
+            _delay_ms(1);
+        }
+
+        temp = 0;
+
+        put_string("\r\n\r\nEnter destination: ");
+        while(temp != '\r')
+        {
+            temp = get_char();
+            if (temp >= 32 && temp <= 126)
+            {
+                put_char(temp);
+                dest = temp;
+            }
+            else if ((temp == 8) || (temp == 127)) //Backspace or delete
+            {
+                put_char(temp);
+                dest = 0;
+            }
+            _delay_ms(1);
+        }
+
+        temp = 0;
 
         put_string("\r\n\r\nEnter message: ");
 
@@ -68,13 +107,21 @@ int main()
 
         //get message over UART...
         //Above message is 107 characters
-        put_string("\r\n");
-        put_number(strlen(message));
-        put_string(" character long message reads: \r\n");
-        put_string(message);
+        if (mode == 'S')
+        {
+            put_string("\r\n");
+            put_number(strlen(message));
+            put_string(" character long message reads: \r\n");
+            put_string(message);
 
-        int error = SendData(dest, message);
-        if (error) put_string("Error sending message");
+            int error = SendData(dest, message);
+            if (error) put_string("Error sending message");
+        }
+        else if (mode == 'R')
+        {
+            RecieveData(char* source, char* rdata);
+        }
+        
 
         //while(1);
        

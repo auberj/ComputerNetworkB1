@@ -8,7 +8,7 @@
 #define Control2SingleMessage 'S'
 
 //source address (my address)
-#define SCRADD 'N'
+//#define SCRADD 'N'
 
 #define MaxSegmentLength 0x79
 

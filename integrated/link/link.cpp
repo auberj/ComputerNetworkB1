@@ -313,7 +313,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
                 retval |= 1 << 1;
                 if(framedata->data[0] == START) {
                     retval |= 1<< 3;
-                    strcpy(framedata->data, framedata->data);
+                    //strcpy(framedata->data, framedata->data);
 
                 }
                 if(framedata->data[strlen(framedata->data)-1] == END) {

@@ -87,6 +87,8 @@ int SendPacket(char dest, char* Spacket) {
         char test[FRAMELEN] = "0123456789012345678901234";
         while(!send_complete) {
             ///////////////////send//////////////////////
+            put_string("\r\n Send Frame: ");
+            put_string(data[i].frame);
             rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
             for (uint8_t j = 0; j < 100; j++)   
             {   
@@ -177,8 +179,8 @@ int RecievePacket(char* Rpacket) {
                 }
                 Rframe[rfm12_rx_len()] = '\0';
                 rfm12_rx_clear();
-                // put_string("\r\nRframe: ");
-                // put_string(Rframe);
+                put_string("\r\nRframe: ");
+                put_string(Rframe);
                 //strcpy(ackstr, Rframe);
                 decode = Nrframe[i];
                 int Rframe_check = decode_frame(&decode, Rframe);

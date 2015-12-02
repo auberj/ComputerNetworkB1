@@ -40,8 +40,8 @@ int SendData(char dest, char* sdata)
         //TODO write encryption
 
         ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
-        segment[loop][2] = 0xFF; //Source port
-        segment[loop][3] = 0xFF; //Dest port
+        segment[loop][2] = 'Z'; //Source port
+        segment[loop][3] = 'Z'; //Dest port
 
         if (loop != numberofsegments - 1)
             messagelength = MAXMESSAGELENGTH;

@@ -10,7 +10,7 @@
 #define Control2SingleMessage 'S'
 
 //source address (my address)
-#define SCRADD 'N'
+//#define callsign 'N'
 #define DLLFLOOD 0xFF
 
 #define MaxSegmentLength 0x79
@@ -126,7 +126,7 @@ void sendHello(){
 	packet[0] = Control1Hello;
 	packet[1] = Control1Hello;
 	//set SRC address
-	packet[2] = SCRADD;
+	packet[2] = callsign;
 	//set DEST address (doesn't matter for HELLO)
 	packet[3] = 0xFF;
 	//set length
@@ -155,7 +155,7 @@ void sendNeighbours(){
 	char 	packet[NumNeighbours+8] = {'0'};
 	packet[0] = Control1Neighbour;
 	packet[1] = 'X'; //dont care
-	packet[2] = SCRADD;
+	packet[2] = callsign;
 	packet[3] = 'X'; //dont care
 	packet[4] = (char)(NumNeighbours);
 
@@ -257,7 +257,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 					PacketType = 2;
 				break;
 				case Control1Message:
-					if(packet[3]==SCRADD){
+					if(packet[3]==callsign){
 						PacketType = 3; //message is for me
 					}
 					else if(control2!=Control2SingleMessage){ 
@@ -348,7 +348,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 		dlladdress = DLLFLOOD;
 	}
 	
-	packet[2] = SCRADD;
+	packet[2] = callsign;
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
 

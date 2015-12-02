@@ -122,7 +122,7 @@ int SendPacket(char dest, char* Spacket) {
                  }
             }
             if(!send_complete) {
-                put_string("\nTIMEOUT\n");
+                put_string("\ncallsign\n");
             }
 
         }
@@ -308,7 +308,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             framedata->data[(int)framedata->length[0]] = 0;
             put_string("\r\nRframe.data: ");
             put_string(framedata->data);
-            if(framedata->address[1] == BROADCAST || framedata->address[1] == THISDEVICE) {
+            if(framedata->address[1] == BROADCAST || framedata->address[1] == callsign) {
                 put_string("\r\nPacket for me!");
                 retval |= 1 << 1;
                 if(framedata->data[0] == START) {

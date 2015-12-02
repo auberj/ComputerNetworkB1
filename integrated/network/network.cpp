@@ -29,7 +29,7 @@
 #include <stdio.h>
 //global vars
 char neighbours[NumNeighbours] = {0};//all set to 0
-char twohops[NumNeighbours] = {0}; //list of nodes two hops away
+char twohops[NumNeighbours][NumNeighbours] = {0}; //list of nodes two hops away
 char oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 char oldchecksumrecieved[NumOldPackets] = {0};
 /*
@@ -56,7 +56,7 @@ char oldchecksumrecieved[NumOldPackets] = {0};
 
 void processHello(char* packet){
 	char 	neighbour[1];
-	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
+	//int 	NumNeighbours = (sizeof(neighbours)/sizeof(neighbours[0]));
 
 	getNeighbourAdd(neighbour, packet);
 
@@ -66,7 +66,7 @@ void processHello(char* packet){
 
 		int duplicateFlag=1;
 		//check array element is not the same as neighbour address and =0
-		for(int i=0;i<neighbourTableSize;i++){
+		for(int i=0;i<NumNeighbours;i++){
 			if(neighbours[i]==neighbour[0]){
 				put_string("duplicate neighbour found, move on.\r\n");
 				duplicateFlag = 0;
@@ -76,7 +76,7 @@ void processHello(char* packet){
 			put_string("no duplicate neighbour found\r\n");
 			int neighbourSpace;
 			int SpaceFlag=0;
-			for(int i=0;i<neighbourTableSize;i++){
+			for(int i=0;i<NumNeighbours;i++){
 				//find space for neighbour in table
 				if(neighbours[i]==0){
 					put_string("space for neighbour\r\n");
@@ -84,7 +84,7 @@ void processHello(char* packet){
 					SpaceFlag = 1;
 					break;
 				}
-				if((i==neighbourTableSize)&&(SpaceFlag==0)){
+				if((i==NumNeighbours)&&(SpaceFlag==0)){
 					put_string("no space for neighbour\r\n");
 				}
 			}
@@ -103,7 +103,7 @@ void processHello(char* packet){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gatherNeighbours(){
 //calculate number of elements in neighbour table
-	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
+	//int 	NumNeighbours = (sizeof(neighbours)/sizeof(neighbours[0]));
 	char 	packet[MaxPacketLength];
 	//get responses, check not duplicates 
 	char 	neighbour[1];
@@ -151,23 +151,23 @@ void sendHello(){
 
 void sendNeighbours(){
 	put_string("sending neighbours\r\n");
-	int 	neighbourTableSize = (sizeof(neighbours)/sizeof(neighbours[0]));
-	char 	packet[neighbourTableSize+8] = {'0'};
+	
+	char 	packet[NumNeighbours+8] = {'0'};
 	packet[0] = Control1Neighbour;
 	packet[1] = 'X'; //dont care
 	packet[2] = SCRADD;
 	packet[3] = 'X'; //dont care
-	packet[4] = (char)(neighbourTableSize & 0x00FF);
+	packet[4] = (char)(NumNeighbours);
 
-	for(int i=5;i<(neighbourTableSize+5);i++){
+	for(int i=5;i<(NumNeighbours+5);i++){
 		packet[i] = neighbours[i-5];
 	}
 	
-	uint16_t fullcrc = calcrc(packet, neighbourTableSize+5);
+	uint16_t fullcrc = calcrc(packet, NumNeighbours+5);
 
-	packet[neighbourTableSize+6] = (char)((fullcrc & 0xFF00) >> 8);
-	packet[neighbourTableSize+7] = (char)(fullcrc & 0x00FF);
-	//put_char(packet[neighbourTableSize+6]);
+	packet[NumNeighbours+6] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[NumNeighbours+7] = (char)(fullcrc & 0x00FF);
+	//put_char(packet[NumNeighbours+6]);
 
 	SendPacket(DLLFLOOD, packet);
 	put_string(packet);
@@ -176,8 +176,9 @@ void sendNeighbours(){
 
 	return;
 }
-void processDoubleHop(){
-	
+void processDoubleHop(char* packet){
+	int PacketLength = strlen(packet);
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){
@@ -252,7 +253,8 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	//char 	packet[segmentLength+8]; //only 7 other bits but need a null!
 
-	int singleHopFlag = 0;
+	int 	singleHopFlag = 0;
+	char 	dlladdress;
 
 	packetLength = strlen(packet);
 	put_string("2. packet length: ");put_number(packetLength);put_string("\r\n");
@@ -270,6 +272,9 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	}
 	else if(doubleHopFlag==1){
 		packet[1] = 'D';
+		// TO DO:
+		// -set up to know what the next hop is 
+
 	}
 	else{
 		packet[1] = 'F';

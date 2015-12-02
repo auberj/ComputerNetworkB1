@@ -127,7 +127,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag)
         display_segment(segment);
         put_string("\r\n");
 
-        SendSegment(source, segment); //Acknowledge the segment
+        SendSegment(*source, segment); //Acknowledge the segment
         //TODO read flags properly
         //TODO check segment valid
 

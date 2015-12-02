@@ -254,6 +254,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	//char 	packet[segmentLength+8]; //only 7 other bits but need a null!
 
 	int 	singleHopFlag = 0;
+	int 	doubleHopFlag = 0;
 	char 	dlladdress;
 
 	packetLength = strlen(packet);
@@ -330,7 +331,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 		case 3: //packet is a message for me
 
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
-			repeatPacketFlag = checkRecievedPacket(packet)
+			repeatPacketFlag = checkRecievedPacket(packet);
 			if(repeatPacketFlag==0){ //if not recieved before
 				returnval = 1;
 			}

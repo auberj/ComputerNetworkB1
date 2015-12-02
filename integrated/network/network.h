@@ -1,7 +1,7 @@
 //network.h
 // https://docs.google.com/document/d/1VcHl5GLs-VoUbCynElk380cPVeAX4LO5zO68r2fjCKA/edit
 
-//#include "../link/link.cpp"
+#include "../link/link.cpp"
 
 void 	gatherNeighbours();
 void 	sendHello();

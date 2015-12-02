@@ -174,7 +174,7 @@ int RecievePacket(char* Rpacket) {
             if (rfm12_rx_status() == STATUS_COMPLETE) {
                 bufptr = rfm12_rx_buffer();
                 put_string("Raw data received: ");
-                put_string(bufptr);
+                put_string((char*)bufptr);
                 for(uint8_t k = 0; k < (rfm12_rx_len()); k++) {
                     Rframe[k] = bufptr[k];
                 }

@@ -84,7 +84,6 @@ int SendPacket(char dest, char* Spacket) {
 
     for(i = 0; i < no_frames; i++) {
         send_complete = 0;
-        char test[FRAMELEN] = "0123456789012345678901234";
         while(!send_complete) {
             ///////////////////send//////////////////////
             put_string("\r\n Send Frame: ");

@@ -277,7 +277,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	put_string("\r\nEND GET PACKET\r\n");
 	return PacketType;
 }
-char calcNextHop(char* dest){ //returns the next node to send data to
+char calcNextHop(char dest){ //returns the next node to send data to
 	put_string("\r\nBEGIN CALC NEXT HOP\r\n");
 	char 	nextHop;
 	int 	foundHopFlag = 0;

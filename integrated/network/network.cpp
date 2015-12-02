@@ -176,25 +176,30 @@ void sendNeighbours(){
 	return;
 }
 void processNeighbours(char* packet){ //processes a packet detailing neighbours (ie, 2 hops away)
+	put_string("PROCESSING 2HOP NEIGHBOURS\r\n");
 	int 	PacketLength = strlen(packet);
-	char 	1hopadd = packet[2]; //the neighbour that sent the packet
-	char 	2hoparray[NumNeighbours];
+	char 	onehopadd = packet[2]; //the neighbour that sent the packet
+	char 	twohoparray[NumNeighbours];
 
 	for(int i=0;i<NumNeighbours;i++){
-		2hoparray[i] = packet[i+5]; //2hoparray now contains details of neighbour's neighbours
+		twohoparray[i] = packet[i+5]; //twohoparray now contains details of neighbour's neighbours
 	}
 
 	int twohopsrow = 0;
 	for(int i=0;i<NumNeighbours;i++){ //find space in this array
 		if(twohops[i][0]=='0'){
 			twohopsrow = i;
+			twohops[i][0] = onehopadd;
+			put_string("1hop neighbour: ");put_char(onehopadd);put_string(" stoerd in: ");put_number(i);
 			break;
 		}
 	}
+	put_string("PROCESSING 2HOP NEIGHBOURS\r\n");
+	return;
 }
 void processDoubleHop(char* packet){ //processes a double packet that is not for me
 	int 	PacketLength = strlen(packet);
-
+	return;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void getNeighbourAdd(char* neighbourADD, char* packet){

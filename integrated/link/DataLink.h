@@ -2,12 +2,12 @@
 #ifndef __DATALINK_H__
 #define __DATALINK_H__
 
-#include "lcd/font.c"
-#include "lcd/ili934x.c"
-#include "lcd/lcd.c"
-#include "lcd/avrlcd.h"
+// #include "lcd/font.c"
+// #include "lcd/ili934x.c"
+// #include "lcd/lcd.c"
+// #include "lcd/avrlcd.h"
 
-#include "rfm12.h"
+//#include "rfm12.h"
 
 //Size of each section of the frame
 #define HEADERLEN 1

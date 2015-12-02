@@ -1,8 +1,8 @@
 
 #include "DataLink.h"
-#include <stdio.h>
-#include <avr/io.h>
-#include <string.h>
+// #include <stdio.h>
+// #include <avr/io.h>
+// #include <string.h>
 
 
 void setchecksum(struct frame (*vals)[FRAMECOUNT]) {

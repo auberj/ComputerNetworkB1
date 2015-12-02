@@ -81,8 +81,11 @@ int SendData(char dest, char* sdata)
 
 int RecieveData(char* source, char* rdata)
 {
-    return RecieveSegment(source, rdata);
-    if (millis() > 10000) //This is dummy received data representing Hello World!
+    int receiveflag = 0;
+
+    receiveflag = RecieveSegment(source, rdata);
+
+    if ((millis() > 5000) && (millis() < 5500)) //This is dummy received data representing Hello World!
     {
         rdata[0] = 0b10000000;
         rdata[1] = 0b01000001;
@@ -103,7 +106,13 @@ int RecieveData(char* source, char* rdata)
         rdata[16] = 0b00100001;
         rdata[17] = 0b10011000;
         rdata[18] = 0b11100011;
+        *source = 'D';
+        receiveflag = 1;
     }
+
+
+
+    return receiveflag;
 }
 
 //To check values use http://www.lammertbies.nl/comm/info/crc-calculation.html

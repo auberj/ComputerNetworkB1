@@ -108,7 +108,7 @@ int main()
                 }
                 _delay_ms(1);
             }
-            
+
             put_string("\r\n");
             put_number(strlen(message));
             put_string(" character long message reads: \r\n");
@@ -131,6 +131,7 @@ int main()
                     put_char(source);
                     put_string(" reads: \r\n");
                     put_string(message);
+                    return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
                 } 
             }
         }

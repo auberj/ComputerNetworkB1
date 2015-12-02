@@ -29,7 +29,7 @@ void setchecksum(struct frame (*vals)[FRAMECOUNT]) {
     }
 }
 
-void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket) {
+void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
     /*
         vals is an array of frame structs size FRAMECOUNT, and fills the frame.data
     */
@@ -42,15 +42,17 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket) {
         // int loop = DATALEN;
         //
         for(j = 0; j < DATALEN; j++) {
-            if(i ==0 && j == 0) {
+            if(i ==0 && j == 0 && !ack) {
                 (*vals)[i].data[j++] = START;
                 //loop--;
             }
-            if(Spacket[cnt] == '\0') {
-                (*vals)[i].data[j] = END;
+            if(Spacket[cnt] == '\0' ) {
+                if(!ack) {
+                    (*vals)[i].data[j] = END;
+                    j++;                    
+                }
                 //put_char((*vals)[i].data[j]);
                 end = 1;
-                j++;
                 break;
             }
             (*vals)[i].data[j] = Spacket[cnt++];
@@ -127,10 +129,10 @@ void setcontrol(struct frame (*vals)[FRAMECOUNT], int ack) {
     }    
 }
 
-int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack) {
+int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack, int frames = FRAMECOUNT) {
     dataInit(data);    
 
-    setdata(data, Spacket);
+    setdata(data, Spacket, ack);
 
     setheader(data);
 
@@ -143,7 +145,7 @@ int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack
     setfooter(data);
     int i;
     int retval = 0;
-    for(i = 0; i < FRAMECOUNT; i++) {
+    for(i = 0; i < frames; i++) {
         if((*data)[i].length[0]) {
             // put_string("\nMAke the string: \n");
             char temp[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN + CHECKSUMLEN + FOOTERLEN + 10] = "";
@@ -163,5 +165,5 @@ int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack
 
         }
     }
-    return retval;  
+    return retval+1;  
 }

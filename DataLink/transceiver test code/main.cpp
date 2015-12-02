@@ -87,10 +87,10 @@ int main(void)
 
 				//	printf("%d", sizeof(tv));
 				//	printf("02%x",rfm12_tx(sizeof(tv), 0, tv)));
-				puts("\nsend string: ");
+				//puts("\nsend string: ");
 				//strcpy(tv, "01234567890123456789\0");
 				//for(uint8_t j = 0; j < strlen(tv); j++) {
-				puts(tv);
+				//puts(tv);
 				//}
 				rfm12_tx(strlen(tv), 0, (uint8_t*)tv);	
 			//	}

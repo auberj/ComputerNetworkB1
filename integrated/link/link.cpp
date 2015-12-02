@@ -70,10 +70,10 @@ int SendPacket(char dest, char* Spacket) {
     struct frame data[FRAMECOUNT];
     int no_frames;
     put_number(millis());
-    put_char('\n');
+    put_char('\r\n');
     no_frames = makeframe(&data, dest, Spacket, 0);
     put_number(millis());
-    put_char('\n');    
+    put_char('\r\n');    
 
     uint8_t *bufptr;
     char temp[50];
@@ -107,14 +107,14 @@ int SendPacket(char dest, char* Spacket) {
                     }
                     temp[rfm12_rx_len()] = '\0';
                     rfm12_rx_clear();
-                    // put_string("\nRECEIVED: ");
+                    // put_string("\r\nRECEIVED: ");
                     // put_string(temp);
-                    // put_string("\n\n");
+                    // put_string("\r\n\r\n");
                     ////////////////check if acknowledgemnt valid////////////////
                     int check_ack = decode_frame(&ack, temp);
                     if((check_ack & (1<<1)) && !(check_ack & 1<<2)) {
                         //if(strcmp(ack.data, data[i].data)) {
-                        put_string("\nSend Complete!\n");
+                        put_string("\r\nSend Complete!\r\n");
                         send_complete = 1;
                         break;  
                         //}
@@ -122,7 +122,7 @@ int SendPacket(char dest, char* Spacket) {
                  }
             }
             if(!send_complete) {
-                put_string("\ncallsign\n");
+                put_string("\r\ntimeout\r\n");
             }
 
         }

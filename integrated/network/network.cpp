@@ -43,43 +43,43 @@ void processHello(char* packet){
 	getNeighbourAdd(neighbour, packet);
 
 	put_string("processing HELLO\r\n");
-		put_string("neighbour found: ");
-		put_char(neighbour[0]); put_string("\r\n");
+	put_string("neighbour found: ");
+	put_char(neighbour[0]); put_string("\r\n");
 
-		int duplicateFlag=1;
+	int duplicateFlag=1;
 		//check array element is not the same as neighbour address and =0
+	for(int i=0;i<NumNeighbours;i++){
+		if(neighbours[i]==neighbour[0]){
+			put_string("duplicate neighbour found, move on.\r\n");
+			duplicateFlag = 0;
+		}
+	}
+	if(duplicateFlag==1){
+		put_string("no duplicate neighbour found\r\n");
+		int neighbourSpace;
+		int SpaceFlag=0;
 		for(int i=0;i<NumNeighbours;i++){
-			if(neighbours[i]==neighbour[0]){
-				put_string("duplicate neighbour found, move on.\r\n");
-				duplicateFlag = 0;
+				//find space for neighbour in table
+			if(neighbours[i]==0){
+				put_string("space for neighbour\r\n");
+				neighbourSpace = i;
+				SpaceFlag = 1;
+				break;
+			}
+			if((i==NumNeighbours)&&(SpaceFlag==0)){
+				put_string("no space for neighbour\r\n");
 			}
 		}
-		if(duplicateFlag==1){
-			put_string("no duplicate neighbour found\r\n");
-			int neighbourSpace;
-			int SpaceFlag=0;
-			for(int i=0;i<NumNeighbours;i++){
-				//find space for neighbour in table
-				if(neighbours[i]==0){
-					put_string("space for neighbour\r\n");
-					neighbourSpace = i;
-					SpaceFlag = 1;
-					break;
-				}
-				if((i==NumNeighbours)&&(SpaceFlag==0)){
-					put_string("no space for neighbour\r\n");
-				}
-			}
-			if(SpaceFlag==1){
-				neighbours[neighbourSpace] = neighbour[0];
-				put_string("neighbour stored in ");
-				char str[10];
-				sprintf(str, "%d", neighbourSpace);
-				put_string(str); put_string("\r\n");
-			}
-			
+		if(SpaceFlag==1){
+			neighbours[neighbourSpace] = neighbour[0];
+			put_string("neighbour stored in ");
+			char str[10];
+			sprintf(str, "%d", neighbourSpace);
+			put_string(str); put_string("\r\n");
 		}
 		
+	}
+	
 	put_string("neighbour processed\r\n");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,27 +101,27 @@ void processHello(char* packet){
 	return;
 }*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void periodicHello(){
-	int 	currentTime = millis();
+	void periodicHello(){
+		int 	currentTime = millis();
 
-	if(currentTime>(oldTime+HelloTimeout)){
-		sendHello();
+		if(currentTime>(oldTime+HelloTimeout)){
+			sendHello();
+		}
+
+		oldTime = currentTime;
+		return;
 	}
-
-	oldTime = currentTime;
-	return;
-}
 
 int isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if not
 	int neighbourFlag = 0;
 
 	for(int i=0;i<NumNeighbours;i++){
-			if(neighbours[i]==address[3]){
-				put_string("This person is a neighbour\r\n");
-				neighbourFlag = 1;
-				break;
-			}
+		if(neighbours[i]==address[3]){
+			put_string("This person is a neighbour\r\n");
+			neighbourFlag = 1;
+			break;
 		}
+	}
 	if(neighbourFlag==0){
 		put_string("This person is NOT a neighbour\r\n");
 	}
@@ -263,45 +263,45 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 
 			switch (control1){
 				case Control1Hello:
-					PacketType = 1;
+				PacketType = 1;
 				break;
 				case Control1Neighbour:
-					PacketType = 2;
+				PacketType = 2;
 				break;
 				case Control1Message:
-					if(packet[3]==callsign){
+				if(packet[3]==callsign){
 						PacketType = 3; //message is for me
 					}
 					else{ //if message is not for me then....
 						switch(control2){
 							case Control2SingleMessage: //message is a single hop
 								PacketType = 5; 		//drop it
-							break;
+								break;
 
-							case Control2DoubleHop:
+								case Control2DoubleHop:
 								PacketType = 4; //message is a double hop but not for me
-							break;
+								break;
 
 							case Control2FloodMessage: //message is to be flooded
-								PacketType = 7;
+							PacketType = 7;
 							break;
 
 							default:
 								PacketType = 7;	// if in doubt, flood it
 								break;
+							}
 						}
-					}
-					
-				break; 
+						
+						break; 
 
-				default:
+						default:
 					PacketType = 6; //no readable packet
-				break;
+					break;
+				}
 			}
+			
 		}
-		
-	}
-	else{
+		else{
 		PacketType = 6; //no packet
 	}
 	//put_string("done.\r\n");
@@ -418,25 +418,25 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	//determine if I am intended recipient
 	switch (packetType){
 		case 0:
-			put_string("packet corrupted, dropped.\r\n");
+		put_string("packet corrupted, dropped.\r\n");
 			returnval = 0; 								//nothing for TRAN layer
-		break;
+			break;
 
 		case 1: 										//recieved a HELLO, send one back!
 			periodicHello(); 							//only sends a hello every 500ms
 			processHello(packet);
 			returnval = 0;								//nothing for TRAN layer
-		break;
+			break;
 
 		case 2: 										//Packet contains details of neighbours
-			processNeighbours(packet);
+		processNeighbours(packet);
 			returnval = 0;								//nothing for TRAN layer
-		break;
+			break;
 
 		case 3: 										//packet is a message for me
 
-			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
-			repeatPacketFlag = checkRecievedPacket(packet);
+		put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
+		repeatPacketFlag = checkRecievedPacket(packet);
 			if(repeatPacketFlag==0){ 					//if not recieved before (prevents multiple packets being received in a flood)
 				returnval = 1;
 				put_string("Not seen this packet before\r\n");
@@ -459,14 +459,14 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 
 			//copy segment data 
 			returnval = 1;
-		break;
+			break;
 
 		case 4: 										//packet is a message but not for me and is a double hop
-			put_string("message not for me.\r\n");
-			
-			
-			repeatPacketFlag = checkRepeatPacket(packet);
-			neighbourFlag = isANeighbour(packet);
+		put_string("message not for me.\r\n");
+		
+		
+		repeatPacketFlag = checkRepeatPacket(packet);
+		neighbourFlag = isANeighbour(packet);
 
 			if((repeatPacketFlag==0)&&(neighbourFlag==1)){ //if not trasmitted before and a neighbour
 				put_string("retransmiting packet: ");
@@ -475,49 +475,49 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			}
 			else{put_string("already retransmitted\r\n");};
 			returnval = 0; //nothing to pass up to TRAN layer
-		break;
+			break;
 
 		case 5: 										//drop the packet
-			put_string("Single hop message not for me...dropped.\r\n");
-			returnval = 0;
+		put_string("Single hop message not for me...dropped.\r\n");
+		returnval = 0;
 		break;
 
 		case 6: 										//there was no packet
-			put_string("no packet.\r\n");
-			returnval = 0;
+		put_string("no packet.\r\n");
+		returnval = 0;
 		break;
 
 		case 7:											//flood the packet
-			repeatPacketFlag = checkRepeatPacket(packet);
+		repeatPacketFlag = checkRepeatPacket(packet);
 			if(repeatPacketFlag==0){ //if not trasmitted before and a neighbour
 				put_string("flooding packet: ");
 				put_string(packet);put_string("\r\n");
 				SendPacket(DLLFLOOD,packet); //flood it
 			}
-		break;
+			break;
+		}
+		
+		put_string("\r\nEND RECEIVE SEGMENT\r\n");
+		return returnval;
 	}
-	
-	put_string("\r\nEND RECEIVE SEGMENT\r\n");
-	return returnval;
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://github.com/vinmenn/Crc16
 {
-    int  crc;
-    char i;
-    crc = 0;
-    while (--count >= 0)
-    {
-        crc = crc ^ (int) *ptr++ << 8;
-        i = 8;
-        do
-        {
-            if (crc & 0x8000)
-                crc = crc << 1 ^ 0x1021;
-            else
-                crc = crc << 1;
-        } while(--i);
-    }
+	int  crc;
+	char i;
+	crc = 0;
+	while (--count >= 0)
+	{
+		crc = crc ^ (int) *ptr++ << 8;
+		i = 8;
+		do
+		{
+			if (crc & 0x8000)
+				crc = crc << 1 ^ 0x1021;
+			else
+				crc = crc << 1;
+		} while(--i);
+	}
 
     if ((crc >> 8) == 0x00) //If top byte of crc is 0x00
     	crc |= 0xFF00; //Set byte to 0xFF

@@ -8,11 +8,13 @@
 
 #define Control1Message 'M'
 #define Control2SingleMessage 'S'
+#define Control2FloodMessage 'F'
+#define Control2DoubleHop 'D'
 
 #define DLLFLOOD 0xFF //address to send to DLL when I want everyone to get the packet
 
 #define MaxSegmentLength 0x79
-
+#define HelloTimeout 500 //milliseconds
 //checksum definitions
 #define HelloChecksum 0x00
 
@@ -20,6 +22,8 @@
 
 #define HelloPacketLength 15
 #define MaxPacketLength 128
+
+
 
 #define NumOldPackets 20 //the number of old packets to check for retransmission multiplied by 2
 
@@ -30,6 +34,7 @@ char 	neighbours[NumNeighbours] = {0};//all set to 0
 char 	twohops[NumNeighbours][NumNeighbours+1] = {0}; //list of nodes two hops away [neighbour][2hops]
 char 	oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 char 	oldchecksumrecieved[NumOldPackets] = {0};
+int 	oldTime;
 
 void processHello(char* packet){
 	char 	neighbour[1];
@@ -96,6 +101,33 @@ void processHello(char* packet){
 	return;
 }*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void periodicHello(){
+	int 	currentTime = millis();
+
+	if(currentTime>(oldTime+HelloTimeout)){
+		sendHello();
+	}
+
+	oldTime = currentTime;
+	return;
+}
+
+int isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if not
+	int neighbourFlag = 0;
+
+	for(int i=0;i<NumNeighbours;i++){
+			if(neighbours[i]==address[3]){
+				put_string("This person is a neighbour\r\n");
+				neighbourFlag = 1;
+				break;
+			}
+		}
+	if(neighbourFlag==0){
+		put_string("This person is NOT a neighbour\r\n");
+	}
+	return neighbourFlag;
+}
+
 void sendHello(){
 	put_string("sending hello...");
 	char packet[16] = {0}; //max packet length in bytes
@@ -240,18 +272,37 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 					if(packet[3]==callsign){
 						PacketType = 3; //message is for me
 					}
-					else if(control2!=Control2SingleMessage){ 
-						PacketType = 4; //message is not a single hop and not for me
+					else{ //if message is not for me then....
+						switch(control2){
+							case Control2SingleMessage: //message is a single hop
+								PacketType = 5; 		//drop it
+							break;
+
+							case Control2DoubleHop:
+								PacketType = 4; //message is a double hop but not for me
+							break;
+
+							case Control2FloodMessage: //message is to be flooded
+								PacketType = 7;
+							break;
+
+							default:
+								PacketType = 7;	// if in doubt, flood it
+								break;
+						}
 					}
-					else{ PacketType = 5;} //drop the packet
 					
+				break; 
+
+				default:
+					PacketType = 6; //no readable packet
 				break;
 			}
 		}
 		
 	}
 	else{
-		PacketType = 6;
+		PacketType = 6; //no packet
 	}
 	//put_string("done.\r\n");
 	put_string("\r\nEND GET PACKET. Packet Type: ");put_number(PacketType);put_string("\r\n");
@@ -285,7 +336,7 @@ char calcNextHop(char dest){ //returns the next node to send data to
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("\r\nBEGIN SEND SEGMENT\r\n");
-
+	periodicHello();
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[MaxPacketLength] = {0}; //only 7 other bits but need a null!
@@ -360,6 +411,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	int 	returnval = 0;
 	//int 	packetend = 0;
 	int repeatPacketFlag;
+	int neighbourFlag;
 
 	int packetType = getPacket(packet); //get packet from DLL
 	int PacketLength = strlen(packet);
@@ -367,27 +419,30 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	switch (packetType){
 		case 0:
 			put_string("packet corrupted, dropped.\r\n");
-			returnval = 0;
-		break;
-		case 1: //recieved a HELLO, send one back!
-			sendHello(); //only send this if haven't sent one recently
-			processHello(packet);
-			returnval = 0;
-		break;
-		case 2: //details neighbours
-			processNeighbours(packet);
-			returnval = 0;
+			returnval = 0; 								//nothing for TRAN layer
 		break;
 
-		case 3: //packet is a message for me
+		case 1: 										//recieved a HELLO, send one back!
+			periodicHello(); 							//only sends a hello every 500ms
+			processHello(packet);
+			returnval = 0;								//nothing for TRAN layer
+		break;
+
+		case 2: 										//Packet contains details of neighbours
+			processNeighbours(packet);
+			returnval = 0;								//nothing for TRAN layer
+		break;
+
+		case 3: 										//packet is a message for me
 
 			put_string("message for me. packet length: "); put_number(PacketLength); put_string("\r\n");
 			repeatPacketFlag = checkRecievedPacket(packet);
-			if(repeatPacketFlag==0){ //if not recieved before
+			if(repeatPacketFlag==0){ 					//if not recieved before (prevents multiple packets being received in a flood)
 				returnval = 1;
+				put_string("Not seen this packet before\r\n");
 			}
 			else {
-				returnval = 0;
+				returnval = 0;							//ELSE nothing for TRAN layer
 				put_string("Packet dropped\r\n");
 			}
 			put_string("\r\n");
@@ -406,26 +461,39 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 			returnval = 1;
 		break;
 
-		case 4: //packet is a message but not for me and not a single hop
+		case 4: 										//packet is a message but not for me and is a double hop
 			put_string("message not for me.\r\n");
-			returnval = 0;
-			//retransmit packet if not done so before
+			
+			
 			repeatPacketFlag = checkRepeatPacket(packet);
+			neighbourFlag = isANeighbour(packet);
 
-			if(repeatPacketFlag!=1){ //if not trasmitted before
-				put_string("retransmiting.\r\n");
+			if((repeatPacketFlag==0)&&(neighbourFlag==1)){ //if not trasmitted before and a neighbour
+				put_string("retransmiting packet: ");
 				put_string(packet);put_string("\r\n");
 				SendPacket(packet[3],packet); //destination address is used here as messages can only be sent 2 hops directly
 			}
 			else{put_string("already retransmitted\r\n");};
+			returnval = 0; //nothing to pass up to TRAN layer
 		break;
 
-		case 5:
-			//drop the packet
+		case 5: 										//drop the packet
 			put_string("Single hop message not for me...dropped.\r\n");
-		case 6:
-			put_string("no packet.\r\n");
+			returnval = 0;
 		break;
+
+		case 6: 										//there was no packet
+			put_string("no packet.\r\n");
+			returnval = 0;
+		break;
+
+		case 7:											//flood the packet
+			repeatPacketFlag = checkRepeatPacket(packet);
+			if(repeatPacketFlag==0){ //if not trasmitted before and a neighbour
+				put_string("flooding packet: ");
+				put_string(packet);put_string("\r\n");
+				SendPacket(DLLFLOOD,packet); //flood it
+			}
 		break;
 	}
 	
@@ -459,7 +527,7 @@ uint16_t calcrc(char *ptr, int count) //XModem CRC calculator from https://githu
 
     return (crc);
 }
-int	checkRepeatPacket(char* packet){ //for sending packets in a flood
+int	checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 if not a duplicate
 	put_string("check checksum,");
 
 	int PacketLength = strlen(packet);

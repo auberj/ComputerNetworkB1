@@ -4,7 +4,19 @@
 // #include <avr/io.h>
 // #include <string.h>
 
-
+uint16_t calccrc(char *str, int len) {
+    int i, r;
+    r = 0;
+    for(i = 0; i < len; i++) {
+        r = r ^ (str[i] << 8);
+        int j;
+        for(j = 0; j < 8; j++) {
+            r = (r&0x8000)? ((r<<1)^GENERATOR):(r<<1);
+            r = r & 0xffff;
+        } 
+    }
+    return r;
+}
 void setchecksum(struct frame (*vals)[FRAMECOUNT]) {
     int i;
     for(i = 0; i<FRAMECOUNT; i++) {
@@ -17,7 +29,7 @@ void setchecksum(struct frame (*vals)[FRAMECOUNT]) {
             //strcat(checksumcalc,(char*)(*vals)[i].header);
             strcat(checksumcalc,(*vals)[i].data);
             
-            uint16_t crc = calcrc(checksumcalc, strlen(checksumcalc));
+            uint16_t crc = calccrc(checksumcalc, strlen(checksumcalc));
 
             (*vals)[i].checksum[0] = (uint8_t)(crc>>8);
             (*vals)[i].checksum[1] = (uint8_t)(crc & 0xff);

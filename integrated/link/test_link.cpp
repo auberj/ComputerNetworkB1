@@ -30,6 +30,34 @@ char callsign = 'H';
 
 void send();
 void receive();
+uint16_t calcrc(char *ptr, int count)
+{ 
+    //put_string("calcCRC\r\n");
+    int  crc;
+    char i;
+    crc = 0;
+    while (--count >= 0)
+    {
+        crc = crc ^ (int) *ptr++ << 8;
+        i = 8;
+        do
+        {
+            if (crc & 0x8000)
+                crc = crc << 1 ^ 0x1021;
+            else
+                crc = crc << 1;
+        } while(--i);
+    }
+
+    //need to avoid 0x00 checksum so that strlen works
+    if ((crc >> 8) == 0x00) //If top byte of crc is 0x00
+        crc |= 0xFF00; //Set byte to 0xFF
+
+    if (!(crc & 0x00FF)) //if bottom byte of crc is 0x00
+        crc |= 0x00FF; //Set bottom byte to 0xFF
+
+    return (crc);
+}
 
 int main()
 {
@@ -42,22 +70,22 @@ int main()
     put_string("\r\n\r\n\r\n\r\nInitialising...");
 
     // send();
-    receive();
+    // receive();
 
-    // char test[50] = "doesnt need byte stuffing";
-    // struct frame frames[FRAMECOUNT];
-    // int count = makeframe(&frames, BROADCAST, test, 0);
+    char test[50] = "doesnt need byte stuffing";
+    struct frame frames[FRAMECOUNT];
+    int count = makeframe(&frames, BROADCAST, test, 0);
     
-    // for(int i = 0; i < count; i++) {
-    //     put_string("\n\n\n\r\ncounter = ");
-    //     put_number(i);
-    //     struct frame receivestuff;
-    //     put_string("\r\nBeforeDecode: ");
-    //     put_string(frames[i].frame);
-    //     decode_frame(&receivestuff, frames[i].frame);
-    //     put_string("\r\ndecoded data: ");
-    //     put_string(receivestuff.data);
-    // }
+    for(int i = 0; i < count; i++) {
+        put_string("\n\n\n\r\ncounter = ");
+        put_number(i);
+        struct frame receivestuff;
+        put_string("\r\nBeforeDecode: ");
+        put_string(frames[i].frame);
+        decode_frame(&receivestuff, frames[i].frame);
+        put_string("\r\ndecoded data: ");
+        put_string(receivestuff.data);
+    }
     
 
 }

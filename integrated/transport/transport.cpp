@@ -12,7 +12,7 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
         uint8_t segmentnumber, uint8_t segmenttotal, char* ptr);
 void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr);
 uint8_t waitacknowledge(char dest, char* segment);
-void rc4(char *key, char *data);
+void swap(char* a, char* b);
 void rc4(char *key, char *data);
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey)
@@ -137,23 +137,23 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         display_segment(segment);
         put_string("\r\n");
 
-        SendSegment(*source, segment); //Acknowledge the segment - need to do this better
+        uint16_t crc = (segment[strlen(segment) - 2] << 8);
+        crc |= (segment[strlen(segment) - 1] & 0x00ff);
 
-        //TODO check segment valid
-        //TODO piece segement back together into message
-
-        //todo receive flag = 2 if message incomplete
-        copyin(rdata, segment, 0, segmentlength-7, 5);
-        *rmessageflag = segmenttotal - segmentnumber;
-
-        if (*rmessageflag == 0) //it was the last message so decrypt
+        if (crc == calcrc(segment, (strlen(segment)-2))) //if segment is valid
         {
-            if (encryption) //Encrypt data...
-                rc4(sessionkey, sdata);
+            SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
+
+            copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
+            *rmessageflag = segmenttotal - segmentnumber;
+
+            if (*rmessageflag == 0) //it was the last message so decrypt
+            {
+                if (encryption) //Decrypt data...
+                    rc4(sessionkey, rdata);
+            }
         }
     }
-    
-
     return receiveflag;
 }
 
@@ -286,7 +286,8 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
             display_segment(receivedsegment);
             //put_string("\r\n");
 
-            //TODO add function that checks if received source is same as destination
+            if (source != dest)
+                errorflag = 1; //Prevents people acknowledging other people's stuff
 
             for (i = 0; i < strlen(segment); i++)
                 if (segment[i] != receivedsegment[i])

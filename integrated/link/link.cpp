@@ -129,7 +129,7 @@ int SendPacket(char dest, char* Spacket) {
                 rfm12_tick();   
                 _delay_us(500); 
             }
-            _delay_ms(400);
+            _delay_ms(200);
         }
     }
 
@@ -248,7 +248,6 @@ int RecievePacket(char* Rpacket) {
             strcat(Rpacket, "\0");
             put_string("\r\nReceived packet: ");
             put_string(Rpacket);
-            put_string("\n\n\n\n\n\n\n\n\r");
         }
     }
     return i;

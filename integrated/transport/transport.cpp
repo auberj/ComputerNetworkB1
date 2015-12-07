@@ -2,8 +2,8 @@
 #define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
 #define TIMEOUTMILLIS 1000 //milliseconds for acknowledgement timeout, then segment is resent
 
-int SendData(char dest, char* sdata);
-int RecieveData(char* source, char* rdata, uint8_t messageflag);
+int SendData(char dest, char* sdata, char encryption, char* sessionkey);
+int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey);
 //uint16_t calcrc(char *ptr, int count);
 void display_segment(char* segment);
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
@@ -13,12 +13,12 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
 void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr);
 uint8_t waitacknowledge(char dest, char* segment);
 
-int SendData(char dest, char* sdata)
+int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 {
     volatile uint8_t loop = 0;
     uint8_t i = 1;
     uint8_t j;
-    uint8_t encrypted, flag1, flag2;
+    uint8_t flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
     uint8_t messagelength;
     uint16_t crcbits;
@@ -39,9 +39,12 @@ int SendData(char dest, char* sdata)
 
         //TODO write encryption
 
+        if (encryption == 'Y')
+            bool eflag = 1;
+
         ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
-        segment[loop][2] = 'Z'; //Source port
-        segment[loop][3] = 'Z'; //Dest port
+        segment[loop][2] = 0xFF; //Source port
+        segment[loop][3] = 0xFF; //Dest port
 
         if (loop != numberofsegments - 1)
             messagelength = MAXMESSAGELENGTH;
@@ -82,11 +85,11 @@ int SendData(char dest, char* sdata)
 	return 0;
 };
 
-int RecieveData(char* source, char* rdata, uint8_t* rmessageflag)
+int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey)
 {
     int receiveflag = 0;
     char segment[MAXMESSAGELENGTH+8] = {'\0'};
-    uint8_t encrypted, flag1, flag2;
+    uint8_t encryption, flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
     uint16_t crc = 0;
 
@@ -120,7 +123,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag)
     if (receiveflag) //if something has been received
     {
         uint8_t segmentlength = strlen(segment);
-        ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
+        ctrl_read(&encryption, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
 
         put_string("\r\n");
         put_number(strlen(segment));

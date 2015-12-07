@@ -32,9 +32,11 @@ int main()
     while(1){
         char dest, source;
         char mode;
+        char encryption;
 
         char temp = '\0'; //temporary character for receiving over uart
         char message[1000] = {0};
+        char sessionkey[20] = {0};
         uint16_t i = 0;
 
         put_string("\r\n\r\nEnter your callsign: ");
@@ -55,6 +57,48 @@ int main()
         }
 
         temp = 0;
+
+        put_string("\r\nEncrypt session ('Y' or 'N'): ");
+        while(temp != '\r')
+        {
+            temp = get_char();
+            if (temp >= 32 && temp <= 126)
+            {
+                put_char(temp);
+                encryption = temp;
+            }
+            else if ((temp == 8) || (temp == 127)) //Backspace or delete
+            {
+                put_char(temp);
+                encryption = 0;
+            }
+            _delay_ms(1);
+        }
+
+        temp = 0;
+
+        if (encryption == 'Y')
+        {
+            put_string("\r\nEnter session key: ");
+            while(temp != '\r')
+            {
+                temp = get_char();
+                if (temp >= 32 && temp <= 126)
+                {
+                    put_char(temp);
+                    sessionkey[i] = temp;
+                    i++;
+                }
+                else if ((temp == 8) || (temp == 127)) //Backspace or delete
+                {
+                    put_char(temp);
+                    i--;
+                    sessionkey[i] = 0;
+                }
+                _delay_ms(1);
+            }
+            temp = 0;
+        }
 
         put_string("\r\nSend or receive ('S' or 'R'): ");
         while(temp != '\r')
@@ -96,6 +140,8 @@ int main()
 
             temp = 0;
 
+            i = 0;
+
             put_string("\r\nEnter message: ");
 
             while(temp != '\r')
@@ -121,7 +167,7 @@ int main()
             put_string(" character long message reads: \r\n");
             put_string(message);
 
-            int error = SendData(dest, message);
+            int error = SendData(dest, message, encryption, sessionkey);
             if (error) put_string("Error sending message");
         }
 
@@ -134,7 +180,7 @@ int main()
 
             while(1)
             {
-                tempflag = RecieveData(&source, message, &rmessageflag);
+                tempflag = RecieveData(&source, message, &rmessageflag, sessionkey);
                 if (tempflag == 1) //if something has been received
                 {
                     if (rmessageflag == 0)

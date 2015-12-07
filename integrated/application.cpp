@@ -1,6 +1,6 @@
 #define __PLATFORM_AVR__
 
-static char callsign;
+#define callsign 'A' //Change this!
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -40,25 +40,6 @@ int main()
         char message[200] = {0};
         char sessionkey[20] = {0};
         uint16_t i = 0;
-
-        put_string("\r\n\r\nEnter your callsign: ");
-        while(temp != '\r')
-        {
-            temp = get_char();
-            if (temp >= 32 && temp <= 126)
-            {
-                put_char(temp);
-                callsign = temp;
-            }
-            else if ((temp == 8) || (temp == 127)) //Backspace or delete
-            {
-                put_char(temp);
-                callsign = 0;
-            }
-            _delay_ms(1);
-        }
-
-        temp = 0;
 
         put_string("\r\nEncrypt session ('Y' or 'N'): ");
         while(temp != '\r')

@@ -271,7 +271,7 @@ void 	periodicHello(){
 		put_string("Function End: periodicHello\r\n");
 		return;
 }
-int 	isANeighbour(char address){ //returns 1 if the person is a neighbour, 0 if not
+int 	isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if not
 	put_string("Function Begin: isANeighbour\r\n");
 	int neighbourFlag = 0;
 

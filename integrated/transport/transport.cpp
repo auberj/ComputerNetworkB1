@@ -97,6 +97,8 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
 int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey)
 {
+    //TODO receive from two different people simulatenously
+
     int receiveflag = 0;
     char segment[MAXMESSAGELENGTH+8] = {'\0'};
     uint8_t encryption, flag1, flag2;

@@ -1,6 +1,6 @@
 //Author: dm6g13
 
-#include "uart.h"
+#include "uart1.h"
 #include <stdio.h>
 
 void init_uart1(void) //Function copied from Steve Gunn's library

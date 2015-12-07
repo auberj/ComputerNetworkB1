@@ -14,7 +14,7 @@ int RecievePacket(char* rpacket)
 
 	while(temp != 0)
 	{
-		temp = get_1_char()
+		temp = get_1_char();
 		if (temp != 0)
 		{
 			rpacket[i] = temp;

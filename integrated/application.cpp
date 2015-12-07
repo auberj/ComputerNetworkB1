@@ -16,8 +16,8 @@
 
 
 
-#ifdef i2clink
-#include "i2clink/i2clink.cpp"
+#ifdef uartlink
+#include "uartlink/uartlink.cpp"
 #else
 #include "physical/physical.cpp"
 #include "link/link.cpp"
@@ -34,7 +34,9 @@
 int main()
 {
     _delay_ms(100);  //little delay for the rfm12 to initialize properly
+    #ifndef uartlink
     rfm12_init();    //init the RFM12
+    #endif
     _delay_ms(100);
     sei();
     init_uart0();

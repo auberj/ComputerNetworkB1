@@ -37,7 +37,7 @@ char 	oldchecksumrecieved[NumOldPackets] = {0};
 int 	oldTime;
 
 //provide to transport layer:
-int SendSegment(char dest, char* segment){ //provide this to transport layer
+int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("\r\nBEGIN SEND SEGMENT\r\n");
 	periodicHello();
 	int 	segmentLength = strlen(segment);
@@ -106,7 +106,7 @@ int SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("\r\nEND SEND SEGMENT\r\n");
 	return 0;
 }
-int RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
+int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
 	put_string("\r\nBEGIN RECEIVE SEGMENT\r\n");
 	//create variables
 	char 	packet[MaxPacketLength] = {0}; //assume max length
@@ -202,7 +202,7 @@ int RecieveSegment(char* source, char* rsegment){ //provide this to transport la
 	put_string("\r\nEND RECEIVE SEGMENT\r\n");
 	return returnval;
 }
-void processHello(char* packet){
+void 	processHello(char* packet){
 	char 	neighbour[1];
 	//int 	NumNeighbours = (sizeof(neighbours)/sizeof(neighbours[0]));
 
@@ -248,7 +248,7 @@ void processHello(char* packet){
 
 	put_string("neighbour processed\r\n");
 }
-void periodicHello(){
+void 	periodicHello(){
 		int 	currentTime = millis();
 
 		if(currentTime>(oldTime+HelloTimeout)){
@@ -258,7 +258,7 @@ void periodicHello(){
 		oldTime = currentTime;
 		return;
 }
-int isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if not
+int 	isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if not
 	int neighbourFlag = 0;
 
 	for(int i=0;i<NumNeighbours;i++){
@@ -273,7 +273,7 @@ int isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if 
 	}
 	return neighbourFlag;
 }
-void sendHello(){
+void 	sendHello(){
 	put_string("sending hello...");
 	char packet[MaxPacketLength] = {0}; //max packet length in bytes
 	//set control bits
@@ -308,7 +308,7 @@ void sendHello(){
 	put_string("hello sent\r\n");
 	return; //done
 }
-void sendNeighbours(){
+void 	sendNeighbours(){
 	put_string("SENDING NEIGHBOURS\r\n");
 	
 	char 	packet[NumNeighbours+8] = {'0'};
@@ -336,7 +336,7 @@ void sendNeighbours(){
 	put_string("END SENDING NEIGHBOURS\r\n");
 	return; //done
 }
-void processNeighbours(char* packet){ //processes a packet detailing neighbours (ie, 2 hops away)
+void 	processNeighbours(char* packet){ //processes a packet detailing neighbours (ie, 2 hops away)
 	put_string("PROCESSING 2HOP NEIGHBOURS\r\n");
 	int 	PacketLength = strlen(packet);
 	char 	onehopadd = packet[2]; //the neighbour that sent the packet
@@ -367,16 +367,16 @@ void processNeighbours(char* packet){ //processes a packet detailing neighbours 
 	put_string("END PROCESSING 2HOP NEIGHBOURS\r\n");
 	return;
 }
-void processDoubleHop(char* packet){ //processes a double packet that is not for me
+void 	processDoubleHop(char* packet){ //processes a double packet that is not for me
 	int 	PacketLength = strlen(packet);
 	return;
 }
-void getNeighbourAdd(char* neighbourADD, char* packet){
+void 	getNeighbourAdd(char* neighbourADD, char* packet){
 	put_string("getting neighbour address\r\n");
 	neighbourADD[0] = packet[2];
 	return;
 }
-int getPacket(char* packet){ //gets a packet from DLL and returns its type
+int 	getPacket(char* packet){ //gets a packet from DLL and returns its type
 	put_string("\r\nBEGIN GET PACKET\r\n");
 	
 	int PacketLength; 
@@ -456,7 +456,7 @@ int getPacket(char* packet){ //gets a packet from DLL and returns its type
 	put_string("\r\nEND GET PACKET. Packet Type: ");put_number(PacketType);put_string("\r\n");
 	return PacketType;
 }
-char calcNextHop(char dest){ //returns the next node to send data to
+char 	calcNextHop(char dest){ //returns the next node to send data to
 	put_string("\r\nBEGIN CALC NEXT HOP\r\n");
 	char 	nextHop;
 	int 	foundHopFlag = 0;
@@ -507,7 +507,7 @@ uint16_t calcrc(char *ptr, int count){ //XModem CRC calculator from https://gith
 
     return (crc);
 }
-int	checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 if not a duplicate
+int		checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 if not a duplicate
 	put_string("Checking repeat packet");
 
 	int PacketLength = strlen(packet);
@@ -536,7 +536,7 @@ int	checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 
 	put_string("END.\r\n");
 	return duplicateFlag;
 }
-int	checkRecievedPacket(char* packet){ //for recieving a flooded packet
+int		checkRecievedPacket(char* packet){ //for recieving a flooded packet
 	put_string("Checking if packet has already been recieved.\r\n");
 
 	int PacketLength = strlen(packet);

@@ -143,6 +143,7 @@ int SendPacket(char dest, char* Spacket) {
                 rfm12_tick();   
                 _delay_us(500); 
             }
+
         }
     }
 
@@ -187,7 +188,7 @@ int RecievePacket(char* Rpacket) {
         struct frame ackarr[FRAMECOUNT];
         int Received_Final_frame = 0;
         unsigned long timeout = millis() + 20000;
-        while(!Received_Final_frame/* && (millis() < timeout)*/){ //never passes this while statement
+        while(!Received_Final_frame && (millis() < timeout)){ //never passes this while statement
                                                                 //Also maybe add RFM12B tick??
             //int Rframe_len;
             put_string("Trying to receive data");
@@ -226,16 +227,18 @@ int RecievePacket(char* Rpacket) {
                     frame received, frame for me
                     acknowledge
                     */
-                    ackarr[0] = Nrframe[i];
-                    makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
-                    put_string("\r\nacknowledgement: ");
-                    put_string(ackarr[0].frame);
-                    rfm12_tx(strlen(ackarr[0].frame), 0, (uint8_t*)ackarr[0].frame);
-                    for (uint8_t j = 0; j < 100; j++)   
-                    {   
-                        //put_string(". ");
-                        rfm12_tick();   
-                        _delay_us(500); 
+                    if(Rframe_check & 1<<5) {
+                        ackarr[0] = Nrframe[i];
+                        makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
+                        put_string("\r\nacknowledgement: ");
+                        put_string(ackarr[0].frame);
+                        rfm12_tx(strlen(ackarr[0].frame), 0, (uint8_t*)ackarr[0].frame);
+                        for (uint8_t j = 0; j < 100; j++)   
+                        {   
+                            //put_string(". ");
+                            rfm12_tick();   
+                            _delay_us(500); 
+                        }
                     }
                     i++;
                     timeout = millis() + 20000;
@@ -289,6 +292,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
     bit 2: set = INFOFRAME, not set = SUPEFRAME 
     bit 3: first frame
     bit 4: last frame
+    bit 5: Broadcast 
 
     */
     int retval = 0;
@@ -359,6 +363,9 @@ int decode_frame(struct frame *framedata, char * Rframe) {
                 }
                 if(framedata->control[0] == INFOFRAME[0]) {
                     retval |= 1 << 2;
+                }
+                if(framedata->address[1] == BROADCAST) {
+                    retval |= 1<<5;
                 }
             }
             else {

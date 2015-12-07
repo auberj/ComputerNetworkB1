@@ -1,6 +1,6 @@
 #define __PLATFORM_AVR__
 
-char callsign;
+static char callsign;
 
 #include <avr/io.h>
 #include <util/delay.h>

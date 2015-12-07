@@ -5,8 +5,9 @@
 int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 {
     volatile uint8_t loop = 0;
-    uint8_t i = 1;
+    uint8_t i;
     uint8_t j;
+    uint8_t error;
     uint8_t flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
     uint8_t messagelength;
@@ -37,7 +38,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
     while (loop < numberofsegments)
     {
-        i = 1;
+        i = TIMEOUTTRIES;
 
         for (j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
@@ -64,7 +65,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         display_segment(segment[loop]);
         put_string("\r\n\r\n");
 
-        while(i)
+        while(i > 0)
         {
             put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(dest, segment[loop]);
@@ -72,14 +73,21 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
 
-            i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again
+            error = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again
             
-            if(i)
+            if(error)
+            {
                 put_string("\r\nNo acknowledgment, resending segment");
-
+                i--;
+                if (i == 0)
+                    return 1; //There was an error sending the segement
+            }
+            else
+            {
+                i = 0;
+                put_string("\r\n\r\nAcknowledged.");
+            }
         }
-        
-        put_string("\r\n\r\nAcknowledged.");
 
         _delay_ms(1);
         loop = loop + 1;

@@ -30,7 +30,7 @@
 #include "network.h"
 #include <stdio.h>
 //global vars
-char 	neighbours[NumNeighbours] = {0};//all set to 0
+char 	neighbours[NumNeighbours] = {'H'};//all set to 0
 char 	twohops[NumNeighbours][NumNeighbours+1] = {0}; //list of nodes two hops away [neighbour][2hops]
 char 	oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
 char 	oldchecksumrecieved[NumOldPackets] = {0};
@@ -38,6 +38,8 @@ int 	oldTime;
 
 //provide to transport layer:
 int 	SendSegment(char dest, char* segment){ //provide this to transport layer
+	twohops[0][0] = 'H';
+	twohops[0][1] = 'D';
 	put_string("Function Begin: SendSegment\r\n");
 	//periodicHello();
 	int 	segmentLength = strlen(segment);
@@ -60,6 +62,8 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 			break; //no need to check the rest of the table
 		}
 	}
+
+	//to-do check if double hop!
 	put_string("Setting control bytes...");
 	packet[0] = Control1Message;
 

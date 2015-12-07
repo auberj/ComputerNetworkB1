@@ -149,7 +149,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         if (*rmessageflag == 0) //it was the last message so decrypt
         {
             if (encryption) //Encrypt data...
-                rc4(sessionkey, sdata);
+                rc4(sessionkey, rdata);
         }
     }
     

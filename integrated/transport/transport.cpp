@@ -134,6 +134,10 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
     //     receiveflag = 1;
     // }
 
+    put_string("\r\nReceive Flag: ");
+    put_number(receiveflag);
+    put_string("\r\n");
+
     if (receiveflag) //if something has been received
     {
         uint8_t segmentlength = strlen(segment);

@@ -26,5 +26,6 @@ int RecievePacket(char* rpacket)
 		put_string("\r\nReceived packet\r\n");
 		return 1;
 	}
-	return 0;
+	else
+		return 0;
 }

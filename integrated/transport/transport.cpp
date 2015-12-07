@@ -57,19 +57,19 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         segment[loop][messagelength+5] = crcbits >> 8;
         segment[loop][messagelength+6] = crcbits & 0x00FF;
 
-        put_string("\r\nSending segment to ");
-        put_char(dest); 
-        put_string(", from ");
+        put_string("\r\n\r\nCallsign: ");
         put_char(callsign); 
-        put_string(".");
+        put_string("\r\nDestination: ");
+        put_char(dest);     
     
         display_segment(segment[loop]);
-        put_string("\r\n");
+        put_string("\r\n\r\n");
 
         while(i)
         {
-            
+            put_string("Passing to network layer.\r\n\r\n");
             SendSegment(dest, segment[loop]);
+            put_string("\r\n\r\n Returned from network layer.\r\n");
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
             i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again
             if(i)

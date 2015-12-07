@@ -75,6 +75,9 @@ int main()
             _delay_ms(1);
         }
 
+        if (encryption == 'Y') encryption = 1;
+        if (encryption == 'N') encryption = 0;
+
         temp = 0;
 
         if (encryption == 'Y')

@@ -31,18 +31,15 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     if (numberofsegments*MAXMESSAGELENGTH < sdatalength) 
         numberofsegments++;
 
+    //TODO write encryption
+
     while (loop < numberofsegments)
     {
         i = 1;
         for (j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
 
-        //TODO write encryption
-
-        if (encryption == 'Y')
-            bool eflag = 1;
-
-        ctrl_write(0, 0, 0, loop+1, numberofsegments, segment[loop]);
+        ctrl_write(encryption, 0, 0, loop+1, numberofsegments, segment[loop]);
         segment[loop][2] = 0xFF; //Source port
         segment[loop][3] = 0xFF; //Dest port
 
@@ -138,6 +135,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         //TODO read flags properly eg encryption
         //TODO decryption
         //TODO check segment valid
+        //TODO piece segement back together into message
 
         //todo receive flag = 2 if message incomplete
         copyin(rdata, segment, 0, segmentlength-7, 5);

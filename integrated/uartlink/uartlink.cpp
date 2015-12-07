@@ -9,22 +9,22 @@ int SendPacket(char dest, char* spacket)
 
 int RecievePacket(char* rpacket)
 {
-	while(!(strlen(rpacket)))
+	char temp = 'A';
+	int i = 0;
+	while(temp != 0)
 	{
-		char temp = 'A';
-		int i = 0;
-		put_char('!');
-		while(temp != 0)
+		temp = get_1_char();
+		if (temp != 0)
 		{
-			temp = get_1_char();
-			if (temp != 0)
-			{
-				rpacket[i] = temp;
-				put_char(rpacket[i]);
-				i++;
-			}
+			rpacket[i] = temp;
+			put_char(rpacket[i]);
+			i++;
 		}
 	}
-	put_string("Received packet");
+	if (strlen(rpacket))
+	{
+		put_string("\r\nReceived packet\r\n");
+		return 1;
+	}
 	return 0;
 }

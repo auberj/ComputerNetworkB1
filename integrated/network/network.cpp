@@ -53,7 +53,7 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	char 	dlladdress;
 
 	packetLength = strlen(packet);
-	displayPacket(packet,1);
+	displayPacket(packet,1); 
 	for(int i=0;i<NumNeighbours;i++){
 		if(dest==neighbours[i]){
 			singleHopFlag = 1;
@@ -86,7 +86,7 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
 	displayPacket(packet,1);
-	put_string("Callsign and Dest\r\n");put_char(callsign);put_char(packet[2]);put_char(dest);put_char(packet[3]);
+	put_string("Callsign and Dest: ");put_char(callsign);put_char(packet[2]);put_char(dest);put_char(packet[3]);
 
 
 	put_string("Copying in ");put_number(segmentLength);put_string(" segment bytes\r\n");
@@ -481,7 +481,7 @@ int 	getPacket(char* packet){ //gets a packet from DLL and returns its type
 	return PacketType;
 }
 char 	calcNextHop(char dest){ //returns the next node to send data to
-	put_string("\r\nBEGIN CALC NEXT HOP\r\n");
+	put_string("Function Begin: calcNextHop\r\n");
 	char 	nextHop;
 	int 	foundHopFlag = 0;
 	for(int i=0;i<NumNeighbours;i++){
@@ -502,7 +502,7 @@ char 	calcNextHop(char dest){ //returns the next node to send data to
 		nextHop = 0xFF;
 		put_string("couldn't find next hop. flood.\r\n");
 	}
-	put_string("\r\nEND CALC NEXT HOP\r\n");
+	put_string("Function end: calcNextHop\r\n");
 	return nextHop;
 }
 uint16_t calcrc(char *ptr, int count){ //XModem CRC calculator from https://github.com/vinmenn/Crc16
@@ -532,7 +532,7 @@ uint16_t calcrc(char *ptr, int count){ //XModem CRC calculator from https://gith
     return (crc);
 }
 int		checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 if not a duplicate
-	put_string("Checking repeat packet");
+	put_string("Function Begin: checkRepeatPacket\r\n");
 
 	int PacketLength = strlen(packet);
 	//put_string("CRP: packet length: "); put_number(PacketLength); put_string("\r\n");
@@ -557,10 +557,11 @@ int		checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0
 		oldchecksum[1]=checksum2;
 		put_string("cheksum stored,");
 	}
-	put_string("END.\r\n");
+	put_string("Function End: checkRepeatPacket\r\n");
 	return duplicateFlag;
 }
 int		checkRecievedPacket(char* packet){ //for recieving a flooded packet
+	put_string("Function Begin: checkRecievedPacket\r\n");
 	put_string("Checking if packet has already been recieved.\r\n");
 
 	int PacketLength = strlen(packet);
@@ -586,10 +587,11 @@ int		checkRecievedPacket(char* packet){ //for recieving a flooded packet
 		oldchecksumrecieved[1]=checksum2;
 		put_string("cheksum stored,");
 	}
-	put_string("END.\r\n");
+	put_string("Function End: checkRecievedPacket\r\n");
 	return duplicateFlag;
 }
 void	displaySegment(char* packet){
+	put_string("Function Begin: displaySegment\r\n");
 	int PacketLength = strlen(packet);
 	char segment[PacketLength-7];
 
@@ -598,8 +600,11 @@ void	displaySegment(char* packet){
 	}
 
 	put_string(segment);
+	put_string("Function End: displaySegment\r\n");
+	return;
 }
 void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: display whole packet
+	put_string("Function Begin: displayPacket\r\n");
 	int 	packetLength = strlen(packet);
 
 	switch(command){
@@ -618,6 +623,7 @@ void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: disp
 			put_string("\r\n");put_string("Checksum: ");put_hex(packet[packetLength-2],2);put_string("\r\n");
 		break;
 	}
+	put_string("Function Begin: displayPacket\r\n");
 	return;
 }
 

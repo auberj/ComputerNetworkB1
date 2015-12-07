@@ -1,19 +1,4 @@
-#define MAXMESSAGELENGTH 50
-#define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
-#define TIMEOUTMILLIS 1000 //milliseconds for acknowledgement timeout, then segment is resent
-
-int SendData(char dest, char* sdata, char encryption, char* sessionkey);
-int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey);
-//uint16_t calcrc(char *ptr, int count);
-void display_segment(char* segment);
-void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
-        uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr);
-void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
-        uint8_t segmentnumber, uint8_t segmenttotal, char* ptr);
-void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr);
-uint8_t waitacknowledge(char dest, char* segment);
-void swap(char* a, char* b);
-void rc4(char *key, char *data);
+#include "transport.h"
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 {
@@ -82,10 +67,6 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         _delay_ms(1);
         loop = loop + 1;
     }
-    //ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, &segment[0]);
-
-	//int error = SendSegment(dest, segment);
-	
 	return 0;
 };
 
@@ -175,6 +156,12 @@ void display_segment(char* segment)
     put_string("\r\nControl Byte 2: ");
     put_binary(segment[1]);
 
+    put_string("\r\nEncrypted: ");
+    if (encryption)
+        put_string("Yes");
+    else
+        put_string("No");
+
     put_string("\r\nSegment: ");
     put_number(segmentnumber);
     put_string(" of ");
@@ -210,13 +197,13 @@ void display_segment(char* segment)
         put_string("No");
 }
 
-void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
+void ctrl_read(uint8_t* encryption, uint8_t* flag1, uint8_t* flag2,
         uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr) //Reads a segment's control bits
 {
     if(ptr[0] & (1 << 6))
-        *encrypted = 1;
+        *encryption = 1;
     else
-        *encrypted = 0;
+        *encryption = 0;
     if(ptr[0] & (1 << 5))
         *flag1 = 1;
     else
@@ -235,7 +222,7 @@ void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
     *segmenttotal = (ptr[1] & 0x3f);
 }
 
-void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
+void ctrl_write(uint8_t encryption, uint8_t flag1, uint8_t flag2,
         uint8_t segmentnumber, uint8_t segmenttotal, char* ptr) //Reads a segment's control bits
 {
 
@@ -243,7 +230,7 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
     ptr[1] = 0;
 
     ptr[0] |= 1 << 7; //Sets first bit to one to say it's a segment
-    ptr[0] |= encrypted << 6;
+    ptr[0] |= encryption << 6;
     ptr[0] |= flag1 << 5;
     ptr[0] |= flag2 << 4;
 

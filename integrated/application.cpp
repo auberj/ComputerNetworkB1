@@ -16,9 +16,10 @@
 #include "network/network.cpp"
 #include "transport/transport.cpp"
 
-
-
-//C232HM Pinout. Yellow - D1. Orange - D0. Black - Ground.
+//C232HM Pinout
+//Yellow - D1
+//Orange - D0
+//Black - Ground.
 
 
 int main()
@@ -29,7 +30,7 @@ int main()
     sei();
     init_uart0();
     init_timer();
-    put_string("\r\n\r\n\r\n\r\nInitialising...");
+    put_string("\r\n\r\n\r\n\r\nInitialising...\r\n");
     
     while(1){
         char dest, source;

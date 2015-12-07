@@ -298,7 +298,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
         // put_string(Rframe);
         // put_string("\r\nstrlen: ");
         // put_number(strlen(Rframe));
-        uint16_t crc = (Rframe[strlen(segment) - 2] << 8);
+        uint16_t crc = (Rframe[strlen(Rframe) - 2] << 8);
         crc |= (Rframe[strlen(Rframe) - 1] & 0x00ff);
         //put_hex(crc, 2);
 

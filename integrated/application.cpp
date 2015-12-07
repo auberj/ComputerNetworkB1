@@ -47,7 +47,7 @@ int main()
     
     while(1){
         start:
-        
+
         char dest, source;
         char mode;
         char encryption;
@@ -165,7 +165,7 @@ int main()
             }
 
             int error = SendData(dest, message, encryption, sessionkey);
-            if (error) put_string("Error sending message");
+            if (error) put_string("\r\n\r\nError sending message");
         }
 
         else if (mode == 'R')

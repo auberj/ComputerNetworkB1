@@ -336,7 +336,7 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
         else
         {
             put_number(elapsedtime);
-            put_string("\r");
+            put_string("\r\n");
         }
 
     }

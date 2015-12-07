@@ -84,50 +84,65 @@ int SendPacket(char dest, char* Spacket) {
 
     for(i = 0; i < no_frames; i++) {
         send_complete = 0;
-        while(!send_complete) {
-            ///////////////////send//////////////////////
+        if(dest != BROADCAST) {
+            while(!send_complete) {
+                ///////////////////send//////////////////////
+                put_string("\r\n Send Frame: ");
+                put_string(data[i].frame);
+                put_string("\r\n Frame Length: ");
+                put_number(strlen(data[i].frame));
+                rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
+                for (uint8_t j = 0; j < 100; j++)   
+                {   
+                    put_string(". ");
+                    rfm12_tick();   
+                    _delay_us(500); 
+                }
+
+                time = millis() + 100;
+
+                while((millis() != time)) {
+                    ///////////check for acknowledgemt/////////////////
+                    if(rfm12_rx_status() == STATUS_COMPLETE) {
+                        //send_complete = 1;
+                        bufptr = rfm12_rx_buffer();
+                        for(k = 0; k < (rfm12_rx_len()); k++) {
+                            temp[k] = bufptr[k];
+                        }
+                        temp[rfm12_rx_len()] = '\0';
+                        rfm12_rx_clear();
+                        // put_string("\r\nRECEIVED: ");
+                        // put_string(temp);
+                        // put_string("\r\n\r\n");
+                        ////////////////check if acknowledgemnt valid////////////////
+                        int check_ack = decode_frame(&ack, temp);
+                        if((check_ack & (1<<1)) && !(check_ack & 1<<2)) {
+                            //if(strcmp(ack.data, data[i].data)) {
+                            put_string("\r\nSend Complete!\r\n");
+                            send_complete = 1;
+                            break;  
+                            //}
+                        }
+                     }
+                }
+                if(!send_complete) {
+                    put_string("\r\ntimeout\r\n");
+                }
+
+            }
+        }
+        else {
             put_string("\r\n Send Frame: ");
             put_string(data[i].frame);
             put_string("\r\n Frame Length: ");
             put_number(strlen(data[i].frame));
             rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
-            for (uint8_t j = 0; j < 100; j++)   
+            for (uint8_t j = 0; j < 1000; j++)   
             {   
                 put_string(". ");
                 rfm12_tick();   
                 _delay_us(500); 
             }
-
-            time = millis() + 100;
-
-            while((millis() != time)) {
-                ///////////check for acknowledgemt/////////////////
-                if(rfm12_rx_status() == STATUS_COMPLETE) {
-                    //send_complete = 1;
-                    bufptr = rfm12_rx_buffer();
-                    for(k = 0; k < (rfm12_rx_len()); k++) {
-                        temp[k] = bufptr[k];
-                    }
-                    temp[rfm12_rx_len()] = '\0';
-                    rfm12_rx_clear();
-                    // put_string("\r\nRECEIVED: ");
-                    // put_string(temp);
-                    // put_string("\r\n\r\n");
-                    ////////////////check if acknowledgemnt valid////////////////
-                    int check_ack = decode_frame(&ack, temp);
-                    if((check_ack & (1<<1)) && !(check_ack & 1<<2)) {
-                        //if(strcmp(ack.data, data[i].data)) {
-                        put_string("\r\nSend Complete!\r\n");
-                        send_complete = 1;
-                        break;  
-                        //}
-                    }
-                 }
-            }
-            if(!send_complete) {
-                put_string("\r\ntimeout\r\n");
-            }
-
         }
     }
 

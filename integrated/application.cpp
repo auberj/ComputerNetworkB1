@@ -34,7 +34,9 @@
 int main()
 {
     _delay_ms(100);  //little delay for the rfm12 to initialize properly
-    #ifndef uartlink
+    #ifdef uartlink
+    init_uart1();
+    #else
     rfm12_init();    //init the RFM12
     #endif
     _delay_ms(100);

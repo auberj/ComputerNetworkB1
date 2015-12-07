@@ -2,25 +2,26 @@
 
 int SendPacket(char dest, char* spacket)
 {
-	init_uart1();
 	put_1_string(spacket);
 	return 0;
 }
 
 int RecievePacket(char* rpacket)
 {
-	char temp = 'A';
-	int i = 0;
-
-	init_uart1();
-
-	while(temp != 0)
+	while(!(strlen(rpacket)))
 	{
-		temp = get_1_char();
-		if (temp != 0)
+		char temp = 'A';
+		int i = 0;
+		put_char('!');
+		while(temp != 0)
 		{
-			rpacket[i] = temp;
-			i++;
+			temp = get_1_char();
+			if (temp != 0)
+			{
+				rpacket[i] = temp;
+				put_number(rpacket[i]);
+				i++;
+			}
 		}
 	}
 	return 0;

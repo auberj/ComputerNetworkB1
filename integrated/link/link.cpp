@@ -98,7 +98,7 @@ int SendPacket(char dest, char* Spacket) {
                 _delay_us(500); 
             }
 
-            time = millis() + 100;
+            time = millis() + 500;
 
             while((millis() != time)) {
                 ///////////check for acknowledgemt/////////////////
@@ -171,8 +171,8 @@ int RecievePacket(char* Rpacket) {
         struct frame Nrframe[FRAMECOUNT];
         struct frame ackarr[FRAMECOUNT];
         int Received_Final_frame = 0;
-        unsigned long timeout = millis() + 20000;
-        while(!Received_Final_frame/* && (millis() < timeout)*/){ //never passes this while statement
+        unsigned long timeout = millis() + 1000;
+        while(!Received_Final_frame && (millis() < timeout)){ //never passes this while statement
                                                                 //Also maybe add RFM12B tick??
             //int Rframe_len;
             put_string("Trying to receive data");
@@ -223,7 +223,7 @@ int RecievePacket(char* Rpacket) {
                         _delay_us(500); 
                     }
                     i++;
-                    timeout = millis() + 20000;
+                    timeout = millis() + 1000;
                     
                 }
                 else if(!Rframe_check) {

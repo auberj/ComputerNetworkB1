@@ -37,7 +37,7 @@ int main()
         char encryption;
 
         char temp = '\0'; //temporary character for receiving over uart
-        char message[200] = {0};
+        char message[1000] = {0};
         char sessionkey[20] = {0};
         uint16_t i = 0;
 
@@ -57,7 +57,7 @@ int main()
             }
             _delay_ms(1);
         }
-         
+
         temp = 0;
 
         put_string("\r\nEncrypt session ('Y' or 'N'): ");

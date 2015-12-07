@@ -62,7 +62,6 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
     put_string("\r\n");
 
-
     while (loop < numberofsegments)
     {
         i = 1;

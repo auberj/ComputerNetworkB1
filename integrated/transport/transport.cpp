@@ -59,7 +59,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
         put_string("\r\n\r\nCallsign: \r\n");
         put_char(callsign); 
-        put_string("\r\n\r\nDestination: \r\n");
+        put_string("\r\nDestination: \r\n");
         put_char(dest);     
     
         display_segment(segment[loop]);

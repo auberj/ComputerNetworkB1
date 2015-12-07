@@ -506,7 +506,7 @@ char 	calcNextHop(char dest){ //returns the next node to send data to
 	return nextHop;
 }
 uint16_t calcrc(char *ptr, int count){ //XModem CRC calculator from https://github.com/vinmenn/Crc16
-	put_string("calcCRC\r\n");
+	//put_string("calcCRC\r\n");
 	int  crc;
 	char i;
 	crc = 0;

@@ -57,9 +57,9 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         segment[loop][messagelength+5] = crcbits >> 8;
         segment[loop][messagelength+6] = crcbits & 0x00FF;
 
-        put_string("\r\n\r\nCallsign: ");
+        put_string("\r\n\r\nCallsign: \r\n");
         put_char(callsign); 
-        put_string("\r\nDestination: ");
+        put_string("\r\n\r\nDestination: \r\n");
         put_char(dest);     
     
         display_segment(segment[loop]);

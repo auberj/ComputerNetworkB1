@@ -164,18 +164,10 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		//the first one.
 		recheck_interrupt = 0;
 
-		#if RFM12_UART_DEBUG >= 2
-			uart_putc('S');
-			uart_putc(status);
-		#endif
-
 		//low battery detector feature
 		#if RFM12_LOW_BATT_DETECTOR
 			if (status & (RFM12_STATUS_LBD >> 8)) {
 				//debug
-				#if RFM12_UART_DEBUG >= 2
-					uart_putc('L');
-				#endif
 
 				//set status variable to low battery
 				ctrl.low_batt = RFM12_BATT_LOW;
@@ -187,9 +179,6 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 		#if RFM12_USE_WAKEUP_TIMER
 			if (status & (RFM12_STATUS_WKUP >> 8)) {
 				//debug
-				#if RFM12_UART_DEBUG >= 2
-					uart_putc('W');
-				#endif
 
 				ctrl.wkup_flag = 1;
 				recheck_interrupt = 1;
@@ -223,11 +212,6 @@ ISR(RFM12_INT_VECT, ISR_NOBLOCK)
 						//add the packet overhead and store it into a working variable
 						ctrl.num_bytes = data + PACKET_OVERHEAD;
 
-						//debug
-						#if RFM12_UART_DEBUG >= 2
-							uart_putc('I');
-							uart_putc(data);
-						#endif
 
 						//see whether our buffer is free
 						//FIXME: put this into global statekeeping struct, the free state can be set by the function which pulls the packet, i guess

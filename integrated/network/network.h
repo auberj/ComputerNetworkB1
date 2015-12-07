@@ -16,3 +16,7 @@ int		checkRepeatPacket(char* packet); //return 1 if checksum is currently in the
 void	displaySegment(char* packet);
 int		checkRecievedPacket(char* packet); //check if a flooded packet has already been received
 void	displayPacket(char* packet,int command);
+char 	calcNextHop(char dest);
+void 	periodicHello();
+void 	processNeighbours(char* packet);
+int 	isANeighbour(char* address);

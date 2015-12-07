@@ -242,6 +242,8 @@ int RecievePacket(char* Rpacket) {
                 strcat(Rpacket, Nrframe[l].data);
             }
             strcat(Rpacket, "\0");
+            put_string("\r\nReceived packet: ");
+            put_string(Rpacket);
         }
     }
     return i;
@@ -276,9 +278,21 @@ int decode_frame(struct frame *framedata, char * Rframe) {
     */
     int retval = 0;
     if(Rframe[0] == HEADER && Rframe[strlen(Rframe)-1] == FOOTER ) {
+        // put_string("\r\nBefore unbytestuff: ");
+        // put_string(Rframe);
         unbytestuff(Rframe);
+        // put_string("\r\nafter unbytestuff: ");
+        // put_string(Rframe);
         strncpy(Rframe, Rframe, strlen(Rframe)-1);
+        // put_string("\r\nRemoved footer: ");
+        // put_string(Rframe);
+        // put_string("\r\nstrlen: ");
+        // put_number(strlen(Rframe));
         Rframe[strlen(Rframe)-1] = '\0';
+        // put_string("\r\nadd zero: ");
+        // put_string(Rframe);
+        // put_string("\r\nstrlen: ");
+        // put_number(strlen(Rframe));
         if(!((long unsigned int)calccrc(Rframe, strlen(Rframe)))) {
             //put_string("\nNo Errors!\n");
             retval |= 1;
@@ -319,16 +333,16 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             if(framedata->address[1] == BROADCAST || framedata->address[1] == callsign) {
                 put_string("\r\nPacket for me!");
                 retval |= 1 << 1;
-                if(framedata->data[0] == START) {
+                if(framedata->control[1] == START) {
                     retval |= 1<< 3;
-                    strcpy(framedata->data, framedata->data+1);
+                    // strcpy(framedata->data, framedata->data+1);
 
                 }
-                if(framedata->data[strlen(framedata->data)-1] == END) {
+                if(framedata->control[1] == END) {
                     retval |= 1<<4;
-                    framedata->data[(int)framedata->length[0] - 1] = 0;
+                    // framedata->data[(int)framedata->length[0] - 1] = 0;
                 }
-                if(!strcmp(framedata->control, INFOFRAME)) {
+                if(framedata->control[0] == INFOFRAME[0]) {
                     retval |= 1 << 2;
                 }
             }
@@ -343,7 +357,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
         else {
             // error in transmission
             //retval = 1;
-            ;
+            put_string("\r\nCRC failed");
         }
 
     }

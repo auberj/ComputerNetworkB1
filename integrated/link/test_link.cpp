@@ -41,20 +41,23 @@ int main()
     init_timer();
     put_string("\r\n\r\n\r\n\r\nInitialising...");
 
-    send();
-    //receive();
+    // send();
+    // receive();
 
-    // char test[50] = "New and different string to be tested";
-    // struct frame frames[FRAMECOUNT];
-    // int count = makeframe(&frames, BROADCAST, test, 0);
-    // struct frame receivestuff;
-    // for(int i = 0; i < count; i++) {
-    //     put_string("\r\nBeforeDecode: ");
-    //     put_string(frames[i].frame);
-    //     decode_frame(&receivestuff, frames[i].frame);
-    //     put_string("\r\ndecoded data: ");
-    //     put_string(receivestuff.data);
-    // }
+    char test[50] = "doesnt need byte stuffing";
+    struct frame frames[FRAMECOUNT];
+    int count = makeframe(&frames, BROADCAST, test, 0);
+    
+    for(int i = 0; i < count; i++) {
+        put_string("\n\n\n\r\ncounter = ");
+        put_number(i);
+        struct frame receivestuff;
+        put_string("\r\nBeforeDecode: ");
+        put_string(frames[i].frame);
+        decode_frame(&receivestuff, frames[i].frame);
+        put_string("\r\ndecoded data: ");
+        put_string(receivestuff.data);
+    }
     
 
 }

@@ -42,15 +42,16 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
         // int loop = DATALEN;
         //
         for(j = 0; j < DATALEN; j++) {
-            if(i ==0 && j == 0 && !ack) {
-                (*vals)[i].data[j++] = START;
-                //loop--;
-            }
+            // if(i ==0 && j == 0 && !ack) {
+            //     (*vals)[i].data[j++] = START;
+            //     //loop--;
+            // }
             if(Spacket[cnt] == '\0' ) {
-                if(!ack) {
-                    (*vals)[i].data[j] = END;
-                    j++;                    
-                }
+                // if(!ack) {
+                //     (*vals)[i].data[j] = END;
+                //     j++;                    
+                // }
+                (*vals)[i].lastframe = 1;
                 //put_char((*vals)[i].data[j]);
                 end = 1;
                 break;
@@ -94,6 +95,7 @@ void dataInit(struct frame (*vals)[FRAMECOUNT]) {
         (*vals)[i].length[1] = '\0';
         (*vals)[i].header[1] = '\0';
         (*vals)[i].footer[1] = '\0';
+        (*vals)[i].lastframe = 0;
     }    
 }
 
@@ -114,17 +116,28 @@ void setcontrol(struct frame (*vals)[FRAMECOUNT], int ack) {
     int j;
     for(i = 0; i < FRAMECOUNT; i++) {
         if((*vals)[i].length[0]) {
-            for(j = 0; j < CONTROLLEN; j++) {
-                if(!ack) {
-                    (*vals)[i].control[j] = INFOFRAME[j];
+            
+            if(!ack) {
+                (*vals)[i].control[0] = 'I';
+                if(i == 0) {
+                    (*vals)[i].control[1] = '1';
+                }
+                else if((*vals)[i].lastframe) {
+                    (*vals)[i].control[1] = '0';
                 }
                 else {
-                    (*vals)[i].control[j] = SUPEFRAME[j];
+                    (*vals)[i].control[1] = i;
                 }
+            }
+            else {
+                (*vals)[i].control[j] = SUPEFRAME[j];
+            }
 
                 //put_char((*vals)[i].control[j]);
-            }
+            
             (*vals)[i].control[CONTROLLEN] = '\0';
+            // put_string("\r\nControl: ");
+            // put_string((*vals)[i].control);
         }
     }    
 }

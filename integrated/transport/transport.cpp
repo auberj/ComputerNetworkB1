@@ -1,4 +1,4 @@
-#define MAXMESSAGELENGTH 114
+#define MAXMESSAGELENGTH 50
 #define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
 #define TIMEOUTMILLIS 1000 //milliseconds for acknowledgement timeout, then segment is resent
 
@@ -38,6 +38,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     //     put_string(".");
     // }
 
+<<<<<<< HEAD
     // if (encryption)
     //     rc4(sessionkey, sdata);
 
@@ -50,11 +51,34 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     // if (encryption)
     //     rc4("password", sdata);
 
+=======
+    // put_string("\r\n");
+
+    // if (encryption)
+    //     rc4(sessionkey, sdata);
+
     // for (int k = 0; k < sdatalength; k++)
     // {
     //     put_number(sdata[k]);
     //     put_string(".");
     // }
+
+    // put_string("\r\n");
+
+    // if (encryption)
+    //     rc4("password", sdata);
+
+>>>>>>> origin/master
+    // for (int k = 0; k < sdatalength; k++)
+    // {
+    //     put_number(sdata[k]);
+    //     put_string(".");
+    // }
+<<<<<<< HEAD
+=======
+
+    // put_string("\r\n");
+>>>>>>> origin/master
 
 
     while (loop < numberofsegments)
@@ -83,6 +107,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         put_char(dest); 
         put_string(" from ");
         put_char(callsign);
+        _delay_ms(1000);
         display_segment(segment[loop]);
         put_string("\r\n");
 

@@ -428,46 +428,49 @@ int 	getPacket(char* packet){ //gets a packet from DLL and returns its type
 
 			switch (control1){
 				case Control1Hello:
-				PacketType = 1;
+					PacketType = 1;
 				break;
 				case Control1Neighbour:
-				PacketType = 2;
+					PacketType = 2;
 				break;
 				case Control1Message:
-				if(packet[3]==callsign){
-						PacketType = 3; //message is for me
-					}
-					else{ //if message is not for me then....
-						switch(control2){
-							case Control2SingleMessage: //message is a single hop
-								PacketType = 5; 		//drop it
+					if(packet[3]==callsign){
+							PacketType = 3; //message is for me
+							put_string("Message is for me\r\n");
+						}
+						else{ //if message is not for me then....
+							put_string("Message is for: \r\n");put_char(packet[3]);put_string("\r\n");
+							switch(control2){
+								case Control2SingleMessage: //message is a single hop
+									PacketType = 5; 		//drop it
+									break;
+
+									case Control2DoubleHop:
+									PacketType = 4; //message is a double hop but not for me
+									break;
+
+								case Control2FloodMessage: //message is to be flooded
+								PacketType = 7;
 								break;
 
-								case Control2DoubleHop:
-								PacketType = 4; //message is a double hop but not for me
-								break;
-
-							case Control2FloodMessage: //message is to be flooded
-							PacketType = 7;
-							break;
-
-							default:
-								PacketType = 7;	// if in doubt, flood it
+								default:
+									PacketType = 7;	// if in doubt, flood it
 								break;
 							}
 						}
 
-						break; 
+				break; 
 
-						default:
+				default:
 					PacketType = 6; //no readable packet
-					break;
-				}
+					put_string("no readable packet.\r\n");
+				break;
 			}
-
 		}
-		else{
+	}
+	else{
 		PacketType = 6; //no packet
+		put_string("no packet at all.\r\n");
 	}
 	//put_string("done.\r\n");
 	put_string("\r\nEND GET PACKET. Packet Type: ");put_number(PacketType);put_string("\r\n");

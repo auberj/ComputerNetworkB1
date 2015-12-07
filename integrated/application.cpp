@@ -44,6 +44,7 @@ int main()
     init_uart0();
     init_timer();
     put_string("\r\n\r\n\r\n\r\nInitialising...");
+    put_char(callsign);
     
     while(1){
         start:

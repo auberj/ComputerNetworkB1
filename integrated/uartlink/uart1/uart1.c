@@ -15,12 +15,17 @@ void init_uart1(void) //Function copied from Steve Gunn's library
 
 char get_1_char(void) //Function copied from Steve Gunn's library
 {
-	while(!(UCSR1A & _BV(RXC1)));
-	return UDR1;
+	unsigned long timeout = millis() + 10;
+	while((!(UCSR1A & _BV(RXC1))) && (timeout > millis()));
+	if (timeout > millis())
+		return UDR1;
+	else
+		return 0;
 }
 
 void put_1_char(char ch) //Function copied from Steve Gunn's library
 {
+
 	while (!(UCSR1A & _BV(UDRE1)));
 	UDR1 = ch;
 }

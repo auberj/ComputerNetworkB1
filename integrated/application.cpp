@@ -1,5 +1,3 @@
-#define __PLATFORM_AVR__
-
 char callsign;
 
 #include <avr/io.h>

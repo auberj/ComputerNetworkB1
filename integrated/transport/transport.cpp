@@ -1,4 +1,4 @@
-#define MAXMESSAGELENGTH 20
+#define MAXMESSAGELENGTH 114
 #define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
 #define TIMEOUTMILLIS 1000 //milliseconds for acknowledgement timeout, then segment is resent
 

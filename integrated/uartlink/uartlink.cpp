@@ -12,6 +12,8 @@ int RecievePacket(char* rpacket)
 	char temp = 'A';
 	int i = 0;
 
+	init_uart1();
+
 	while(temp != 0)
 	{
 		temp = get_1_char();

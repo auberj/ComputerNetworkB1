@@ -110,6 +110,7 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 
 	int packetType = getPacket(packet); //get packet from DLL
 	int PacketLength = strlen(packet);
+
 	//determine if I am intended recipient
 	switch (packetType){
 		case 0:
@@ -134,6 +135,7 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 		repeatPacketFlag = checkRecievedPacket(packet);
 			if(repeatPacketFlag==0){ 					//if not recieved before (prevents multiple packets being received in a flood)
 				returnval = 1;
+				*source = packet[2];
 				put_string("Not seen this packet before\r\n");
 			}
 			else {
@@ -153,7 +155,8 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 			//rsegment[PacketLength-7] = '\0';
 
 			//copy segment data 
-			returnval = 1;
+			//returnval = 1;
+			
 			break;
 
 		case 4: 										//packet is a message but not for me and is a double hop

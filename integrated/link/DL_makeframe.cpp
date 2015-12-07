@@ -17,7 +17,7 @@ void setchecksum(struct frame (*vals)[FRAMECOUNT]) {
             //strcat(checksumcalc,(char*)(*vals)[i].header);
             strcat(checksumcalc,(*vals)[i].data);
             
-            uint16_t crc = calccrc(checksumcalc, strlen(checksumcalc));
+            uint16_t crc = calcrc(checksumcalc, strlen(checksumcalc));
 
             (*vals)[i].checksum[0] = (uint8_t)(crc>>8);
             (*vals)[i].checksum[1] = (uint8_t)(crc & 0xff);

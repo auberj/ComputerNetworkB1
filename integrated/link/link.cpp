@@ -44,20 +44,6 @@ int bytestuff(char *str, int len) {
     return strlen(str);
 }
 
-uint16_t calccrc(char *str, int len) {
-    int i, r;
-    r = 0;
-    for(i = 0; i < len; i++) {
-        r = r ^ (str[i] << 8);
-        int j;
-        for(j = 0; j < 8; j++) {
-            r = (r&0x8000)? ((r<<1)^GENERATOR):(r<<1);
-            r = r & 0xffff;
-        } 
-    }
-    return r;
-}
-
 int test() {
     return 0;
 }
@@ -312,7 +298,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
         // put_string(Rframe);
         // put_string("\r\nstrlen: ");
         // put_number(strlen(Rframe));
-        if(!((long unsigned int)calccrc(Rframe, strlen(Rframe)))) {
+        if(!((long unsigned int)calcrc(Rframe, strlen(Rframe)))) {
             //put_string("\nNo Errors!\n");
             retval |= 1;
             int i;

@@ -1,3 +1,5 @@
+//Author: dm6g13
+
 #define __PLATFORM_AVR__
 
 #include <avr/io.h>
@@ -11,6 +13,8 @@
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
+uint16_t calcrc(char *ptr, int count);
+
 #include "physical/physical.cpp"
 #include "link/link.cpp"
 #include "network/network.cpp"
@@ -20,7 +24,6 @@
 //Yellow - D1
 //Orange - D0
 //Black - Ground.
-
 
 int main()
 {
@@ -191,4 +194,35 @@ int main()
        
     }
      return 0;
+}
+
+//XModem CRC calculator from https://github.com/vinmenn/Crc16
+//Modified by dm6g16
+uint16_t calcrc(char *ptr, int count)
+{ 
+    //put_string("calcCRC\r\n");
+    int  crc;
+    char i;
+    crc = 0;
+    while (--count >= 0)
+    {
+        crc = crc ^ (int) *ptr++ << 8;
+        i = 8;
+        do
+        {
+            if (crc & 0x8000)
+                crc = crc << 1 ^ 0x1021;
+            else
+                crc = crc << 1;
+        } while(--i);
+    }
+
+    //need to avoid 0x00 checksum so that strlen works
+    if ((crc >> 8) == 0x00) //If top byte of crc is 0x00
+        crc |= 0xFF00; //Set byte to 0xFF
+
+    if (!(crc & 0x00FF)) //if bottom byte of crc is 0x00
+        crc |= 0x00FF; //Set bottom byte to 0xFF
+
+    return (crc);
 }

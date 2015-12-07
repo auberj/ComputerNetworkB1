@@ -495,33 +495,7 @@ char 	calcNextHop(char dest){ //returns the next node to send data to
 	put_string("Function end: calcNextHop\r\n");
 	return nextHop;
 }
-uint16_t calcrc(char *ptr, int count){ //XModem CRC calculator from https://github.com/vinmenn/Crc16
-	//put_string("calcCRC\r\n");
-	int  crc;
-	char i;
-	crc = 0;
-	while (--count >= 0)
-	{
-		crc = crc ^ (int) *ptr++ << 8;
-		i = 8;
-		do
-		{
-			if (crc & 0x8000)
-				crc = crc << 1 ^ 0x1021;
-			else
-				crc = crc << 1;
-		} while(--i);
-	}
 
-	//need to avoid 0x00 checksum so that strlen works
-    if ((crc >> 8) == 0x00) //If top byte of crc is 0x00
-    	crc |= 0xFF00; //Set byte to 0xFF
-
-    if (!(crc & 0x00FF)) //if bottom byte of crc is 0x00
-    	crc |= 0x00FF; //Set bottom byte to 0xFF
-
-    return (crc);
-}
 int		checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 if not a duplicate
 	put_string("Function Begin: checkRepeatPacket\r\n");
 

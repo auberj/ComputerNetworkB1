@@ -65,7 +65,6 @@ int decode_frame(struct frame *framedata, char * Rframe);
 
 int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack, int frames);
 int bytestuff(char *str, int len);
-uint16_t calccrc(char *str, int len);
 void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack);
 void setfooter(struct frame (*vals)[FRAMECOUNT]);
 void dataInit(struct frame (*vals)[FRAMECOUNT]);

@@ -129,7 +129,7 @@ int SendPacket(char dest, char* Spacket) {
                 rfm12_tick();   
                 _delay_us(500); 
             }
-            _delay_ms(200);
+            _delay_ms(400);
         }
     }
 

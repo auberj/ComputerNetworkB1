@@ -158,6 +158,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
 
         if (crc == calcrc(segment, (strlen(segment)-2))) //if segment is valid
         {
+            put_string("Segent valid, sending acknowledgment\r\n\r\n")
             put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
             put_string("\r\n\r\n*******Returned to transport layer*******\r\n");

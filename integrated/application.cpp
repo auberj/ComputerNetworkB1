@@ -43,7 +43,7 @@ int main()
     sei();
     init_uart0();
     init_timer();
-    put_string("\r\n\r\n\r\n\r\nInitialising...\r\n");
+    put_string("\r\n\r\n\r\n\r\nInitialising...");
     
     while(1){
         char dest, source;
@@ -55,7 +55,7 @@ int main()
         char sessionkey[20] = {0};
         uint16_t i = 0;
 
-        put_string("\r\nEncrypt session ('Y' or 'N'): ");
+        put_string("\r\n\r\nEncrypt session ('Y' or 'N'): ");
         while(temp != '\r')
         {
             temp = get_char();
@@ -186,7 +186,7 @@ int main()
                         put_char(source);
                         put_string(" reads: \r\n");
                         put_string(message);
-                        return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
+                        //return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
                     }
                     else
                     {

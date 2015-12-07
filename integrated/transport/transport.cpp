@@ -147,18 +147,11 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
             copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
             *rmessageflag = segmenttotal - segmentnumber;
 
-<<<<<<< HEAD
             if (*rmessageflag == 0) //it was the last message so decrypt
             {
                 if (encryption) //Decrypt data...
                     rc4(sessionkey, rdata);
             }
-=======
-        if (*rmessageflag == 0) //it was the last message so decrypt
-        {
-            if (encryption) //Encrypt data...
-                rc4(sessionkey, rdata);
->>>>>>> origin/master
         }
     }
     return receiveflag;

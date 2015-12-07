@@ -32,35 +32,8 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     if (numberofsegments*MAXMESSAGELENGTH < sdatalength) 
         numberofsegments++;
 
-    for (int k = 0; k < sdatalength; k++)
-    {
-        put_number(sdata[k]);
-        put_string(".");
-    }
-
-    put_string("\r\n");
-
-    if (encryption)
+    if (encryption) //Encrypt data...
         rc4(sessionkey, sdata);
-
-    for (int k = 0; k < sdatalength; k++)
-    {
-        put_number(sdata[k]);
-        put_string(".");
-    }
-
-    put_string("\r\n");
-
-    if (encryption)
-        rc4("password", sdata);
-
-    for (int k = 0; k < sdatalength; k++)
-    {
-        put_number(sdata[k]);
-        put_string(".");
-    }
-
-    put_string("\r\n");
 
     while (loop < numberofsegments)
     {
@@ -86,8 +59,10 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
         put_string("\r\nSending segment to ");
         put_char(dest); 
-        put_string(" from ");
-        put_char(callsign);
+        put_string(", from ");
+        put_char(callsign); 
+        put_string(".");
+    
         display_segment(segment[loop]);
         put_string("\r\n");
 
@@ -180,11 +155,11 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
 void display_segment(char* segment)
 {
     uint8_t i = 0;
-    uint8_t encrypted, flag1, flag2;
+    uint8_t encryption, flag1, flag2;
     uint8_t segmentnumber, segmenttotal;
     uint16_t crc = 0;
 
-    ctrl_read(&encrypted, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
+    ctrl_read(&encryption, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
 
     put_string("\r\n\r\nDecoding segment that is ");
     put_number(strlen(segment));
@@ -208,9 +183,14 @@ void display_segment(char* segment)
     put_string("\r\nMessage Length: ");
     put_number((uint8_t)segment[4]);
 
-    put_string("\r\nMessage: ");
-    for (i = 0; i<(strlen(segment)-7); i++)
-        put_char(segment[i+5]);
+    if (encryption)
+        put_string("\r\nMessage encrypted, cannot decode");
+    else
+    {
+        put_string("\r\nMessage: ");
+        for (i = 0; i<(strlen(segment)-7); i++)
+            put_char(segment[i+5]);
+    }
 
     put_string("\r\nCRC: ");;
     crc = (segment[strlen(segment) - 2] << 8);

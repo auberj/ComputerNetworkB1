@@ -3,7 +3,7 @@
 
 void init_uart0(void)
 {
-	/* Configure 9600 baud, 8-bit, no parity and one stop bit */
+	/* Configure 115200 baud, 8-bit, no parity and one stop bit */
 	const int baud_rate = 9600;
 	UBRR0H = (F_CPU/(baud_rate*16L)-1) >> 8;
 	UBRR0L = (F_CPU/(baud_rate*16L)-1);
@@ -21,6 +21,7 @@ void put_char(char ch)
 {
 	while (!(UCSR0A & _BV(UDRE0)));
 	UDR0 = ch;
+	//_delay_ms(1);
 }
 
 void put_string(char *str)

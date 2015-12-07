@@ -84,7 +84,7 @@ int SendPacket(char dest, char* Spacket) {
 
     for(i = 0; i < no_frames; i++) {
         send_complete = 0;
-        if(dest != BROADCAST) {
+        if((uint8_t)dest != (uint8_t)BROADCAST) {
             while(!send_complete) {
                 ///////////////////send//////////////////////
                 put_string("\r\n Send Frame: ");

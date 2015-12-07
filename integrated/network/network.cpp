@@ -290,7 +290,7 @@ void sendHello(){
 	for(int i=5;i<13;i++){
 		packet[i] = 'i';
 	}
-	//packetLength(packet,1);
+	displayPacket(packet,1);
 	int 	packetLength = strlen(packet);
 	uint16_t fullcrc = calcrc(packet, packetLength);
 
@@ -300,7 +300,7 @@ void sendHello(){
 	//char destination = 0xFF; //this is to flood a packet
 	int PacketLength = strlen(packet);
 	put_hex(packet[15],1);
-	//packetLength(packet,1);
+	displayPacket(packet,1);
 	put_string("passing to DLL\r\n");
 	put_string(packet);put_string("\r\n");
 	SendPacket(DLLFLOOD, packet);

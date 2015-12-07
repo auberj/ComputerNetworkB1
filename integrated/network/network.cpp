@@ -38,9 +38,10 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 
 	if(singleHopFlag==0){
 		for(int i=0;i<NumNeighbours;i++){
-			for(int j=1;j<(NumNeighbours+1);i++){
+			for(int j=1;j<(NumNeighbours+1);j++){
 				if(dest==twohops[i][j]){
 					doubleHopFlag = 1;
+					dest = twohops[i][0];
 					break;
 				}
 			}

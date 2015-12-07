@@ -585,7 +585,7 @@ void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: disp
 			// for(int i=5;i<(packetLength-2);i++){
 			// 	put_char(packet[i]);
 			// }
-			put_string("\r\n");put_string("Checksum: ");put_hex(packet[packetLength-2],1);ut_hex(packet[packetLength-1],1);put_string("\r\n");
+			put_string("\r\n");put_string("Checksum: ");put_hex(packet[packetLength-2],1);put_hex(packet[packetLength-1],1);put_string("\r\n");
 		break;
 	}
 	//put_string("Function End: displayPacket\r\n");

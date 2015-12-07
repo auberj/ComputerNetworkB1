@@ -12,6 +12,7 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
         uint8_t segmentnumber, uint8_t segmenttotal, char* ptr);
 void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr);
 uint8_t waitacknowledge(char dest, char* segment);
+void rc4(char *key, char *data);
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 {
@@ -31,7 +32,30 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     if (numberofsegments*MAXMESSAGELENGTH < sdatalength) 
         numberofsegments++;
 
-    //TODO write encryption
+    for (int k = 0; k < sdatalength; k++)
+    {
+        put_number(sdata[k]);
+        put_string(".");
+    }
+
+    if (encryption)
+        rc4(sessionkey, sdata);
+
+    for (int k = 0; k < sdatalength; k++)
+    {
+        put_number(sdata[k]);
+        put_string(".");
+    }
+
+    if (encryption)
+        rc4("password", sdata);
+
+    for (int k = 0; k < sdatalength; k++)
+    {
+        put_number(sdata[k]);
+        put_string(".");
+    }
+
 
     while (loop < numberofsegments)
     {
@@ -56,7 +80,9 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         segment[loop][messagelength+6] = crcbits & 0x00FF;
 
         put_string("\r\nSending segment to ");
-        put_char(dest);
+        put_char(dest); 
+        put_string(" from ");
+        put_char(callsign);
         display_segment(segment[loop]);
         put_string("\r\n");
 
@@ -197,8 +223,6 @@ void display_segment(char* segment)
 void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
         uint8_t* segmentnumber, uint8_t* segmenttotal, char* ptr) //Reads a segment's control bits
 {
-    //if (ptr[0] & (0x01 << 7)) //Needs to be one to be a segment but we can ignore
-    //Definitely a better way to do the below, but didn't work unless I do it longhand
     if(ptr[0] & (1 << 6))
         *encrypted = 1;
     else
@@ -224,8 +248,6 @@ void ctrl_read(uint8_t* encrypted, uint8_t* flag1, uint8_t* flag2,
 void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
         uint8_t segmentnumber, uint8_t segmenttotal, char* ptr) //Reads a segment's control bits
 {
-    //if (ptr[0] & (0x01 << 7)) //Needs to be one to be a segment but we can ignore
-    //Definitely a better way to do the below, but didn't work unless I do it longhand
 
     ptr[0] = 0;
     ptr[1] = 0;
@@ -292,4 +314,31 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
     }
     put_string("\r\n");
     return 1;
+}
+
+#define S_SWAP(a,b) do { int t = S[a]; S[a] = S[b]; S[b] = t; } while(0)
+
+void rc4(char *key, char *data) //function modified from https://github.com/shirokuade/RC4-Arduino/tree/master/RC4Encryption
+{ 
+     int i,j;
+     unsigned char S[256];
+          
+     for (i=0;i<256;i++)
+         S[i] = i;
+     
+     j = 0;
+
+     for (i=0;i<256;i++){
+         j = (j+S[i]+key[i%strlen(key)]) %256;    
+         S_SWAP(S[i],S[j]);
+     }
+
+     i = j = 0;
+     for (int k=0;k<strlen(data);k++){
+         i = (i+1) %256;
+         j = (j+S[i]) %256;
+         S_SWAP(S[i],S[j]);
+         data[k] = data[k]^S[(S[i]+S[j]) %256];
+     }
+     data[strlen(data)+1] = '\0';
 }

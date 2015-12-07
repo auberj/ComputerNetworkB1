@@ -41,7 +41,7 @@
 #define SUPEFRAME "SF"
 
 //built in addresses
-#define BROADCAST '\xff'
+#define BROADCAST 0xFF
 //#define THISDEVICE 'N' //0x74
 
 //CRC stuff

@@ -8,12 +8,11 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "application.h"
 #include "callsign.h"
 
 #include "timer/timer.cpp"
 #include "uart/uart.c"
-
-uint16_t calcrc(char *ptr, int count);
 
 #include "physical/physical.cpp"
 #include "link/link.cpp"
@@ -151,11 +150,6 @@ int main()
                 }
                 _delay_ms(1);
             }
-
-            put_string("\r\n\r\n");
-            put_number(strlen(message));
-            put_string(" character long message reads: \r\n");
-            put_string(message);
 
             int error = SendData(dest, message, encryption, sessionkey);
             if (error) put_string("Error sending message");

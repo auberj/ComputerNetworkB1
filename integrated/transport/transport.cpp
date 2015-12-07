@@ -15,6 +15,17 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
 	char segment[MAXSEGMENTS][MAXMESSAGELENGTH+8] = {'\0'}; //Initialisation is important
 
+    put_string("\r\n\r\n");
+    put_number(strlen(sdata));
+    put_string(" character long message from ");
+    put_char(callsign);
+    put_string(" to ");
+    put_char(dest);
+    put_string(" reads: \r\n");
+    put_string(sdata);
+
+    put_string("\r\n\r\nEncoding segment...");
+
     sdatalength = strlen(sdata);
 
     uint8_t numberofsegments = (uint8_t)(sdatalength/MAXMESSAGELENGTH);
@@ -48,19 +59,16 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         segment[loop][messagelength+5] = crcbits >> 8;
         segment[loop][messagelength+6] = crcbits & 0x00FF;
 
-        put_string("\r\n\r\nCallsign: \r\n");
-        put_char(callsign); 
-        put_string("\r\nDestination: \r\n");
-        put_char(dest);     
+        put_string("segment encoded."); 
     
         display_segment(segment[loop]);
         put_string("\r\n\r\n");
 
         while(i)
         {
-            put_string("Passing to network layer.\r\n\r\n");
+            put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(dest, segment[loop]);
-            put_string("\r\n\r\n Returned from network layer.\r\n");
+            put_string("\r\n\r\n*******Returned from network layer*******\r\n");
 
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
 
@@ -87,7 +95,9 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
     uint8_t segmentnumber, segmenttotal;
     uint16_t crc = 0;
 
+    put_string("*******Passing to network layer*******\r\n\r\n");
     receiveflag = RecieveSegment(source, segment);
+    put_string("\r\n\r\n*******Returned from network layer*******\r\n");
 
     // if (millis() > 2000); //This is dummy received data representing Hello World!
     // {
@@ -134,7 +144,9 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
 
         if (crc == calcrc(segment, (strlen(segment)-2))) //if segment is valid
         {
+            put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
+            put_string("\r\n\r\n*******Returned from network layer*******\r\n");
 
             copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
             *rmessageflag = segmenttotal - segmentnumber;
@@ -173,6 +185,12 @@ void display_segment(char* segment)
     else
         put_string("No");
 
+    put_string("\r\nFlag1: ");
+    put_number(flag1);
+
+    put_string("\r\nFlag2: ");
+    put_number(flag2);
+
     put_string("\r\nSegment: ");
     put_number(segmentnumber);
     put_string(" of ");
@@ -187,7 +205,7 @@ void display_segment(char* segment)
     put_number((uint8_t)segment[4]);
 
     if (encryption)
-        put_string("\r\nMessage encrypted, cannot decode");
+        put_string("\r\nMessage: Encrypted - cannot decode");
     else
     {
         put_string("\r\nMessage: ");
@@ -280,7 +298,9 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
         for (i = 0; i < MAXMESSAGELENGTH; i++)
             receivedsegment[i] = '\0';
 
+        put_string("*******Passing to network layer*******\r\n\r\n");
         RecieveSegment(&source, receivedsegment);
+        put_string("\r\n\r\n*******Returned from network layer*******\r\n");
 
         if (strlen(receivedsegment)) //If anything is actually there
         {

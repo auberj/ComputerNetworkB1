@@ -39,7 +39,7 @@ int 	oldTime;
 //provide to transport layer:
 int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string("Function Begin: SendSegment\r\n");
-	periodicHello();
+	//periodicHello();
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
 	char 	packet[MaxPacketLength] = {0}; //only 7 other bits but need a null!
@@ -85,7 +85,8 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	packet[2] = callsign;
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
-
+	displayPacket(packet,1);
+	//put_char(dest);
 	put_string("Copying in ");put_number(segmentLength);put_string(" segment bytes\r\n");
 	for(int i=0;i<segmentLength;i++){
 		packet[i+5] = segment[i];
@@ -100,7 +101,7 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	packetLength = strlen(packet);
 	displayPacket(packet,1);
 	put_string("***passing to DLL***\r\n");
-	put_string(packet);put_string("\r\n");
+	displayPacket(packet,2);
 	SendPacket(dlladdress,packet);
 	put_string("***return from DLL***\r\n");
 	put_string("Function End: SendSegment\r\n");
@@ -601,14 +602,18 @@ void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: disp
 
 	switch(command){
 		case 1:
-			put_string("1. packet length: ");put_number(packetLength);put_string("\r\n");
+			put_string("Packet length: ");put_number(packetLength);put_string("\r\n");
 		break;
 
 		case 2:
-			for(int i=0;i<(packetLength-2);i++){
-				put_char(packet[i]);
-			}
-			put_hex(packet[packetLength-2],2);put_string("\r\n");
+			put_string("Control Bytes: ");put_char(packet[0]);put_char(packet[1]);put_string("\r\n");
+			put_string("Source: ");put_char(packet[2]);put_string("\r\n");
+			put_string("Dest: ");put_char(packet[3]);put_string("\r\n");
+			// put_string("segment: ");
+			// for(int i=5;i<(packetLength-2);i++){
+			// 	put_char(packet[i]);
+			// }
+			put_string("\r\n");put_string("Checksum: ");put_hex(packet[packetLength-2],2);put_string("\r\n");
 		break;
 	}
 	return;

@@ -69,7 +69,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
         {
             put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(dest, segment[loop]);
-            put_string("\r\n\r\n*******Returned from network layer*******\r\n");
+            put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
 
@@ -107,7 +107,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
 
     put_string("*******Passing to network layer*******\r\n\r\n");
     receiveflag = RecieveSegment(source, segment);
-    put_string("\r\n\r\n*******Returned from network layer*******\r\n");
+    put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
     // if (millis() > 2000); //This is dummy received data representing Hello World!
     // {
@@ -160,7 +160,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         {
             put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
-            put_string("\r\n\r\n*******Returned from network layer*******\r\n");
+            put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
             copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
             *rmessageflag = segmenttotal - segmentnumber;
@@ -314,7 +314,7 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
 
         put_string("*******Passing to network layer*******\r\n\r\n");
         RecieveSegment(&source, receivedsegment);
-        put_string("\r\n\r\n*******Returned from network layer*******\r\n");
+        put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
         if (strlen(receivedsegment)) //If anything is actually there
         {

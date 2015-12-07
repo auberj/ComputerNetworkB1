@@ -1,8 +1,5 @@
 //Author dm6g13
 
-#include <inttypes.h>
-#include <avr/io.h>
-
 void init_uart0(void); //Function copied from Steve Gunn's library
 
 char get_char(void); //Function copied from Steve Gunn's library

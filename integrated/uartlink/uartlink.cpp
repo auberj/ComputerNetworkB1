@@ -8,6 +8,7 @@ int SendPacket(char dest, char* spacket)
 
 int RecievePacket(char* rpacket)
 {
+	put_string(rpacket);
 	while(!(strlen(rpacket)))
 	{
 		char temp = 'A';

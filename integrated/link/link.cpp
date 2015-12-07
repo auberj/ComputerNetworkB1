@@ -349,7 +349,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             framedata->data[(int)framedata->length[0]] = 0;
             put_string("\r\nRframe.data: ");
             put_string(framedata->data);
-            if(framedata->address[1] == BROADCAST || framedata->address[1] == callsign) {
+            if((uint8_t)framedata->address[1] == (uint8_t)BROADCAST || (uint8_t)framedata->address[1] == (uint8_t)callsign) {
                 put_string("\r\nFrame for me!");
                 retval |= 1 << 1;
                 if(framedata->control[1] == START) {

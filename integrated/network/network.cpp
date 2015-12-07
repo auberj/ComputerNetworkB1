@@ -506,6 +506,7 @@ char 	calcNextHop(char dest){ //returns the next node to send data to
 	return nextHop;
 }
 uint16_t calcrc(char *ptr, int count){ //XModem CRC calculator from https://github.com/vinmenn/Crc16
+	put_string("calcCRC\r\n");
 	int  crc;
 	char i;
 	crc = 0;
@@ -604,7 +605,7 @@ void	displaySegment(char* packet){
 	return;
 }
 void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: display whole packet
-	put_string("Function Begin: displayPacket\r\n");
+	//put_string("Function Begin: displayPacket\r\n");
 	int 	packetLength = strlen(packet);
 
 	switch(command){
@@ -623,7 +624,7 @@ void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: disp
 			put_string("\r\n");put_string("Checksum: ");put_hex(packet[packetLength-2],2);put_string("\r\n");
 		break;
 	}
-	put_string("Function Begin: displayPacket\r\n");
+	//put_string("Function End: displayPacket\r\n");
 	return;
 }
 

@@ -41,10 +41,10 @@ int main()
     init_timer();
     put_string("\r\n\r\n\r\n\r\nInitialising...");
 
-    //send();
-    receive();
+    send();
+    //receive();
 
-    // char test[50] = "this is a long string which will be split";
+    // char test[50] = "New and different string to be tested";
     // struct frame frames[FRAMECOUNT];
     // int count = makeframe(&frames, BROADCAST, test, 0);
     // struct frame receivestuff;
@@ -54,14 +54,27 @@ int main()
     //     decode_frame(&receivestuff, frames[i].frame);
     //     put_string("\r\ndecoded data: ");
     //     put_string(receivestuff.data);
-    //}
+    // }
     
 
 }
 
 void send() {
-    char random[120] = "hello aaron rowland, this is a string which should get";
+    char random[120] = "hello nathan, this is a longer string to test stuff";
     SendPacket(callsign,random);
+    // while(1){
+
+    //     put_string("\r\nsend: ");
+    //     put_string(random);
+    //     rfm12_tx(strlen(random), 0, (uint8_t*)random);
+    //     for (uint8_t j = 0; j < 100; j++)   
+    //     {   
+    //             put_string(". ");
+    //             rfm12_tick();   
+    //             _delay_us(500); 
+    //     }
+    //     _delay_ms(500);
+    // }
 }
 
 void receive() {

@@ -32,8 +32,8 @@
 #define HEADER '\x73'
 #define FOOTER '\x72'
 #define ESCAPE '\x61'
-#define START '\x35'
-#define END '\x35'
+#define START '1'
+#define END '0'
 //default addresses
  
 //control bits
@@ -57,6 +57,7 @@ struct frame {
 	char checksum[CHECKSUMLEN+1];
 	char footer[FOOTERLEN+1];
 	char frame[FRAMELEN + 1];
+	char lastframe;
 };
 
 void unbytestuff(char *Rframe);

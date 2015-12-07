@@ -88,10 +88,12 @@ int SendPacket(char dest, char* Spacket) {
             ///////////////////send//////////////////////
             put_string("\r\n Send Frame: ");
             put_string(data[i].frame);
+            put_string("\r\n Frame Length: ");
+            put_number(strlen(data[i].frame));
             rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
             for (uint8_t j = 0; j < 100; j++)   
             {   
-                //put_string(". ");
+                put_string(". ");
                 rfm12_tick();   
                 _delay_us(500); 
             }
@@ -161,7 +163,7 @@ int RecievePacket(char* Rpacket) {
             pass to network
     */
     int i = 0;
-    //if (rfm12_rx_status() == STATUS_COMPLETE) { //Status complete 1 - passes this section
+    if (rfm12_rx_status() == STATUS_COMPLETE) { //Status complete 1 - passes this section
         put_char('.');
         uint8_t* bufptr;
         char Rframe[50], ackstr[50];
@@ -169,7 +171,7 @@ int RecievePacket(char* Rpacket) {
         struct frame Nrframe[FRAMECOUNT];
         struct frame ackarr[FRAMECOUNT];
         int Received_Final_frame = 0;
-        long int timeout = millis() + 1000;
+        unsigned long timeout = millis() + 1000;
         while(!Received_Final_frame && (millis() < timeout)){ //never passes this while statement
                                                                 //Also maybe add RFM12B tick??
             //int Rframe_len;
@@ -232,7 +234,7 @@ int RecievePacket(char* Rpacket) {
                 }
 
             }
-        //}
+        }
         if(i && i < FRAMECOUNT) {
             put_string("\r\nPacketComplete\n\r");
             strcpy(Rpacket, Nrframe[0].data);

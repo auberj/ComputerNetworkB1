@@ -40,8 +40,8 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
             segment[loop][j] = 0;
 
         ctrl_write(encryption, 0, 0, loop+1, numberofsegments, segment[loop]);
-        segment[loop][2] = 0xFF; //Source port
-        segment[loop][3] = 0xFF; //Dest port
+        segment[loop][2] = 255; //Source port
+        segment[loop][3] = 255; //Dest port
 
         if (loop != numberofsegments - 1)
             messagelength = MAXMESSAGELENGTH;

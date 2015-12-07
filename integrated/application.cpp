@@ -1,3 +1,5 @@
+#define __PLATFORM_AVR__
+
 char callsign;
 
 #include <avr/io.h>
@@ -80,7 +82,7 @@ int main()
 
         temp = 0;
 
-        if (encryption == 'Y')
+        if (encryption)
         {
             put_string("\r\nEnter session key: ");
             while(temp != '\r')

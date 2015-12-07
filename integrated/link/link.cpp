@@ -350,7 +350,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             put_string("\r\nRframe.data: ");
             put_string(framedata->data);
             if(framedata->address[1] == BROADCAST || framedata->address[1] == callsign) {
-                put_string("\r\nPacket for me!");
+                put_string("\r\nFrame for me!");
                 retval |= 1 << 1;
                 if(framedata->control[1] == START) {
                     retval |= 1<< 3;
@@ -377,6 +377,11 @@ int decode_frame(struct frame *framedata, char * Rframe) {
 
         }
         else {
+            put_string("\r\nDestination address: ");
+            put_number(framedata->address[1]);
+            put_string("\r\nBroadcast address: ");
+            put_number(BROADCAST);
+
             // error in transmission
             //retval = 1;
             put_string("\r\nCRC failed");

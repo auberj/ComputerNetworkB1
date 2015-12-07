@@ -28,6 +28,7 @@ void put_1_char(char ch) //Function copied from Steve Gunn's library
 
 	while (!(UCSR1A & _BV(UDRE1)));
 	UDR1 = ch;
+	_delay_ms(10);
 }
 
 void put_1_string(char *str) //Function copied from Steve Gunn's library
@@ -35,4 +36,9 @@ void put_1_string(char *str) //Function copied from Steve Gunn's library
 	int i;
 	//for(i=0; i<stringlength; i++) put_1_char(str[i]);
 	for(i=0; str[i]; i++) put_1_char(str[i]);
+}
+
+void UART_flush(){ //ner1g13
+	unsigned char dummy;
+	while(UCSR1A & (1<<RXC1)) dummy = UDR1;
 }

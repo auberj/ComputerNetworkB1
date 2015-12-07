@@ -15,3 +15,5 @@ void put_number(uint16_t number); //Displays a number using sprintf. Can display
 void put_hex(unsigned long hex, uint8_t bytes); //Displys 1 to 4 bytes in hex (if you want up to 8, change 'long'to 'long long')
 
 void put_binary(uint8_t byte); //Displys a byte in binary
+
+void UART_flush();

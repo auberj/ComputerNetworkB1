@@ -46,6 +46,8 @@ int main()
     put_string("\r\n\r\n\r\n\r\nInitialising...");
     
     while(1){
+        start:
+        
         char dest, source;
         char mode;
         char encryption;
@@ -186,7 +188,7 @@ int main()
                         put_char(source);
                         put_string(" reads: \r\n");
                         put_string(message);
-                        //return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
+                        goto start; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
                     }
                     else
                     {

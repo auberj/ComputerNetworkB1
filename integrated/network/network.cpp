@@ -55,7 +55,9 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	char 	dlladdress;
 
 	packetLength = strlen(packet);
-	displayPacket(packet,1); 
+	displayPacket(packet,1);
+
+	//replace with isaneighbour 
 	for(int i=0;i<NumNeighbours;i++){
 		if(dest==neighbours[i]){
 			singleHopFlag = 1;

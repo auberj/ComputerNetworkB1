@@ -298,13 +298,13 @@ int decode_frame(struct frame *framedata, char * Rframe) {
         // put_string(Rframe);
         // put_string("\r\nstrlen: ");
         // put_number(strlen(Rframe));
-        uint16_t crc = (segment[strlen(segment) - 2] << 8);
-        crc |= (segment[strlen(segment) - 1] & 0x00ff);
+        uint16_t crc = (Rframe[strlen(segment) - 2] << 8);
+        crc |= (Rframe[strlen(Rframe) - 1] & 0x00ff);
         //put_hex(crc, 2);
 
         //put_string("\r\nSegment Valid: ");
         //put_hex(calcrc(segment, (strlen(segment)-2)), 2);
-        if(crc == calcrc(Rframe, (strlen(segment)-2))) {
+        if(crc == calcrc(Rframe, (strlen(Rframe)-2))) {
             //put_string("\nNo Errors!\n");
             retval |= 1;
             int i;

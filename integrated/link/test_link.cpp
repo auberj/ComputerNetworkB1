@@ -5,7 +5,7 @@
 #include <avr/interrupt.h>
 #include <string.h>
 #include <stdio.h>
-
+char callsign = 'H';
 //#include "lcd/avrlcd.h"
 //#include "lcd/font.c"
 //#include "lcd/ili934x.c"
@@ -42,31 +42,32 @@ int main()
     put_string("\r\n\r\n\r\n\r\nInitialising...");
 
     //send();
-    //receive();
+    receive();
 
-    char test[50] = "this is a long string which will be split";
-    struct frame frames[FRAMECOUNT];
-    int count = makeframe(&frames, BROADCAST, test, 0);
-    struct frame receivestuff;
-    for(int i = 0; i < count; i++) {
-        put_string("\r\nBeforeDecode: ");
-        put_string(frames[i].frame);
-        decode_frame(&receivestuff, frames[i].frame);
-        put_string("\r\ndecoded data: ");
-        put_string(receivestuff.data);
-    }
+    // char test[50] = "this is a long string which will be split";
+    // struct frame frames[FRAMECOUNT];
+    // int count = makeframe(&frames, BROADCAST, test, 0);
+    // struct frame receivestuff;
+    // for(int i = 0; i < count; i++) {
+    //     put_string("\r\nBeforeDecode: ");
+    //     put_string(frames[i].frame);
+    //     decode_frame(&receivestuff, frames[i].frame);
+    //     put_string("\r\ndecoded data: ");
+    //     put_string(receivestuff.data);
+    //}
     
 
 }
 
 void send() {
     char random[120] = "hello aaron rowland, this is a string which should get";
-    SendPacket(BROADCAST,random);
+    SendPacket(callsign,random);
 }
 
 void receive() {
     char Rpacket[125];
     while(1) {
+        put_char('.');
         if(RecievePacket(Rpacket)) {
             put_string("\r\nRecievePacket: ");
             put_string(Rpacket);

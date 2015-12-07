@@ -99,7 +99,7 @@ int SendPacket(char dest, char* Spacket) {
                     _delay_us(500); 
                 }
 
-                time = millis() + 100;
+                time = millis() + 500;
 
                 while((millis() != time)) {
                     ///////////check for acknowledgemt/////////////////
@@ -137,13 +137,13 @@ int SendPacket(char dest, char* Spacket) {
             put_string("\r\n Frame Length: ");
             put_number(strlen(data[i].frame));
             rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
-            for (uint8_t j = 0; j < 1000; j++)   
+            for (uint8_t j = 0; j < 100; j++)   
             {   
                 put_string(". ");
                 rfm12_tick();   
                 _delay_us(500); 
             }
-
+            _delay_ms(200);
         }
     }
 
@@ -227,7 +227,7 @@ int RecievePacket(char* Rpacket) {
                     frame received, frame for me
                     acknowledge
                     */
-                    if(Rframe_check & 1<<5) {
+                    if(!(Rframe_check & 1<<5)) {
                         ackarr[0] = Nrframe[i];
                         makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
                         put_string("\r\nacknowledgement: ");

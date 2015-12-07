@@ -1,32 +1,3 @@
-//#include "class_definitions.h"
-
-//control bit definitions
-#define Control1Hello 'H'
-#define Control2Hello 'O'
-
-#define Control1Neighbour 'N'
-
-#define Control1Message 'M'
-#define Control2SingleMessage 'S'
-#define Control2FloodMessage 'F'
-#define Control2DoubleHop 'D'
-
-#define DLLFLOOD 0xFF //address to send to DLL when I want everyone to get the packet
-
-#define MaxSegmentLength 0x79
-#define HelloTimeout 500 //milliseconds
-//checksum definitions
-#define HelloChecksum 0x00
-
-#define NumNeighbours 10 //can have up to ten neighbours
-
-#define HelloPacketLength 15
-#define MaxPacketLength 128
-
-
-
-#define NumOldPackets 20 //the number of old packets to check for retransmission multiplied by 2
-
 #include "network.h"
 #include <stdio.h>
 //global vars
@@ -64,6 +35,18 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 			break; //no need to check the rest of the table
 		}
 	}
+
+	if(singleHopFlag==0){
+		for(int i=0;i<NumNeighbours;i++){
+			for(int j=1;j<(NumNeighbours+1);i++){
+				if(dest==twohops[i][j]){
+					doubleHopFlag = 1;
+					break;
+				}
+			}
+		}
+	}
+	
 
 	//to-do check if double hop!
 	put_string("Setting control bytes...");

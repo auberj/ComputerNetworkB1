@@ -2,13 +2,12 @@
 
 #define __PLATFORM_AVR__
 
+#include "callsign.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <string.h>
 #include <stdio.h>
-
-#include "callsign.h"
 
 #include "timer/timer.cpp"
 #include "uart/uart.c"

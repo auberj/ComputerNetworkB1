@@ -14,8 +14,15 @@
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
+
+
+#ifdef i2clink
+#include "i2clink/i2clink.cpp"
+#else
 #include "physical/physical.cpp"
 #include "link/link.cpp"
+#endif
+
 #include "network/network.cpp"
 #include "transport/transport.cpp"
 

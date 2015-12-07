@@ -15,12 +15,6 @@
 
 #include "DL_makeframe.cpp"
 
-
-
-
-
-
-
 int bytestuff(char *str, int len) {
     int i;
     char temp[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN + CHECKSUMLEN + FOOTERLEN + 10] = "";

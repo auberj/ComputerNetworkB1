@@ -13,6 +13,7 @@ void ctrl_write(uint8_t encrypted, uint8_t flag1, uint8_t flag2,
 void copyin(char* dest, char* source, uint8_t start, uint8_t number, uint16_t srcptr);
 uint8_t waitacknowledge(char dest, char* segment);
 void rc4(char *key, char *data);
+void rc4(char *key, char *data);
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 {
@@ -301,12 +302,18 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
     return 1;
 }
 
-#define S_SWAP(a,b) { int t = S[a]; S[a] = S[b]; S[b] = t; }
+void swap(char* a, char* b)
+{
+    char temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
 void rc4(char *key, char *data) //function modified from https://github.com/shirokuade/RC4-Arduino/tree/master/RC4Encryption
 { 
      int i,j;
-     unsigned char S[256];
+     char S[256];
           
      for (i=0;i<256;i++)
          S[i] = i;
@@ -315,14 +322,14 @@ void rc4(char *key, char *data) //function modified from https://github.com/shir
 
      for (i=0;i<256;i++){
          j = (j+S[i]+key[i%strlen(key)]) %256;    
-         S_SWAP(i,j);
+         swap(&S[i],&S[j]);
      }
 
      i = j = 0;
      for (int k=0;k<strlen(data);k++){
          i = (i+1) %256;
          j = (j+S[i]) %256;
-         S_SWAP(i,j);
+         swap(&S[i],&S[j]);
          data[k] = data[k]^S[(S[i]+S[j]) %256];
      }
      data[strlen(data)+1] = '\0';

@@ -32,29 +32,29 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     if (numberofsegments*MAXMESSAGELENGTH < sdatalength) 
         numberofsegments++;
 
-    for (int k = 0; k < sdatalength; k++)
-    {
-        put_number(sdata[k]);
-        put_string(".");
-    }
+    // for (int k = 0; k < sdatalength; k++)
+    // {
+    //     put_number(sdata[k]);
+    //     put_string(".");
+    // }
 
-    if (encryption)
-        rc4(sessionkey, sdata);
+    // if (encryption)
+    //     rc4(sessionkey, sdata);
 
-    for (int k = 0; k < sdatalength; k++)
-    {
-        put_number(sdata[k]);
-        put_string(".");
-    }
+    // for (int k = 0; k < sdatalength; k++)
+    // {
+    //     put_number(sdata[k]);
+    //     put_string(".");
+    // }
 
-    if (encryption)
-        rc4("password", sdata);
+    // if (encryption)
+    //     rc4("password", sdata);
 
-    for (int k = 0; k < sdatalength; k++)
-    {
-        put_number(sdata[k]);
-        put_string(".");
-    }
+    // for (int k = 0; k < sdatalength; k++)
+    // {
+    //     put_number(sdata[k]);
+    //     put_string(".");
+    // }
 
 
     while (loop < numberofsegments)

@@ -60,7 +60,7 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 			break; //no need to check the rest of the table
 		}
 	}
-
+	put_string("Setting control bytes...");
 	packet[0] = Control1Message;
 
 	if(singleHopFlag==1){
@@ -81,12 +81,14 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 		put_string("flood\r\n");
 		dlladdress = DLLFLOOD;
 	}
-	
+	put_string("Done\r\n");
 	packet[2] = callsign;
 	packet[3] = dest;
 	packet[4] = (char)segmentLength;
 	displayPacket(packet,1);
-	//put_char(dest);
+	put_string("Callsign and Dest\r\n");put_char(callsign);put_char(packet[2]);put_char(dest);put_char(packet[3]);
+
+
 	put_string("Copying in ");put_number(segmentLength);put_string(" segment bytes\r\n");
 	for(int i=0;i<segmentLength;i++){
 		packet[i+5] = segment[i];

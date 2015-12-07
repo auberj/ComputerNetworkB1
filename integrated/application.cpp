@@ -1,6 +1,6 @@
 #define __PLATFORM_AVR__
 
-#define callsign 'A' //Change this!
+#define callsign 'N' //Change this! put to A when syncing
 
 #include <avr/io.h>
 #include <util/delay.h>

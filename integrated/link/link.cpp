@@ -370,6 +370,10 @@ int decode_frame(struct frame *framedata, char * Rframe) {
             }
             else {
                 // not intended recepient
+                put_string("\r\nDestination address: ");
+                put_number(framedata->address[1]);
+                put_string("\r\nBroadcast address: ");
+                put_number(BROADCAST);
                 put_string("\r\nNot for me!\n");
                 //retval = 1;
             }
@@ -377,10 +381,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
 
         }
         else {
-            put_string("\r\nDestination address: ");
-            put_number(framedata->address[1]);
-            put_string("\r\nBroadcast address: ");
-            put_number(BROADCAST);
+
 
             // error in transmission
             //retval = 1;

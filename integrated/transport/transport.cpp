@@ -137,16 +137,20 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         display_segment(segment);
         put_string("\r\n");
 
-        SendSegment(*source, segment); //Acknowledge the segment
+        SendSegment(*source, segment); //Acknowledge the segment - need to do this better
 
-        //TODO read flags properly eg encryption
-        //TODO decryption
         //TODO check segment valid
         //TODO piece segement back together into message
 
         //todo receive flag = 2 if message incomplete
         copyin(rdata, segment, 0, segmentlength-7, 5);
         *rmessageflag = segmenttotal - segmentnumber;
+
+        if (*rmessageflag == 0) //it was the last message so decrypt
+        {
+            if (encryption) //Encrypt data...
+                rc4(sessionkey, sdata);
+        }
     }
     
 
@@ -332,5 +336,5 @@ void rc4(char *key, char *data) //function modified from https://github.com/shir
          swap(&S[i],&S[j]);
          data[k] = data[k]^S[(S[i]+S[j]) %256];
      }
-     data[strlen(data)+1] = '\0';
+     //data[strlen(data)+1] = '\0';
 }

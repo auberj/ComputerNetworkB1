@@ -38,7 +38,7 @@ int 	oldTime;
 
 //provide to transport layer:
 int 	SendSegment(char dest, char* segment){ //provide this to transport layer
-	put_string("\r\nBEGIN SEND SEGMENT\r\n");
+	put_string("Function Begin: SendSegment\r\n");
 	periodicHello();
 	int 	segmentLength = strlen(segment);
 	put_string("\r\nsegment length: ");put_number(segmentLength);put_string("\r\n");
@@ -103,11 +103,11 @@ int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	put_string(packet);put_string("\r\n");
 	SendPacket(dlladdress,packet);
 	put_string("***return from DLL***\r\n");
-	put_string("\r\nEND SEND SEGMENT\r\n");
+	put_string("Function End: SendSegment\r\n");
 	return 0;
 }
 int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport layer, return 0 if no segment available
-	put_string("\r\nBEGIN RECEIVE SEGMENT\r\n");
+	put_string("Function Begin: RecieveSegment\r\n");
 	//create variables
 	char 	packet[MaxPacketLength] = {0}; //assume max length
 	int 	returnval = 0;
@@ -164,18 +164,18 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 			break;
 
 		case 4: 										//packet is a message but not for me and is a double hop
-		put_string("message not for me.\r\n");
+		put_string("message not for me. is a 2hop\r\n");
 
 
-		repeatPacketFlag = checkRepeatPacket(packet);
-		neighbourFlag = isANeighbour(packet);
+		// repeatPacketFlag = checkRepeatPacket(packet);
+		// neighbourFlag = isANeighbour(packet);
 
-			if((repeatPacketFlag==0)&&(neighbourFlag==1)){ //if not trasmitted before and a neighbour
-				put_string("retransmiting packet: ");
-				put_string(packet);put_string("\r\n");
-				SendPacket(packet[3],packet); //destination address is used here as messages can only be sent 2 hops directly
-			}
-			else{put_string("already retransmitted\r\n");};
+		// 	if((repeatPacketFlag==0)&&(neighbourFlag==1)){ //if not trasmitted before and a neighbour
+		// 		put_string("retransmiting packet: ");
+		// 		displayPacket(packet,2);
+		// 		SendPacket(packet[3],packet); //destination address is used here as messages can only be sent 2 hops directly
+		// 	}
+		// 	else{put_string("already retransmitted\r\n");};
 			returnval = 0; //nothing to pass up to TRAN layer
 			break;
 
@@ -193,16 +193,17 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 		repeatPacketFlag = checkRepeatPacket(packet);
 			if(repeatPacketFlag==0){ //if not trasmitted before and a neighbour
 				put_string("flooding packet: ");
-				put_string(packet);put_string("\r\n");
+				displayPacket(packet,2);
 				SendPacket(DLLFLOOD,packet); //flood it
 			}
 		break;
 	}
 
-	put_string("\r\nEND RECEIVE SEGMENT\r\n");
+	put_string("Function End: RecieveSegment\r\n");
 	return returnval;
 }
 void 	processHello(char* packet){
+	put_string("Function Begin: processHello\r\n");
 	char 	neighbour[1];
 	//int 	NumNeighbours = (sizeof(neighbours)/sizeof(neighbours[0]));
 
@@ -247,8 +248,10 @@ void 	processHello(char* packet){
 	}
 
 	put_string("neighbour processed\r\n");
+	put_string("Function End: processHello\r\n");
 }
 void 	periodicHello(){
+	put_string("Function Begin: periodicHello\r\n");
 		int 	currentTime = millis();
 
 		if(currentTime>(oldTime+HelloTimeout)){
@@ -256,9 +259,11 @@ void 	periodicHello(){
 		}
 
 		oldTime = currentTime;
+		put_string("Function End: periodicHello\r\n");
 		return;
 }
 int 	isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if not
+	put_string("Function Begin: isANeighbour\r\n");
 	int neighbourFlag = 0;
 
 	for(int i=0;i<NumNeighbours;i++){
@@ -271,9 +276,11 @@ int 	isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if
 	if(neighbourFlag==0){
 		put_string("This person is NOT a neighbour\r\n");
 	}
+	put_string("Function End: isANeighbour\r\n");
 	return neighbourFlag;
 }
 void 	sendHello(){
+	put_string("Function Begin: sendHello\r\n");
 	put_string("sending hello...");
 	char packet[MaxPacketLength] = {0}; //max packet length in bytes
 	//set control bits
@@ -306,10 +313,11 @@ void 	sendHello(){
 	SendPacket(DLLFLOOD, packet);
 	put_string("returning from DLL\r\n");
 	put_string("hello sent\r\n");
+	put_string("Function End: sendHello\r\n");
 	return; //done
 }
 void 	sendNeighbours(){
-	put_string("SENDING NEIGHBOURS\r\n");
+	put_string("Function Begin: sendNeighbours\r\n");
 	
 	char 	packet[NumNeighbours+8] = {'0'};
 	packet[0] = Control1Neighbour;
@@ -333,11 +341,11 @@ void 	sendNeighbours(){
 	put_string("return from DLL\r\n");
 	put_string(packet);
 	put_string("\r\n");
-	put_string("END SENDING NEIGHBOURS\r\n");
+	put_string("Function End: sendNeighbours\r\n");
 	return; //done
 }
 void 	processNeighbours(char* packet){ //processes a packet detailing neighbours (ie, 2 hops away)
-	put_string("PROCESSING 2HOP NEIGHBOURS\r\n");
+	put_string("Function Begin: processNeighbours\r\n");
 	int 	PacketLength = strlen(packet);
 	char 	onehopadd = packet[2]; //the neighbour that sent the packet
 	char 	twohoparray[NumNeighbours];
@@ -364,11 +372,24 @@ void 	processNeighbours(char* packet){ //processes a packet detailing neighbours
 		}
 		put_string("done putting 2hop neighbours in\r\n");
 	}
-	put_string("END PROCESSING 2HOP NEIGHBOURS\r\n");
+	put_string("Function End: processNeighbours\r\n");
 	return;
 }
 void 	processDoubleHop(char* packet){ //processes a double packet that is not for me
+	put_string("Function Begin: processDoubleHop\r\n");
 	int 	PacketLength = strlen(packet);
+
+	int repeatPacketFlag = checkRepeatPacket(packet);
+	int	neighbourFlag = isANeighbour(packet);
+
+			if((repeatPacketFlag==0)&&(neighbourFlag==1)){ //if not trasmitted before and a neighbour
+				put_string("retransmiting packet: ");
+				displayPacket(packet,2);
+				SendPacket(packet[3],packet); //destination address is used here as messages can only be sent 2 hops directly
+			}
+			else{put_string("already retransmitted\r\n");};
+
+	put_string("Function End: processDoubleHop\r\n");
 	return;
 }
 void 	getNeighbourAdd(char* neighbourADD, char* packet){

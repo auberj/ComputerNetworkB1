@@ -1,23 +1,15 @@
 /*
     The data link layer
-
     receives a packet from the network layer and provides a reliable link to the next transceiver, ensuring the
     data arrives in the order it was sent. Acts like a wire.
-
     Frame Structure:
-
     | Header[1] | control[2] | Addressing[2] | length[1] | Data[1-23] | Checksum[2] | Foter[1] |
-
     Features:
         Acknowledged connectionless link.
             - probable look into connection oriented at a later date
-
         Framing Method - bit stuffing (have to check what is currently being implemented in the rfm library)
-
         Flow control - probably not needed
-
         error control - maybe
-
 */
 
 
@@ -142,7 +134,6 @@ int SendPacket(char dest, char* Spacket) {
             while timer:
                 if acknowledgement:
                     send_complete = 1;
-
     */
 
 
@@ -156,7 +147,6 @@ int RecievePacket(char* Rpacket) {
     /*
     see http://www.hansinator.de/rfm12lib/ for rfm12b libray details
     receive frame, send acknowledgement
-
     if received a frame:
         de-bytestuff
         check crc
@@ -272,14 +262,12 @@ int decode_frame(struct frame *framedata, char * Rframe) {
     return 0 if error
     
     bits in return set to specify different things
-
     bit 0: No errors
     bit 1: for me
     bit 2: set = INFOFRAME, not set = SUPEFRAME 
     bit 3: first frame
     bit 4: last frame
     bit 5: Broadcast 
-
     */
     int retval = 0;
     if(Rframe[0] == HEADER && Rframe[strlen(Rframe)-1] == FOOTER ) {
@@ -298,13 +286,7 @@ int decode_frame(struct frame *framedata, char * Rframe) {
         // put_string(Rframe);
         // put_string("\r\nstrlen: ");
         // put_number(strlen(Rframe));
-        // uint16_t crc = (Rframe[strlen(Rframe) - 2] << 8);
-        // crc |= (Rframe[strlen(Rframe) - 1] & 0x00ff);
-        //put_hex(crc, 2);
-
-        //put_string("\r\nSegment Valid: ");
-        //put_hex(calcrc(segment, (strlen(segment)-2)), 2);
-        if(!((long unsigned int)calccrc(Rframe, strlen(Rframe)))) {
+        if(!((long unsigned int)calcrc(Rframe, strlen(Rframe)))) {
             //put_string("\nNo Errors!\n");
             retval |= 1;
             int i;
@@ -388,4 +370,3 @@ int decode_frame(struct frame *framedata, char * Rframe) {
     return retval;
 
 }
-

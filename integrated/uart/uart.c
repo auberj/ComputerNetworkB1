@@ -1,7 +1,9 @@
+//Author: dm6g13
+
 #include "uart.h"
 #include <stdio.h>
 
-void init_uart0(void)
+void init_uart0(void) //Function copied from Steve Gunn's library
 {
 	/* Configure 9600 baud, 8-bit, no parity and one stop bit */
 	const int baud_rate = 9600;
@@ -11,19 +13,19 @@ void init_uart0(void)
 	UCSR0C = _BV(UCSZ00) | _BV(UCSZ01);
 }
 
-char get_char(void)
+char get_char(void) //Function copied from Steve Gunn's library
 {
 	while(!(UCSR0A & _BV(RXC0)));
 	return UDR0;
 }
 
-void put_char(char ch)
+void put_char(char ch) //Function copied from Steve Gunn's library
 {
 	while (!(UCSR0A & _BV(UDRE0)));
 	UDR0 = ch;
 }
 
-void put_string(char *str)
+void put_string(char *str) //Function copied from Steve Gunn's library
 {
 	int i;
 	for(i=0; str[i]; i++) put_char(str[i]);

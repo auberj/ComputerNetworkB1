@@ -1,13 +1,15 @@
+//Author dm6g13
+
 #include <inttypes.h>
 #include <avr/io.h>
 
-void init_uart0(void);
+void init_uart0(void); //Function copied from Steve Gunn's library
 
-char get_char(void);
+char get_char(void); //Function copied from Steve Gunn's library
 
-void put_char(char ch);
+void put_char(char ch); //Function copied from Steve Gunn's library
 
-void put_string(char *str);
+void put_string(char *str); //Function copied from Steve Gunn's library
 
 void put_nstring(char *str, uint8_t start, uint8_t n); //Displays n characters in the string from start point called 'start'
 

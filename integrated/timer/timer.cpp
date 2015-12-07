@@ -1,6 +1,4 @@
-/*
- *      Author: dm6g13
- */
+//Author dm6g13
 
 #include <avr/io.h>
 #include <util/delay.h>

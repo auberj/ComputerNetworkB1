@@ -1,3 +1,5 @@
+//Author: dm6g13
+
 #include "transport.h"
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey)
@@ -10,6 +12,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     uint8_t messagelength;
     uint16_t crcbits;
     uint16_t sdatalength;
+
 	char segment[MAXSEGMENTS][MAXMESSAGELENGTH+8] = {'\0'}; //Initialisation is important
 
     sdatalength = strlen(sdata);
@@ -24,10 +27,12 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     while (loop < numberofsegments)
     {
         i = 1;
+
         for (j = 0; j < MAXMESSAGELENGTH+8; j++)
             segment[loop][j] = 0;
 
         ctrl_write(encryption, 0, 0, loop+1, numberofsegments, segment[loop]);
+        
         segment[loop][2] = 255; //Source port
         segment[loop][3] = 255; //Dest port
 
@@ -56,14 +61,18 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
             put_string("Passing to network layer.\r\n\r\n");
             SendSegment(dest, segment[loop]);
             put_string("\r\n\r\n Returned from network layer.\r\n");
+
             put_string("\r\nSegment sent, waiting on acknowledgment\r\n");
+
             i = waitacknowledge(dest, segment[loop]); //returns 1 if needs to go round the loop again
+            
             if(i)
                 put_string("\r\nNo acknowledgment, resending segment");
 
         }
         
         put_string("\r\n\r\nAcknowledged.");
+
         _delay_ms(1);
         loop = loop + 1;
     }
@@ -111,10 +120,12 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         ctrl_read(&encryption, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
 
         put_string("\r\n");
+
         put_number(strlen(segment));
         put_string(" byte long segment from ");
         put_char(*source);
         put_string(" received.");
+
         display_segment(segment);
         put_string("\r\n");
 
@@ -204,18 +215,22 @@ void ctrl_read(uint8_t* encryption, uint8_t* flag1, uint8_t* flag2,
         *encryption = 1;
     else
         *encryption = 0;
+
     if(ptr[0] & (1 << 5))
         *flag1 = 1;
     else
         *flag1 = 0;
+
     if(ptr[0] & (1 << 4))
         *flag2 = 1;
     else
         *flag2 = 0;
 
     *segmentnumber = 0;
+
     for (int i = 3; i>=0; i--)
         *segmentnumber |= ((ptr[0] & (1 << i)) << 2);
+
     *segmentnumber |= ((ptr[1] & (1 << 7)) >> 6);
     *segmentnumber |= ((ptr[1] & (1 << 6)) >> 6);
 
@@ -312,16 +327,21 @@ void rc4(char *key, char *data) //function modified from https://github.com/shir
      
      j = 0;
 
-     for (i=0;i<256;i++){
+     for (i=0;i<256;i++)
+     {
          j = (j+S[i]+key[i%strlen(key)]) %256;    
          swap(&S[i],&S[j]);
      }
 
      i = j = 0;
-     for (int k=0;k<strlen(data);k++){
+
+     for (int k=0;k<strlen(data);k++)
+     {
          i = (i+1) %256;
          j = (j+S[i]) %256;
+
          swap(&S[i],&S[j]);
+
          data[k] = data[k]^S[(S[i]+S[j]) %256];
      }
      //data[strlen(data)+1] = '\0';

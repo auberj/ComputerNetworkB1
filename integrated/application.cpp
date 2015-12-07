@@ -191,10 +191,8 @@ int main()
 }
 
 //XModem CRC calculator from https://github.com/vinmenn/Crc16
-//Modified by dm6g16
 uint16_t calcrc(char *ptr, int count)
 { 
-    //put_string("calcCRC\r\n");
     int  crc;
     char i;
     crc = 0;
@@ -211,9 +209,10 @@ uint16_t calcrc(char *ptr, int count)
         } while(--i);
     }
 
+    //below was added by dm6g13
     //need to avoid 0x00 checksum so that strlen works
     if ((crc >> 8) == 0x00) //If top byte of crc is 0x00
-        crc |= 0xFF00; //Set byte to 0xFF
+        crc |= 0xFF00; //Set top byte to 0xFF
 
     if (!(crc & 0x00FF)) //if bottom byte of crc is 0x00
         crc |= 0x00FF; //Set bottom byte to 0xFF

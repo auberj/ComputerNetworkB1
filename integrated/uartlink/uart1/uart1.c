@@ -28,5 +28,5 @@ void put_1_char(char ch) //Function copied from Steve Gunn's library
 void put_1_string(char *str) //Function copied from Steve Gunn's library
 {
 	int i;
-	for(i=0; str[i]; i++) put_char(str[i]);
+	for(i=0; str[i]; i++) put_1_char(str[i]);
 }

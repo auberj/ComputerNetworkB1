@@ -57,7 +57,7 @@ int main()
             }
             _delay_ms(1);
         }
-        
+         
         temp = 0;
 
         put_string("\r\nEncrypt session ('Y' or 'N'): ");

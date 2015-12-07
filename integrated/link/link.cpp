@@ -69,11 +69,11 @@ int SendPacket(char dest, char* Spacket) {
     */
     struct frame data[FRAMECOUNT];
     int no_frames;
-    put_number(millis());
-    put_char('\r\n');
+    // put_number(millis());
+    // put_char('\r\n');
     no_frames = makeframe(&data, dest, Spacket, 0);
-    put_number(millis());
-    put_char('\r\n');    
+    // put_number(millis());
+    // put_char('\r\n');    
 
     uint8_t *bufptr;
     char temp[50];

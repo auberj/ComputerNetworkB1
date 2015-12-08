@@ -14,8 +14,15 @@
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
+
+
+#ifdef uartlink
+#include "uartlink/uartlink.cpp"
+#else
 #include "physical/physical.cpp"
 #include "link/link.cpp"
+#endif
+
 #include "network/network.cpp"
 #include "transport/transport.cpp"
 
@@ -27,14 +34,20 @@
 int main()
 {
     _delay_ms(100);  //little delay for the rfm12 to initialize properly
+    #ifdef uartlink
+    init_uart1();
+    #else
     rfm12_init();    //init the RFM12
+    #endif
     _delay_ms(100);
     sei();
     init_uart0();
     init_timer();
-    put_string("\r\n\r\n\r\n\r\nInitialising...\r\n");
+    put_string("\r\n\r\n\r\n\r\nInitialising...");
     
     while(1){
+        start:
+
         char dest, source;
         char mode;
         char encryption;
@@ -44,7 +57,7 @@ int main()
         char sessionkey[20] = {0};
         uint16_t i = 0;
 
-        put_string("\r\nEncrypt session ('Y' or 'N'): ");
+        put_string("\r\n\r\nEncrypt session ('Y' or 'N'): ");
         while(temp != '\r')
         {
             temp = get_char();
@@ -152,7 +165,7 @@ int main()
             }
 
             int error = SendData(dest, message, encryption, sessionkey);
-            if (error) put_string("Error sending message");
+            if (error) put_string("\r\n\r\nError sending message");
         }
 
         else if (mode == 'R')
@@ -175,7 +188,7 @@ int main()
                         put_char(source);
                         put_string(" reads: \r\n");
                         put_string(message);
-                        return 0; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
+                        goto start; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
                     }
                     else
                     {

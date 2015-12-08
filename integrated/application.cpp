@@ -17,13 +17,21 @@
 
 
 #ifdef uartlink
-#include "uartlink/uartlink.cpp"
+    #include "uartlink/uartlink.cpp"
 #else
-#include "physical/physical.cpp"
-#include "link/link.cpp"
+    #include "link/link.cpp"
 #endif
 
-#include "network/network.cpp"
+#ifdef networklink
+    #include "networklink/networklink.cpp"
+#else
+    #include "network/network.cpp"
+#endif
+
+//#ifdef physical_on
+    #include "physical/physical.cpp"
+//#endif
+
 #include "transport/transport.cpp"
 
 //C232HM Pinout

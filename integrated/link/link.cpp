@@ -16,11 +16,6 @@
 #include "DL_makeframe.cpp"
 
 
-
-
-
-
-
 int bytestuff(char *str, int len) {
     int i;
     char temp[HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN + CHECKSUMLEN + FOOTERLEN + 10] = "";
@@ -65,9 +60,16 @@ int SendPacket(char dest, char* Spacket) {
         if((uint8_t)dest != (uint8_t)BROADCAST) {
             while(!send_complete) {
                 ///////////////////send//////////////////////
+                put_string("\r\nsend control: ");
+                put_string(data[i].control);
+                put_string("\r\naddress: ");
+                put_string(data[i].address);
+                put_string("\r\n data: ");
+                put_string(data[i].data);
                 put_string("\r\n Send Frame: ");
                 put_string(data[i].frame);
                 put_string("\r\n Frame Length: ");
+                put_number(data[i].length[0]);
                 put_number(strlen(data[i].frame));
                 rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
                 for (uint8_t j = 0; j < 100; j++)   
@@ -114,6 +116,17 @@ int SendPacket(char dest, char* Spacket) {
             put_string(data[i].frame);
             put_string("\r\n Frame Length: ");
             put_number(strlen(data[i].frame));
+            put_string("\r\nsend control: ");
+            put_string(data[i].control);
+            put_string("\r\naddress: ");
+            put_string(data[i].address);
+            put_string("\r\n data: ");
+            put_string(data[i].data);
+            put_string("\r\n Send Frame: ");
+            put_string(data[i].frame);
+            put_string("\r\n Frame Length: ");
+            put_number(data[i].length[0]);
+
             rfm12_tx(strlen(data[i].frame), 0, (uint8_t*)data[i].frame);
             for (uint8_t j = 0; j < 100; j++)   
             {   

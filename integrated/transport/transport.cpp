@@ -25,8 +25,6 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
     put_string(" reads: \r\n");
     put_string(sdata);
 
-    put_string("\r\n\r\nEncoding segment...");
-
     sdatalength = strlen(sdata);
 
     uint8_t numberofsegments = (uint8_t)(sdatalength/MAXMESSAGELENGTH);
@@ -38,6 +36,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
     while (loop < numberofsegments)
     {
+        put_string("\r\n\r\nEncoding segment...");
         i = TIMEOUTTRIES;
 
         for (j = 0; j < MAXMESSAGELENGTH+8; j++)
@@ -67,7 +66,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
         while(i > 0)
         {
-            put_string("*******Passing to network layer*******\r\n\r\n");
+            put_string("\r\n\r\n*******Passing to network layer*******\r\n\r\n");
             SendSegment(dest, segment[loop]);
             put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
@@ -80,12 +79,18 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
                 put_string("\r\nNo acknowledgment, resending segment");
                 i--;
                 if (i == 0)
+                {
+                    //put_string("\r\n\r\nError sending message");
                     return 1; //There was an error sending the segement
+                }
             }
             else
             {
                 i = 0;
                 put_string("\r\n\r\nAcknowledged.");
+                #ifdef transporttest
+                globalsegmentnumber = loop + 1;
+                #endif
             }
         }
 
@@ -97,7 +102,7 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 
 int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey)
 {
-    //TODO receive from two different people simulatenously
+    //TODO receive from two different people simulatenously 
 
     int receiveflag = 0;
     char segment[MAXMESSAGELENGTH+8] = {'\0'};
@@ -105,38 +110,9 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
     uint8_t segmentnumber, segmenttotal;
     uint16_t crc = 0;
 
-    put_string("*******Passing to network layer*******\r\n\r\n");
+    put_string("\r\n\r\n*******Passing to network layer*******\r\n\r\n");
     receiveflag = RecieveSegment(source, segment);
     put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
-
-    // if (millis() > 2000); //This is dummy received data representing Hello World!
-    // {
-    //     segment[0] = 0b10000000;
-    //     segment[1] = 0b01000001;
-    //     segment[2] = 0b11111111;
-    //     segment[3] = 0b11111111;
-    //     segment[4] = 0b00001100;
-    //     segment[5] = 0b01001000;
-    //     segment[6] = 0b01100101;
-    //     segment[7] = 0b01101100;
-    //     segment[8] = 0b01101100;
-    //     segment[9] = 0b01101111;
-    //     segment[10] = 0b00100000;
-    //     segment[11] = 0b01010111;
-    //     segment[12] = 0b01101111;
-    //     segment[13] = 0b01110010;
-    //     segment[14] = 0b01101100;
-    //     segment[15] = 0b01100100;
-    //     segment[16] = 0b00100001;
-    //     segment[17] = 0b10011000;
-    //     segment[18] = 0b11100011;
-    //     *source = 'D';
-    //     receiveflag = 1;
-    // }
-
-    put_string("\r\nReceive Flag: ");
-    put_number(receiveflag);
-    put_string("\r\n");
 
     if (receiveflag) //if something has been received
     {
@@ -162,6 +138,10 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
             put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
             put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
+
+            #ifdef transporttest
+            globalsegmentnumber++;
+            #endif
 
             copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
             *rmessageflag = segmenttotal - segmentnumber;
@@ -313,7 +293,7 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
         for (i = 0; i < MAXMESSAGELENGTH; i++)
             receivedsegment[i] = '\0';
 
-        put_string("*******Passing to network layer*******\r\n\r\n");
+        put_string("\r\n\r\n*******Passing to network layer*******\r\n\r\n");
         RecieveSegment(&source, receivedsegment);
         put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
@@ -330,8 +310,10 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
                 if (segment[i] != receivedsegment[i])
                     errorflag = 1;
 
-            if (!errorflag)
+            if (!errorflag) //If its a valid segment
                 return 0;
+            else
+                put_string("\r\n\r\nInvalid acknowledgment\r\n");
         }
         else
         {

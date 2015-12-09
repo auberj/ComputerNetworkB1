@@ -16,6 +16,7 @@ int ReceiveFrame(char *Rframe = 0) {
 	int retval;
 	uint8_t *bufptr;
 	if(rfm12_rx_status() == STATUS_COMPLETE){
+		put_string("\r\nPhysical layer data detected\r\n");
 		if(Rframe != 0) {
 			bufptr = rfm12_rx_buffer();
             for(int k = 0; k < (rfm12_rx_len()); k++) {
@@ -23,6 +24,8 @@ int ReceiveFrame(char *Rframe = 0) {
             }
             Rframe[rfm12_rx_len()] = '\0';
             rfm12_rx_clear();
+            put_string("\r\nPhysical layer received data: ");
+            put_string(Rframe);
 		}
 		retval = 1;
 	}

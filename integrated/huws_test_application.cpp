@@ -33,34 +33,33 @@ int main() {
     init_uart0();
     init_timer();
     
-	put_string("\r\ninitialising.....");
-	while(1) {
-		send();
-		receive();
-		_delay_ms(500);
-	}
+	put_string("\r\n\n\n\n\n\n\r\ninitialising.....");
+	//send();
+	receive();
+	
 }
 
 void send() {
-	char test[] = "This is a test string";
-	//while(1)  {
-	SendFrame(test);
-	//_delay_ms(1000);
-	//}
+	char test[] = "This is a test string\0";
+	while(1)  {
+    	SendPacket('H',test);
+	_delay_ms(1000);
+	}
 }
 
 void receive() {
 	char RFrame[30];
-	//while(1) {
-	if(ReceiveFrame()) {
-		put_string("\r\nData Received: ");
-		ReceiveFrame(RFrame);
-		put_string(RFrame);
-		for(int i = 0; i < 30; i++) {
-			RFrame[i] = 0;
-		}
+	while(1) {
+    	if(ReceiveFrame()) {
+    		put_string("\r\nPhysical Data Received");
+    		RecievePacket(RFrame);
+            put_string("\r\n\n\n>>>>>>Received packet: ");
+    		put_string(RFrame);
+    		for(int i = 0; i < 30; i++) {
+    			RFrame[i] = 0;
+    		}
+    	}
 	}
-	//}
 }
 
 

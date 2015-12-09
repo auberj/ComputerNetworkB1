@@ -33,6 +33,7 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
         vals is an array of frame structs size FRAMECOUNT, and fills the frame.data
     */
     //put_number(strlen(Spacket));
+    put_string("\r\n>>>start setdata:\r\n");
     int cnt = 0;
     int i, j, end;
     end = 0;
@@ -56,7 +57,7 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
                 break;
             }
             (*vals)[i].data[j] = Spacket[cnt++];
-            //put_char((*vals)[i].data[j]);
+            put_char((*vals)[i].data[j]);
         }
         // put_number(j);
         (*vals)[i].length[0] = j;
@@ -67,6 +68,8 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
         //put_string((*vals)[i].data);
         //put_char('\n');
     }
+    put_string("\r\n>>>End setdata\r\n");
+
 }
 
 void setheader(struct frame (*vals)[FRAMECOUNT]) {
@@ -111,6 +114,7 @@ void setaddress(struct frame (*vals)[FRAMECOUNT], char address) {
 }
 
 void setcontrol(struct frame (*vals)[FRAMECOUNT], int ack) {
+    put_string("\r\n>>>Start setcontrol\r\n");
     int i;
     int j;
     for(i = 0; i < FRAMECOUNT; i++) {
@@ -135,10 +139,11 @@ void setcontrol(struct frame (*vals)[FRAMECOUNT], int ack) {
                 //put_char((*vals)[i].control[j]);
             
             (*vals)[i].control[CONTROLLEN] = '\0';
-            // put_string("\r\nControl: ");
-            // put_string((*vals)[i].control);
+            put_string("\r\nControl: ");
+            put_string((*vals)[i].control);
         }
-    }    
+    } 
+    put_string("\r\n>>>End setcontrol\r\n");   
 }
 
 int makeframe(struct frame (*data)[FRAMECOUNT], char dest, char*Spacket, int ack, int frames = FRAMECOUNT) {

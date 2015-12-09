@@ -14,7 +14,7 @@
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
-
+#include "physical/physical.cpp"
 
 #ifdef uartlink
     #include "uartlink/uartlink.cpp"
@@ -28,7 +28,6 @@
     #include "network/network.cpp"
 #endif
 
-#include "physical/physical.cpp"
 
 #include "transport/transport.cpp"
 

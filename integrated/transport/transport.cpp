@@ -115,7 +115,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
     receiveflag = RecieveSegment(source, segment);
     put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
-    if (receiveflag) //if something has been received
+    if (receiveflag)
     {
         uint8_t segmentlength = strlen(segment);
         ctrl_read(&encryption, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
@@ -137,7 +137,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
         {
             put_string("\r\nSegment valid, sending acknowledgment\r\n\r\n");
             put_string("*******Passing to network layer*******\r\n\r\n");
-            SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
+            SendSegment(*source, segment); //Acknowledge the segment word for word //TODO acknowledge using just checksum
             put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
             #ifdef transporttest

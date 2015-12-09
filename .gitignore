@@ -5,3 +5,5 @@
 *.elf
 
 integrated/callsign.h
+
+*.sublime-workspace

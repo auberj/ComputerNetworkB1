@@ -59,7 +59,7 @@ int main()
         char encryption;
 
         char temp = '\0'; //temporary character for receiving over uart
-        char message[200] = {0};
+        char message[20] = {0};
         char sessionkey[20] = {0};
         uint16_t i = 0;
 

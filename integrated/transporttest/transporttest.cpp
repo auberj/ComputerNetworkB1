@@ -15,18 +15,18 @@ int SendSegment(char dest, char* spacket)
 		globalpacket[i][globalsegmentnumber] = spacket[i];
 	globalpacket[i][globalsegmentnumber] = ('\0');
 	globaldest = dest;
-	put_string("Sending packet");
+	put_string("Sending segment");
 	return 0;
 }
 
 int RecieveSegment(char* source, char* rpacket)
 {
-	if (millis() > 8000)
+	if (millis() > 30000)
 	{
 		for (int i = 0; globalpacket[i][globalsegmentnumber]; i++)
 			rpacket[i] = globalpacket[i][globalsegmentnumber];
 		*source = 'H';
-		put_string("Receiving packet");
+		put_string("Receiving segment");
 		return 1;
 	}
 	else

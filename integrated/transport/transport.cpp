@@ -135,7 +135,7 @@ int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionk
 
         if (crc == calcrc(segment, (strlen(segment)-2))) //if segment is valid
         {
-            put_string("\r\nSegent valid, sending acknowledgment\r\n\r\n");
+            put_string("\r\nSegment valid, sending acknowledgment\r\n\r\n");
             put_string("*******Passing to network layer*******\r\n\r\n");
             SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
             put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
@@ -283,9 +283,6 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
 
     unsigned long stime = millis(); //start time
     unsigned long elapsedtime = 0;
-    put_string("Time waited (ms):\r\n");
-    put_number(elapsedtime);
-    put_string("\r");
 
     while(elapsedtime <= TIMEOUTMILLIS)
     {
@@ -294,9 +291,9 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
         for (i = 0; i < MAXMESSAGELENGTH; i++)
             receivedsegment[i] = '\0';
 
-        put_string("\r\n\r\n*******Passing to network layer*******\r\n\r\n");
+        put_string("\r\n*******Passing to network layer*******\r\n");
         RecieveSegment(&source, receivedsegment);
-        put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
+        put_string("*******Returned to transport layer*******\r\n");
 
         if (strlen(receivedsegment)) //If anything is actually there
         {
@@ -316,12 +313,11 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
             else
                 put_string("\r\n\r\nInvalid acknowledgment at time (ms): ");
                 put_number(elapsedtime);
-                put_string("\r\n");
         }
         else
         {
+            put_string("No message received, time (ms): ");
             put_number(elapsedtime);
-            put_string("\r\n");
         }
 
     }

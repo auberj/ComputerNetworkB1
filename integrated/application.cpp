@@ -52,13 +52,14 @@ int main()
     init_uart1();
     #else
     rfm12_init();    //init the RFM12
+    init_network_layer();
     #endif
     _delay_ms(100);
     sei();
     #endif
     init_uart0();
     init_timer();
-    init_network_layer();
+    
     put_string("\r\n\r\n\r\n\r\nInitialising...");
 
     //put_char(callsign);

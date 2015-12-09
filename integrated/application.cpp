@@ -14,18 +14,26 @@
 #include "timer/timer.cpp"
 #include "uart/uart.c"
 
-#include "physical/physical.cpp"
+#ifdef transporttest
 
-#ifdef uartlink
-    #include "uartlink/uartlink.cpp"
-#else
-    #include "link/link.cpp"
-#endif
+    #include "transporttest/transporttest.cpp"
 
-#ifdef networklink
-    #include "networklink/networklink.cpp"
 #else
-    #include "network/network.cpp"
+
+    #include "physical/physical.cpp"
+
+    #ifdef uartlink
+        #include "uartlink/uartlink.cpp"
+    #else
+        #include "link/link.cpp"
+    #endif
+
+    #ifdef networklink
+        #include "networklink/networklink.cpp"
+    #else
+        #include "network/network.cpp"
+    #endif
+
 #endif
 
 
@@ -39,7 +47,7 @@
 int main()
 {
     _delay_ms(100);  //little delay for the rfm12 to initialize properly
-
+    #ifndef transporttest
     #ifdef uartlink
     init_uart1();
     #else
@@ -47,22 +55,28 @@ int main()
     #endif
     _delay_ms(100);
     sei();
+    #endif
     init_uart0();
     init_timer();
+    init_network_layer();
     put_string("\r\n\r\n\r\n\r\nInitialising...");
-    put_char(callsign);
+
+    //put_char(callsign);
+
     
     while(1){
-        start:
 
+        start:
         char dest, source;
         char mode;
         char encryption;
 
         char temp = '\0'; //temporary character for receiving over uart
-        char message[20] = {0};
+        char message[100] = {0};
         char sessionkey[20] = {0};
         uint16_t i = 0;
+
+
 
         put_string("\r\n\r\nEncrypt session ('Y' or 'N'): ");
         while(temp != '\r')
@@ -170,7 +184,20 @@ int main()
                 }
                 _delay_ms(1);
             }
-            init_network_layer();
+
+            #ifdef transporttest
+                globalsegmentnumber = 0;
+                for (int i = 0; i < MAXSEGMENTS; i++)
+                {
+                    int j = 0;
+                    while(globalpacket[j][i])
+                    {
+                        globalpacket[j][i] = 0;
+                        j++;
+                    }
+                }
+            #endif
+
             int error = SendData(dest, message, encryption, sessionkey);
             if (error) put_string("\r\n\r\nError sending message");
         }
@@ -181,6 +208,10 @@ int main()
             uint8_t tempflag = 0; //0 if nothing received, 1 if something received
 
             //TODO pass callsign down layers
+
+            #ifdef transporttest
+            globalsegmentnumber = 0;
+            #endif   
 
             while(1)
             {
@@ -199,7 +230,7 @@ int main()
                     }
                     else
                     {
-                        put_string("\r\nWaiting for next segment\r\n");
+                        put_string("\r\nWaiting for next segment");
                     }
                 } 
             }

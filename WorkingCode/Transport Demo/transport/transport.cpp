@@ -101,60 +101,64 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
 	return 0;
 };
 
-int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey)
+void RecieveData(char* source, char* rdata, char* sessionkey)
 {
-    //TODO receive from two different people simulatenously 
+    uint8_t rmessageflag = 1;
+    //TODO receive from two different people simulatenously
+    while(rmessageflag)
+    { 
+        int receiveflag = 0;
+        char segment[MAXMESSAGELENGTH+8] = {'\0'};
+        uint8_t encryption, flag1, flag2;
+        uint8_t segmentnumber, segmenttotal;
+        uint16_t crc = 0;
 
-    int receiveflag = 0;
-    char segment[MAXMESSAGELENGTH+8] = {'\0'};
-    uint8_t encryption, flag1, flag2;
-    uint8_t segmentnumber, segmenttotal;
-    uint16_t crc = 0;
+        put_string("\r\n\r\n*******Passing to network layer*******\r\n\r\n");
+        receiveflag = RecieveSegment(source, segment);
+        put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
 
-    put_string("\r\n\r\n*******Passing to network layer*******\r\n\r\n");
-    receiveflag = RecieveSegment(source, segment);
-    put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
-
-    if (receiveflag) //if something has been received
-    {
-        uint8_t segmentlength = strlen(segment);
-        ctrl_read(&encryption, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
-
-        put_string("\r\n");
-
-        put_number(strlen(segment));
-        put_string(" byte long segment from ");
-        put_char(*source);
-        put_string(" received.");
-
-        display_segment(segment);
-        put_string("\r\n");
-
-        uint16_t crc = (segment[strlen(segment) - 2] << 8);
-        crc |= (segment[strlen(segment) - 1] & 0x00ff);
-
-        if (crc == calcrc(segment, (strlen(segment)-2))) //if segment is valid
+        if (receiveflag) //If something has been received
         {
-            put_string("\r\nSegment valid, sending acknowledgment\r\n\r\n");
-            put_string("*******Passing to network layer*******\r\n\r\n");
-            SendSegment(*source, segment); //Acknowledge the segment //TODO acknowledge better
-            put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
+            uint8_t segmentlength = strlen(segment);
+            ctrl_read(&encryption, &flag1, &flag2, &segmentnumber, &segmenttotal, segment);
 
-            #ifdef transporttest
-            globalsegmentnumber++;
-            #endif
+            put_string("\r\n");
 
-            copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
-            *rmessageflag = segmenttotal - segmentnumber;
+            put_number(strlen(segment));
+            put_string(" byte long segment from ");
+            put_char(*source);
+            put_string(" received.");
 
-            if (*rmessageflag == 0) //it was the last message so decrypt
+            display_segment(segment);
+            put_string("\r\n");
+
+            uint16_t crc = (segment[strlen(segment) - 2] << 8);
+            crc |= (segment[strlen(segment) - 1] & 0x00ff);
+
+            if (crc == calcrc(segment, (strlen(segment)-2))) //if segment is valid
             {
-                if (encryption) //Decrypt data...
-                    rc4(sessionkey, rdata);
+                put_string("\r\nSegment valid, sending acknowledgment\r\n\r\n");
+                put_string("*******Passing to network layer*******\r\n\r\n");
+                SendSegment(*source, segment); //Acknowledge the segment word for word //TODO acknowledge using just checksum
+                put_string("\r\n\r\n*******Returned to transport layer*******\r\n");
+
+                #ifdef transporttest
+                globalsegmentnumber++;
+                #endif
+
+                copyin(rdata, segment, ((segmentnumber - 1)*MAXMESSAGELENGTH), segmentlength-7, 5);
+                rmessageflag = segmenttotal - segmentnumber;
+
+                if (rmessageflag == 0) //it was the last message so decrypt
+                {
+                    if (encryption) //Decrypt data...
+                        rc4(sessionkey, rdata);
+                }
+                else
+                    put_string("\r\nWaiting for next segment");
             }
         }
     }
-    return receiveflag;
 }
 
 void display_segment(char* segment)

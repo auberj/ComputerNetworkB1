@@ -77,6 +77,7 @@ int SendPacket(char dest, char* Spacket) {
     for(i = 0; i < no_frames; i++) {
         send_complete = 0;
         if((uint8_t)dest != (uint8_t)BROADCAST) {
+            put_string("\r\nSend message and await acknowledgement: ");
             while(!send_complete) {
                 ///////////////////send//////////////////////
                 put_frame(data[i]);
@@ -120,7 +121,7 @@ int SendPacket(char dest, char* Spacket) {
         }
         else {
             put_frame(data[i]);
-
+            put_string("\n\rBROADCAST frame now : ");
             SendFrame(data[i].frame);
 
             _delay_ms(400);

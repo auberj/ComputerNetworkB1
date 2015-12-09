@@ -5,7 +5,7 @@
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey);
 
-int RecieveData(char* source, char* rdata, uint8_t* rmessageflag, char* sessionkey);
+void RecieveData(char* source, char* rdata, char* sessionkey);
 
 void display_segment(char* segment);
 

@@ -8,7 +8,7 @@ char globaldest;
 int SendSegment(char dest, char* spacket);
 int RecieveSegment(char* source, char* rpacket);
 
-int SendSegment(char dest, char* spacket)
+int SendSegment(char dest, char* spacket) //TODO use better acks. - don't store if flag 1 is set
 {
 	int i;
 	for (i = 0; spacket[i]; i++)
@@ -19,10 +19,11 @@ int SendSegment(char dest, char* spacket)
 	return 0;
 }
 
-int RecieveSegment(char* source, char* rpacket)
+int RecieveSegment(char* source, char* rpacket) //return the checksum segment on alternate calls (have a state, like the other device will)
 {
-	if (millis() > 30000)
+	if (millis() > 3000)
 	{
+		//if flag 1 is set, turn it into a checksum acknowledgment
 		for (int i = 0; globalpacket[i][globalsegmentnumber]; i++)
 			rpacket[i] = globalpacket[i][globalsegmentnumber];
 		*source = 'H';

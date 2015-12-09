@@ -205,8 +205,8 @@ int main()
 
         else if (mode == 'R')
         {
-            uint8_t rmessageflag = 0; //0 if end of message. 1 if stuff still to come
-            uint8_t tempflag = 0; //0 if nothing received, 1 if something received
+            //uint8_t rmessageflag = 0; //0 if end of message. 1 if stuff still to come
+            //uint8_t tempflag = 0; //0 if nothing received, 1 if something received
 
             //TODO pass callsign down layers
 
@@ -214,30 +214,15 @@ int main()
             globalsegmentnumber = 0;
             #endif   
 
-            while(1)
-            {
-                tempflag = RecieveData(&source, message, &rmessageflag, sessionkey);
-                if (tempflag == 1) //if something has been received
-                {
-                    if (rmessageflag == 0)
-                    {
-                        put_string("\r\n");
-                        put_number(strlen(message));
-                        put_string(" character long message from ");
-                        put_char(source);
-                        put_string(" reads: \r\n");
-                        put_string(message);
-                        goto start; //THIS NEEDS TO BE DELETED TO RECEIVE MORE THAN 1 MESSAGE
-                    }
-                    else
-                    {
-                        put_string("\r\nWaiting for next segment");
-                    }
-                } 
-            }
+            RecieveData(&source, message, sessionkey);
+            put_string("\r\n");
+            put_number(strlen(message));
+            put_string(" character long message from ");
+            put_char(source);
+            put_string(" reads: \r\n");
+            put_string(message);
+            goto start;
         }
-        //while(1);
-       
     }
      return 0;
 }

@@ -20,7 +20,7 @@
 #define FRAMELEN (HEADERLEN + CONTROLLEN + ADDRESSLEN + LENGTHLEN + DATALEN + CHECKSUMLEN + FOOTERLEN + 10)
 
 //number of max number of frames to be sent
-#define PACKETLEN 128
+#define PACKETLEN 80 //128
 #define FRAMECOUNT ((PACKETLEN/DATALEN) + 1)
 
 //header, footer, break values

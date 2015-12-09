@@ -39,6 +39,7 @@
 int main()
 {
     _delay_ms(100);  //little delay for the rfm12 to initialize properly
+
     #ifdef uartlink
     init_uart1();
     #else
@@ -169,7 +170,7 @@ int main()
                 }
                 _delay_ms(1);
             }
-
+            init_network_layer();
             int error = SendData(dest, message, encryption, sessionkey);
             if (error) put_string("\r\n\r\nError sending message");
         }

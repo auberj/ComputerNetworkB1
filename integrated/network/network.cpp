@@ -1,17 +1,36 @@
 #include "network.h"
 #include <stdio.h>
 //global vars
-char 	neighbours[NumNeighbours] = {0};//all set to 0
-char 	twohops[NumNeighbours][NumNeighbours+1] = {0}; //list of nodes two hops away [neighbour][2hops]
-char 	oldchecksum[NumOldPackets] = {0}; //store old checksums to ensure messages aren't sent multiple times
-char 	oldchecksumrecieved[NumOldPackets] = {0};
+char 	neighbours[NumNeighbours];// = {0};//all set to 0
+char 	twohops[NumNeighbours][NumNeighbours+1];// = {0}; //list of nodes two hops away [neighbour][2hops]
+char 	oldchecksum[NumOldPackets];// = {0}; //store old checksums to ensure messages aren't sent multiple times
+char 	oldchecksumrecieved[NumOldPackets];// = {0};
 int 	oldTime;
+
+void init_network_layer(){
+	for(int i=0;i<NumNeighbours;i++){
+		neighbours[i]=0;
+	}
+	for(int i=0;i<NumNeighbours;i++){
+		for(int j=0;j<(NumNeighbours+1);j++){
+			twohops[i][j] = 0;
+		}
+	}
+	for(int i=0;i<NumOldPackets;i++){
+		oldchecksum[i]=0;
+		oldchecksumrecieved[i]=0;
+	}
+}
 
 //provide to transport layer:
 int 	SendSegment(char dest, char* segment){ //provide this to transport layer
+	for(int i=0;i<NumNeighbours;i++){
+		put_debug_char(neighbours[i]);
+	}
 	//twohops[0][0] = 'H';
 	//twohops[0][1] = 'D';
 	put_debug_string("Function Begin: SendSegment\r\n");
+	put_debug_char(dest);
 	//periodicHello();
 	int 	segmentLength = strlen(segment);
 	put_debug_string("\r\nsegment length: ");put_debug_number(segmentLength);put_debug_string("\r\n");

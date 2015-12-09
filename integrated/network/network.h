@@ -24,7 +24,7 @@
 #define NumNeighbours 10 //can have up to ten neighbours
 
 #define HelloPacketLength 15
-#define MaxPacketLength 128
+#define MaxPacketLength 80 //128
 
 
 

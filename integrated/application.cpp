@@ -28,9 +28,7 @@
     #include "network/network.cpp"
 #endif
 
-//#ifdef physical_on
-    #include "physical/physical.cpp"
-//#endif
+#include "physical/physical.cpp"
 
 #include "transport/transport.cpp"
 

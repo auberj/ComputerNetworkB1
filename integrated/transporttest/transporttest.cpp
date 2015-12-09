@@ -1,5 +1,5 @@
-#define MAXSEGMENTLENGTH 57
-#define MAXSEGMENTS 4
+#define MAXSEGMENTLENGTH 27
+#define MAXSEGMENTS 5
 
 char globalsegmentnumber;
 char globalpacket[MAXSEGMENTLENGTH+1][MAXSEGMENTS];

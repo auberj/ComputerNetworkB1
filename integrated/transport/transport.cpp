@@ -76,13 +76,14 @@ int SendData(char dest, char* sdata, char encryption, char* sessionkey)
             
             if(error)
             {
-                put_string("\r\nNo acknowledgment, resending segment");
                 i--;
                 if (i == 0)
                 {
                     //put_string("\r\n\r\nError sending message");
                     return 1; //There was an error sending the segement
                 }
+                else
+                    put_string("\r\nNo acknowledgment, resending segment");
             }
             else
             {
@@ -313,7 +314,9 @@ uint8_t waitacknowledge(char dest, char* segment) //returns 1 if needs to go rou
             if (!errorflag) //If its a valid segment
                 return 0;
             else
-                put_string("\r\n\r\nInvalid acknowledgment\r\n");
+                put_string("\r\n\r\nInvalid acknowledgment at time (ms): ");
+                put_number(elapsedtime);
+                put_string("\r\n");
         }
         else
         {

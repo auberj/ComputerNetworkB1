@@ -47,3 +47,4 @@ char 	calcNextHop(char dest);
 void 	periodicHello();
 void 	processNeighbours(char* packet);
 int 	isANeighbour(char* address);
+void 	init_network_layer();

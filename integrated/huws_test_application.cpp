@@ -34,17 +34,17 @@ int main() {
     init_timer();
     
 	put_string("\r\n\n\n\n\n\n\r\ninitialising.....");
-	//send();
-	receive();
+	send();
+	//receive();
 	
 }
 
 void send() {
 	char test[] = "This is a test string\0";
-	while(1)  {
-    	SendPacket('H',test);
+	//while(1)  {
+    SendPacket('\xff',test);
 	_delay_ms(1000);
-	}
+	//}
 }
 
 void receive() {

@@ -46,7 +46,7 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
             //     (*vals)[i].data[j++] = START;
             //     //loop--;
             // }
-            if(Spacket[cnt] == '\0' ) {
+            if(Spacket[cnt+1] == '\0' ) {
                 // if(!ack) {
                 //     (*vals)[i].data[j] = END;
                 //     j++;                    
@@ -54,10 +54,14 @@ void setdata(struct frame (*vals)[FRAMECOUNT], char* Spacket, int ack) {
                 (*vals)[i].lastframe = 1;
                 //put_char((*vals)[i].data[j]);
                 end = 1;
-                break;
+                //break;
             }
             (*vals)[i].data[j] = Spacket[cnt++];
             put_char((*vals)[i].data[j]);
+            if(end) {
+                j++;
+                break;
+            }
         }
         // put_number(j);
         (*vals)[i].length[0] = j;

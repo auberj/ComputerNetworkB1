@@ -29,8 +29,6 @@ void put_frame(struct frame pframe) {
     put_number(pframe.checksum[0]);
     put_char(' ');
     put_number(pframe.checksum[1]);
-    put_string(" or ");
-    put_string(pframe.checksum);
     put_string("\r\nSend Frame: ");
     put_string(pframe.frame);
     put_string("\n\r>>>End Print Frame\r\n");
@@ -90,6 +88,7 @@ int SendPacket(char dest, char* Spacket) {
 
                 while((millis() != time)) {
                     ///////////check for acknowledgemt/////////////////
+                    //put_char(':');
                     if(ReceiveFrame()) {
                         //send_complete = 1;
                         ReceiveFrame(temp);
@@ -202,11 +201,15 @@ int RecievePacket(char* Rpacket) {
                     acknowledge
                     */
                     if(!(Rframe_check & 1<<5)) {
+                        put_string("\n\r>>>>START MAKE AND SEND ACKNOWLEDGEMENT\r\n");
                         ackarr[0] = Nrframe[i];
-                        makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
+
+                        int framecount = makeframe(&ackarr, Nrframe[i].address[0], Nrframe[i].data, 1, 1);
+                        put_string("\r\nNumber of acknowledgement frames generated: ");
+                        put_number(framecount);
                         put_string("\r\nacknowledgement: ");
-                        put_string(ackarr[0].frame);
-                        _delay_ms(100);
+                        put_frame(ackarr[0]);
+                        //_delay_ms(100);
                         SendFrame(ackarr[0].frame);
                         // rfm12_tx(strlen(ackarr[0].frame), 0, (uint8_t*)ackarr[0].frame);
                         // for (uint8_t j = 0; j < 100; j++)   

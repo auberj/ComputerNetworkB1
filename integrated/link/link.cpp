@@ -244,7 +244,7 @@ int RecievePacket(char* Rpacket) {
             put_string(Rpacket);
         }
     }
-    put_string("\r\n>>>End ReceivePacket\r\n")
+    put_string("\r\n>>>End ReceivePacket\r\n");
     return i;
 
 }

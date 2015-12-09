@@ -337,8 +337,8 @@ void swap(uint8_t* a, uint8_t* b)
     *b = temp;
 }
 
-void rc4(char *key, char *data) //function modified from https://github.com/shirokuade/RC4-Arduino/tree/master/RC4Encryption
-{ 
+void rc4(char *key, char *data) //Algorithm from https://en.wikipedia.org/wiki/RC4
+{
      uint16_t i,j;
      uint8_t S[256];
           
@@ -353,7 +353,8 @@ void rc4(char *key, char *data) //function modified from https://github.com/shir
         swap(&S[i], &S[j]);
      }
 
-     i = j = 0;
+     i = 0;
+     j = 0;
 
      for (int k = 0; k < strlen(data); k++)
      {

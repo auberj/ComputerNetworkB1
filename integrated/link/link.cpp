@@ -157,6 +157,7 @@ int RecievePacket(char* Rpacket) {
             pass to network
     */
     int i = 0;
+    put_string("\r\n>>>Begin receive packet: \r\n");
     if (ReceiveFrame()) { //Status complete 1 - passes this section
         put_char('.');
         uint8_t* bufptr;
@@ -243,6 +244,7 @@ int RecievePacket(char* Rpacket) {
             put_string(Rpacket);
         }
     }
+    put_string("\r\n>>>End ReceivePacket\r\n")
     return i;
 
 }

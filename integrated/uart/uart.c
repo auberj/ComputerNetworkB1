@@ -41,7 +41,7 @@ void put_nstring(char *str, uint8_t start, uint8_t n) //Displays n characters in
 void put_number(uint16_t number) //Displays a number using sprintf. Can display between 0 and 99999999
 {
 	char numberstring[8];
-  	snprintf(numberstring, 8, "%d", number); //Convert to string so we can display
+  	snprintf(numberstring, 8, "%u", number); //Convert to string so we can display
   	put_string(numberstring);
 }
 

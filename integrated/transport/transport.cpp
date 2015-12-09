@@ -341,9 +341,17 @@ void rc4(char *key, char *data) //function modified from https://github.com/shir
 { 
      int i,j;
      char S[256];
+
+     put_number(strlen(key));
+     put_string(key);
           
      for (i=0;i<256;i++)
-         S[i] = i;
+     {
+        S[i] = i;
+        put_number(S[i]);
+        put_char('.');
+     }
+        
      
      j = 0;
 

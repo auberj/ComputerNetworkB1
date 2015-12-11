@@ -1,7 +1,7 @@
 #define MAXMESSAGELENGTH 20
 #define MAXSEGMENTS 5 //This times the above number shouldn't be less than chars in message
-#define TIMEOUTMILLIS 1000 //milliseconds for acknowledgement timeout, then segment is resent
-#define TIMEOUTTRIES 5 //Number of timeouts before it says there's an error
+#define TIMEOUTMILLIS 500 //milliseconds for acknowledgement timeout, then segment is resent
+#define TIMEOUTTRIES 2 //Number of timeouts before it says there's an error
 
 int SendData(char dest, char* sdata, char encryption, char* sessionkey);
 

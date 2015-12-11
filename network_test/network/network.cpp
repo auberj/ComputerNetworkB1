@@ -21,7 +21,6 @@ void init_network_layer(){
 		oldchecksumrecieved[i]=0;
 	}
 }
-
 //provide to transport layer:
 int 	SendSegment(char dest, char* segment){ //provide this to transport layer
 	// for(int i=0;i<NumNeighbours;i++){
@@ -178,16 +177,10 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 
 			put_debug_number(strlen(rsegment));
 			put_debug_string("\r\n");
-			//rsegment[PacketLength-7] = '\0';
-
-			//copy segment data 
-			//returnval = 1;
-			
 			break;
 
 		case 4: 										//packet is a message but not for me and is a double hop
 		put_debug_string("message not for me. is a 2hop\r\n");
-
 
 		repeatPacketFlag = checkRepeatPacket(packet);
 		neighbourFlag = isANeighbour(packet);
@@ -224,6 +217,7 @@ int 	RecieveSegment(char* source, char* rsegment){ //provide this to transport l
 	put_debug_string("Function End: RecieveSegment\r\n");
 	return returnval;
 }
+//internatl functions
 void 	processHello(char* packet){
 	put_debug_string("Function Begin: processHello\r\n");
 	char 	neighbour[1];
@@ -305,7 +299,7 @@ int 	isANeighbour(char* address){ //returns 1 if the person is a neighbour, 0 if
 		}
 	}
 	if(neighbourFlag==0){
-		put_debug_string("This person is NOT a neighbour\r\n");
+		put_debug_char(address[3]);put_debug_string(" is NOT a neighbour\r\n");
 	}
 	put_debug_string("Function End: isANeighbour\r\n");
 	return neighbourFlag;
@@ -350,23 +344,24 @@ void 	sendHello(){
 void 	sendNeighbours(){
 	put_debug_string("Function Begin: sendNeighbours\r\n");
 	
-	char 	packet[NumNeighbours+8] = {'0'};
+	char 	packet[MaxPacketLength] = {0};
 	packet[0] = Control1Neighbour;
 	packet[1] = 'X'; //dont care
 	packet[2] = callsign;
 	packet[3] = 'X'; //dont care
 	packet[4] = (char)(NumNeighbours);
 
-	for(int i=5;i<(NumNeighbours+5);i++){
-		packet[i] = neighbours[i-5];
+	for(int i=0;i<(NumNeighbours);i++){
+		packet[i+5] = neighbours[i];
 	}
-	
-	uint16_t fullcrc = calcrc(packet, NumNeighbours+5);
+	int packetLength = strlen(packet);
+	uint16_t fullcrc = calcrc(packet, packetLength);
+	put_debug_number(NumNeighbours);put_debug_string(".");put_debug_number(packetLength);
 
-	packet[NumNeighbours+6] = (char)((fullcrc & 0xFF00) >> 8);
-	packet[NumNeighbours+7] = (char)(fullcrc & 0x00FF);
+	packet[packetLength] = (char)((fullcrc & 0xFF00) >> 8);
+	packet[packetLength+1] = (char)(fullcrc & 0x00FF);
 	//put_debug_char(packet[NumNeighbours+6]);
-	put_debug_string("passing to DLL\r\n");
+	put_debug_string("\r\npassing to DLL\r\n");
 	put_debug_string(packet);put_debug_string("\r\n");
 	SendPacket(DLLFLOOD, packet);
 	put_debug_string("return from DLL\r\n");
@@ -384,11 +379,12 @@ void 	processNeighbours(char* packet){ //processes a packet detailing neighbours
 	for(int i=0;i<NumNeighbours;i++){
 		twohoparray[i] = packet[i+5]; //twohoparray now contains details of neighbour's neighbours
 	}
-
+	put_debug_string("found 2hop neighbours: ");put_debug_string(twohoparray);put_debug_string("\r\n");
+	put_debug_string("they are neighbours of: ");put_debug_char(onehopadd);put_debug_string("\r\n");
 	int twohopsrow = 0;
 	int SpaceFlag = 0;
 	for(int i=0;i<NumNeighbours;i++){ //find space in this array
-		if(twohops[i][0]=='0'){
+		if(twohops[i][0]==0){
 			twohopsrow = i;
 			SpaceFlag = 1;
 			twohops[i][0] = onehopadd;
@@ -539,7 +535,6 @@ char 	calcNextHop(char dest){ //returns the next node to send data to
 	put_debug_string("Function end: calcNextHop\r\n");
 	return nextHop;
 }
-
 int		checkRepeatPacket(char* packet){ //for sending packets in a flood, return 0 if not a duplicate
 	put_debug_string("Function Begin: checkRepeatPacket\r\n");
 
@@ -635,21 +630,3 @@ void	displayPacket(char* packet,int command){ //1:Dsiaply packet length, 2: disp
 	//put_debug_string("Function End: displayPacket\r\n");
 	return;
 }
-
-/*void gatherNeighbours(){ //REDUNDANT
-//calculate number of elements in neighbour table
-	//int 	NumNeighbours = (sizeof(neighbours)/sizeof(neighbours[0]));
-	char 	packet[MaxPacketLength];
-	//get responses, check not duplicates 
-	char 	neighbour[1];
-	int 	packetType = getPacket(packet); //get a new packet
-
-	getNeighbourAdd(neighbour, packet); //extract neighbour address from packet
-
-	if(packetType==1){ //returns 1 for hello packets
-		processHello(packet);
-	} 
-	else{put_debug_string("no hello packet\r\n");}
-	//store in table
-	return;
-}*/

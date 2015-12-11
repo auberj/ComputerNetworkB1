@@ -138,6 +138,26 @@ int RecievePacket(char* packet){
 				DummyPacket[i] = 0;
 			}
 		break;	
+
+		case 5:
+			put_string("BEGIN REC PACKET - 0\r\n");
+			//strcpy(packet,DummyPacket);
+			PacketLength = strlen(DummyPacket);
+			put_string("Dummy packet length: "); put_number(PacketLength); put_string("\r\n");
+			//display_string("r packet length: "); display_number(PacketLength); display_string("\n");
+			for(int i=0;i<(PacketLength);i++){
+				packet[i] = DummyPacket[i];
+			}
+			
+			PacketLength = strlen(packet);
+			put_string("Real packet length: "); put_number(PacketLength); put_string("\r\n");
+			put_string("END REC PACKET\r\n");
+			callcount = 1;
+			returnval = 1;
+			for(int i=0;i<(MAXPACKETSIZE+1);i++){
+				DummyPacket[i] = 0;
+			}
+		break;	
 		}
 	}
 	else{
